@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -34,8 +33,6 @@ import repast.simphony.context.Context;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.ShapefileLoader;
 import repast.simphony.space.graph.Network;
-import repast.simphony.space.graph.RepastEdge;
-import exceptions.NoIdentifierException;
 
 /**
  * Class with useful GIS functions for configuring the GIS model environment.
