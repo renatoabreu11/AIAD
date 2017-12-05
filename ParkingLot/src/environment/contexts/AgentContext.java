@@ -19,6 +19,7 @@ along with RepastCity.  If not, see <http://www.gnu.org/licenses/>.
 package environment.contexts;
 
 import repast.simphony.context.DefaultContext;
+import agents.Agent;
 import agents.IAgent;
 import parkingLot.GlobalVars;
 

@@ -20,12 +20,12 @@ public class Driver extends IAgent {
 	Route route;
 	private boolean goingHome;
 	
-	public void step() {
+	public void update() {
 
 		if (this.route == null) {
 			this.goingHome = false; // Must be leaving home
 			// Choose a new building to go to
-			Agent b = Initializer.agentContext.getRandomObjects(ParkingLot.class, 1).iterator().next();
+			IAgent b = Initializer.agentContext.getRandomObjects(ParkingLot.class, 1).iterator().next();
 
 			this.route = new Route(this, Initializer.getAgentGeography().getGeometry(b).getCoordinate(), b);
 			LOGGER.log(Level.FINE, this.toString() + " created new route to " + b.toString());
@@ -44,5 +44,5 @@ public class Driver extends IAgent {
 			this.route = null;
 
 		}
-	}*/
+	}
 }

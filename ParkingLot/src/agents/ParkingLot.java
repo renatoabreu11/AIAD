@@ -3,8 +3,10 @@ package agents;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParkingLot extends Agent {
+public class ParkingLot extends IAgent {
 	
+	public void update() {};
+
 	
 	/** A list of agents who live here */
 	private List<Agent> agents;

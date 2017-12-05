@@ -11,6 +11,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import agents.IAgent;
+import agents.Agent;
 import agents.Driver;
 import agents.ParkingLot;
 import environment.GISFunctions;
@@ -39,11 +40,8 @@ public class Initializer implements ContextBuilder<Object> {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	
-	public static Context<Agent> agentContext;
-	private static Geography<Agent> agentGeography;
-	
-	public static Context<ParkingLot> parkingContext;
-	public static Geography<ParkingLot> parkingGeogrpahy;
+	public static Context<IAgent> agentContext;
+	private static Geography<IAgent> agentGeography;
 	
 	public static Context<Road> roadContext;
 	public static Geography<Road> roadProjection;
@@ -133,7 +131,7 @@ public class Initializer implements ContextBuilder<Object> {
 		ScheduleParameters agentStepParams = ScheduleParameters.createRepeating(1, 1, 0);
 		// Schedule the agents' step methods.
 		for (IAgent a : agentContext.getObjects(IAgent.class)) {
-			schedule.schedule(agentStepParams, a, "step");
+			schedule.schedule(agentStepParams, a, "stddep");
 		}
 
 		return context;
@@ -156,7 +154,7 @@ public class Initializer implements ContextBuilder<Object> {
 	 * @param point
 	 *            The point to move the agent to
 	 */
-	public static synchronized void moveAgent(Agent agent, Point point) {
+	public static synchronized void moveAgent(IAgent agent, Point point) {
 		Initializer.agentGeography.move(agent, point);
 	}
 	
@@ -173,7 +171,7 @@ public class Initializer implements ContextBuilder<Object> {
 	 *            The angle at which to travel.
 	 * @see Geography
 	 */
-	public static synchronized void moveAgentByVector(Agent agent, double distToTravel, double angle) {
+	public static synchronized void moveAgentByVector(IAgent agent, double distToTravel, double angle) {
 		agentGeography.moveByVector(agent, distToTravel, angle);
 	}
 	
@@ -182,11 +180,11 @@ public class Initializer implements ContextBuilder<Object> {
 	 * agentGeography -- because when multiple threads are used they can interfere with each other and agents end up
 	 * moving incorrectly.
 	 */
-	public static synchronized Geometry getAgentGeometry(Agent agent) {
+	public static synchronized Geometry getAgentGeometry(IAgent agent) {
 		return Initializer.agentGeography.getGeometry(agent);
 	}
 	
-	public static Geography<Agent> getAgentGeography() {
+	public static Geography<IAgent> getAgentGeography() {
 		return agentGeography;
 	}
 }
