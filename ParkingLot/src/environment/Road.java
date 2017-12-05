@@ -259,8 +259,13 @@ public class Road implements FixedGeography, Identified {
 	@Override
 	public int hashCode() {
 		if (this.identifier==null) {
+			try {
+				this.setIdentifier(this.name);
+			} catch(DuplicateIdentifierException e) {
+				e.printStackTrace();
+			}
 			LOGGER.severe("hashCode called but this object's identifier has not been set. It is likely that you're " +
-					"reading a shapefile that doesn't have a string column called 'identifier'");
+					"reading a shapefile that doesn't have a string column called 'identifier'. Using name: " + this.name + " as identifier");
 		}
 		return this.identifier.hashCode();
 	}
