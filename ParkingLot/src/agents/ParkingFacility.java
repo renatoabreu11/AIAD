@@ -1,9 +1,10 @@
 package agents;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
+
+import sajas.core.behaviours.Behaviour;
 
 public class ParkingFacility extends IAgent {
 	private static Logger LOGGER = Logger.getLogger(ParkingFacility.class.getName());
@@ -12,16 +13,21 @@ public class ParkingFacility extends IAgent {
 	
 	public int capacity;
 	protected int currLotation;
-	// Hashmap with string as driver identifier and driver object
 	protected HashMap<String, Driver> parkedDrivers;
 	
-	// Pricing scheme
 	public double pricePerMinute;
 	public double minPricePerStay;
 	public double maxPricePerStay;
 	
 	public double profit;
 	
+	/**
+	 * Parking facility constructor
+	 * @param type
+	 * @param id
+	 * @param position
+	 * @param maxCapacity
+	 */
 	public ParkingFacility(Type type, String id, Coordinate position, int maxCapacity) {
 		super();
 		this.type = type;
@@ -33,6 +39,22 @@ public class ParkingFacility extends IAgent {
 		parkedDrivers = new HashMap<String, Driver>();
 	}
 	
+	protected void setup() {
+		
+	}
+	
+	/**
+	 * Adds a behaviour
+	 */
+	public void addBehaviour(Behaviour b) {
+		super.addBehaviour(b);
+	}
+	
+	/**
+	 * Returns the price to pay for the stay
+	 * @param driver
+	 * @return
+	 */
 	public double getFinalPrice(Driver driver) {
 		double price = pricePerMinute * 1.0; // driver.getStaytime
 		
@@ -53,6 +75,20 @@ public class ParkingFacility extends IAgent {
 		return price;
 	}
 	
+	/**
+	 * Removes a driver from the park
+	 * @param driver
+	 */
+	public void removeDriver(Driver driver) {
+		parkedDrivers.remove(driver.id);
+		currLotation--;
+	}
+	
+	/**
+	 * Accepts or reject a new driver, accordingly to the current capacity
+	 * @param driver
+	 * @return
+	 */
 	public boolean acceptDriver(Driver driver) {
 		if(currLotation == capacity) {
 			return false;
@@ -65,10 +101,17 @@ public class ParkingFacility extends IAgent {
 		return true;
 	}
 	
+	/**
+	 * Removes all drivers from the park
+	 */
 	public void closeParkingFacility() {
 		parkedDrivers = new HashMap<String, Driver>();
 		currLotation = 0;
 	}
+	
+	/**
+	 * Default Getters and Setters
+	 */
 	
 	public void setPricingScheme(double pricePerMinute, double minPricePerStay, double maxPricePerStay) {
 		this.pricePerMinute = pricePerMinute;

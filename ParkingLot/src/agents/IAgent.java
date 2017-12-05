@@ -6,7 +6,6 @@ public abstract class IAgent extends Agent{
 	public static enum Type {
 			EXPLORATORY_DRIVER,
 			RATIONAL_DRIVER,
-			PARKING_FACILITY,
 			DYNAMIC_PARKING_FACILITY,
 			STATIC_PARKING_FACILITY
 	}
