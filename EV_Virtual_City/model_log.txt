@@ -1,2 +1,0 @@
-Dec 05, 2017 12:39:23 PM repastcity3.main.ContextManager build
-INFO: Creating agents with the agent definition: 'point:people_600.shp$repastcity3.agent.DefaultAgent'
