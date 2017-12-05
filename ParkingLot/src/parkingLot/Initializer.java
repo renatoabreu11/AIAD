@@ -131,7 +131,7 @@ public class Initializer implements ContextBuilder<Object> {
 		ScheduleParameters agentStepParams = ScheduleParameters.createRepeating(1, 1, 0);
 		// Schedule the agents' step methods.
 		for (IAgent a : agentContext.getObjects(IAgent.class)) {
-			schedule.schedule(agentStepParams, a, "stddep");
+			schedule.schedule(agentStepParams, a, "update");
 		}
 
 		return context;
