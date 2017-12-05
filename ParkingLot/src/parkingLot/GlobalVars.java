@@ -1,5 +1,5 @@
 /*
-©Copyright 2012 Nick Malleson
+ï¿½Copyright 2012 Nick Malleson
 This file is part of RepastCity.
 
 RepastCity is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import agents.Agent;
+import agents.IAgent;
 
 /**
  * 
@@ -108,7 +108,7 @@ public abstract class GlobalVars {
 		// This variable is used by NetworkEdge.getWeight() function so that it knows what travel options
 		// are available to the agent (e.g. has a car). Can't be passed as a parameter because NetworkEdge.getWeight()
 		// must override function in RepastEdge because this is the one called by ShortestPath.
-		public static Agent currentAgent = null;
+		public static IAgent currentAgent = null;
 		public static Object currentBurglarLock = new Object();
 
 		public static final String WALK = "walk";

@@ -1,5 +1,5 @@
 package agents;
 
-public class ParkingLot extends Agent {
+public class ParkingLot extends IAgent {
 	
 }

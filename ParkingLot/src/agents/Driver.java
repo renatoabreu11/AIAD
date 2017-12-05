@@ -12,7 +12,7 @@ import parkingLot.Initializer;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.graph.RepastEdge;
 
-public class Driver extends Agent {
+public class Driver extends IAgent {
 	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 
 	public Coordinate destination;
@@ -20,7 +20,7 @@ public class Driver extends Agent {
 	public int currentJunction;
 	public Road currentRoad;
 	
-	@ScheduledMethod(start = 1, interval = 1)
+	/*@ScheduledMethod(start = 1, interval = 1)
 	public void step() {
 
 		Coordinate current = Initializer.agentGeography.getGeometry(this).getCoordinate(); 
@@ -41,5 +41,5 @@ public class Driver extends Agent {
 				Initializer.agentGeography.move(this, geoFactory.createPoint(nextCoord));
 			}
 		}
-	}
+	}*/
 }

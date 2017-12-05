@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
-import agents.Agent;
+import agents.IAgent;
 import agents.Driver;
 import environment.GISFunctions;
 import environment.Junction;
@@ -37,8 +37,8 @@ public class Initializer implements ContextBuilder<Object> {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	
-	public static Context<Agent> agentContext;
-	public static Geography<Agent> agentGeography;
+	public static Context<IAgent> agentContext;
+	public static Geography<IAgent> agentGeography;
 
 
 	public static Context<Road> roadContext;
@@ -94,7 +94,7 @@ public class Initializer implements ContextBuilder<Object> {
 		context.addSubContext(agentContext);
 		agentGeography = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
 				GlobalVars.CONTEXT_NAMES.AGENT_GEOGRAPHY, agentContext,
-				new GeographyParameters<Agent>(new SimpleAdder<Agent>()));
+				new GeographyParameters<IAgent>(new SimpleAdder<IAgent>()));
 		
 		Driver driver = new Driver();
 		Road road = roadContext.getRandomObject();
@@ -124,7 +124,7 @@ public class Initializer implements ContextBuilder<Object> {
 				"printTicks");
 		ScheduleParameters agentStepParams = ScheduleParameters.createRepeating(1, 1, 0);
 		// Schedule the agents' step methods.
-		for (Agent a : agentContext.getObjects(Agent.class)) {
+		for (IAgent a : agentContext.getObjects(IAgent.class)) {
 			schedule.schedule(agentStepParams, a, "step");
 		}
 
