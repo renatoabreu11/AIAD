@@ -14,7 +14,7 @@ import parkingLot.Initializer;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.graph.RepastEdge;
 
-public class Driver extends Agent {
+public class Driver extends IAgent {
 	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 
 	Route route;
@@ -44,5 +44,5 @@ public class Driver extends Agent {
 			this.route = null;
 
 		}
-	}
+	}*/
 }

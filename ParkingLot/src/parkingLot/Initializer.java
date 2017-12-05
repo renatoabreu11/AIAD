@@ -10,7 +10,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
-import agents.Agent;
+import agents.IAgent;
 import agents.Driver;
 import agents.ParkingLot;
 import environment.GISFunctions;
@@ -96,7 +96,7 @@ public class Initializer implements ContextBuilder<Object> {
 		context.addSubContext(agentContext);
 		agentGeography = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
 				GlobalVars.CONTEXT_NAMES.AGENT_GEOGRAPHY, agentContext,
-				new GeographyParameters<Agent>(new SimpleAdder<Agent>()));
+				new GeographyParameters<IAgent>(new SimpleAdder<IAgent>()));
 		
 		Junction junction;
 		Road road;
@@ -132,7 +132,7 @@ public class Initializer implements ContextBuilder<Object> {
 				"printTicks");
 		ScheduleParameters agentStepParams = ScheduleParameters.createRepeating(1, 1, 0);
 		// Schedule the agents' step methods.
-		for (Agent a : agentContext.getObjects(Agent.class)) {
+		for (IAgent a : agentContext.getObjects(IAgent.class)) {
 			schedule.schedule(agentStepParams, a, "step");
 		}
 
