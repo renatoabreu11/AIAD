@@ -14,11 +14,52 @@ import repast.simphony.space.graph.RepastEdge;
 
 public class Driver extends IAgent {
 	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
-
+	
+	public static int totalTicksParked = 0;
+	public static int totalTicksAlive = 0;
+	
+	public static int parkingDuration = 0; // definir valor default futuramente
+	public static int maxDist = 0; // definir valor default futuramente
+	
+	
+	public boolean alive = true;
+	
 	public Coordinate destination;
 	public List<RepastEdge<Junction>> junctionsToPass;
 	public int currentJunction;
 	public Road currentRoad;
+	
+	public Driver() {
+		
+	}
+	
+	public Driver(Coordinate destination,List<RepastEdge<Junction>> junctionsToPass,Road firstRoad) {
+		this.destination=destination;
+		this.junctionsToPass=junctionsToPass;
+		this.currentRoad=firstRoad;
+		this.currentJunction=this.junctionsToPass.get(0).getSource().getId(); //não tenho a certeza, perguntar ao William
+	}
+	
+	public Coordinate getDestination() {
+		return destination;
+	}
+	
+	public List<RepastEdge<Junction>> getJunctionsToPass(){
+		return junctionsToPass;
+	}
+	
+	public int getCurrentJunction() {
+		return currentJunction;
+	}
+	
+	public Road getCurrentRoad() {
+		return currentRoad;
+	}
+	
+	public boolean getAlive() {
+		return alive;
+	}
+	
 	
 	/*@ScheduledMethod(start = 1, interval = 1)
 	public void step() {
