@@ -7,17 +7,22 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import agents.IAgent;
+import agents.Agent;
 import agents.Driver;
+import agents.ParkingLot;
 import environment.GISFunctions;
 import environment.Junction;
 import environment.NetworkEdgeCreator;
 import environment.Road;
+import environment.Route;
 import environment.SpatialIndexManager;
 import environment.contexts.AgentContext;
 import environment.contexts.JunctionContext;
+import environment.contexts.ParkingLotContext;
 import environment.contexts.RoadContext;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -37,10 +42,14 @@ public class Initializer implements ContextBuilder<Object> {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	
+	public ArrayList<ParkingLot> parks = new ArrayList<>();
+	
 	public static Context<IAgent> agentContext;
-	public static Geography<IAgent> agentGeography;
-
-
+	private static Geography<IAgent> agentGeography;
+	
+	public static Context<ParkingLot> parkingLotContext;
+	private static Geography<ParkingLot> parkingLotGeography;
+	
 	public static Context<Road> roadContext;
 	public static Geography<Road> roadProjection;
 	
@@ -54,20 +63,16 @@ public class Initializer implements ContextBuilder<Object> {
 		context.setId("ParkingLot");
 
 		try {
-			
 			roadContext = new RoadContext();
 			roadProjection = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
 					GlobalVars.CONTEXT_NAMES.ROAD_GEOGRAPHY, roadContext,
 					new GeographyParameters<Road>(new SimpleAdder<Road>()));
 			
-			GISFunctions.readShapefile(Road.class, "./data/espinho.shp", roadProjection, roadContext);
+			GISFunctions.readShapefile(Road.class, "./data/roads.shp", roadProjection, roadContext);
 			context.addSubContext(roadContext);
 			SpatialIndexManager.createIndex(roadProjection, Road.class);
-			
-
-			
+						
 			// Create road network
-
 			// 1.junctionContext and junctionGeography
 			junctionContext = new JunctionContext();
 			context.addSubContext(junctionContext);
@@ -96,46 +101,108 @@ public class Initializer implements ContextBuilder<Object> {
 				GlobalVars.CONTEXT_NAMES.AGENT_GEOGRAPHY, agentContext,
 				new GeographyParameters<IAgent>(new SimpleAdder<IAgent>()));
 		
-		Driver driver = new Driver();
-		Road road = roadContext.getRandomObject();
+		parkingLotContext = new ParkingLotContext();
+		context.addSubContext(parkingLotContext);
+		parkingLotGeography = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
+				GlobalVars.CONTEXT_NAMES.PARKINGLOT_GEOGRAPHY, parkingLotContext,
+				new GeographyParameters<ParkingLot>(new SimpleAdder<ParkingLot>()));
+		
+		//Adicionar elementos ao ambiente
+		Junction junction;
+		Road road;
+		Point point;
+		for(int i = 0; i < 2; i++) {
+			junction = junctionContext.getRandomObject();
+			point = junctionGeography.getGeometry(junction).getCentroid();
+			System.out.println(junction.toString());
+			parks.add(new ParkingLot(new Coordinate(point.getX(),point.getY())));
+			agentContext.add(parks.get(i));
+			agentGeography.move(parks.get(i),  point);
+			parkingLotContext.add(parks.get(i));
+		}
+		
+		road = roadContext.getRandomObject();
 		ArrayList<Junction> endpoints = road.getJunctions();
-		Coordinate[] c = roadProjection.getGeometry(road).getCoordinates();
-		
-		Point p = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
+		Point initialPoint = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
+		junction = junctionContext.getRandomObject();
+		Point finalPoint = junctionGeography.getGeometry(junction).getCentroid();
+		Coordinate initialCoordinates = new Coordinate(initialPoint.getX(),initialPoint.getY());
+		Coordinate finalCoordinates = new Coordinate(finalPoint.getX(),finalPoint.getY());
+		Driver driver = new Driver(initialCoordinates,finalCoordinates,endpoints,road);
 		agentContext.add(driver);
-		agentGeography.move(driver, p);
+		agentGeography.move(driver, initialPoint);
 		
-		Junction j = junctionContext.getRandomObject();
-		ShortestPath<Junction> shortest = new ShortestPath<Junction>(roadNetwork);
-		List<RepastEdge<Junction>> shortestPath = shortest.getPath(endpoints.get(0), endpoints.get(1));
+//		
+//		Junction j = junctionContext.getRandomObject();
+//		ShortestPath<Junction> shortest = new ShortestPath<Junction>(roadNetwork);
+//		List<RepastEdge<Junction>> shortestPath = shortest.getPath(endpoints.get(0), endpoints.get(1));
 		//double pathLength = shortest.getPathLength(endpoints.get(0), j);
-		driver.junctionsToPass = shortestPath;
-		driver.currentJunction = 0;
-		driver.currentRoad = road;
 		
 		if (RunEnvironment.getInstance().isBatch()) {
 			RunEnvironment.getInstance().endAt(20);
 		}
 		
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-
 		// Schedule something that outputs ticks every 1000 iterations.
 		schedule.schedule(ScheduleParameters.createRepeating(1, 1000, ScheduleParameters.LAST_PRIORITY), this,
 				"printTicks");
 		ScheduleParameters agentStepParams = ScheduleParameters.createRepeating(1, 1, 0);
 		// Schedule the agents' step methods.
 		for (IAgent a : agentContext.getObjects(IAgent.class)) {
-			schedule.schedule(agentStepParams, a, "step");
+			schedule.schedule(agentStepParams, a, "update");
 		}
-
+		
 		return context;
 	}
 	
 	private static long speedTimer = -1; // For recording time per N iterations 
 	public void printTicks() {
-		LOGGER.info("Iterations: " + RunEnvironment.getInstance().getCurrentSchedule().getTickCount()+
-				". Speed: "+((double)(System.currentTimeMillis()-speedTimer)/1000.0)+
-				"sec/ticks.");
+//		LOGGER.info("Iterations: " + RunEnvironment.getInstance().getCurrentSchedule().getTickCount()+
+//				". Speed: "+((double)(System.currentTimeMillis()-speedTimer)/1000.0)+
+//				"sec/ticks.");
 		speedTimer = System.currentTimeMillis();
+	}
+	
+	/**
+	 * Move an agent. This method is required -- rather than giving agents direct access to the agentGeography --
+	 * because when multiple threads are used they can interfere with each other and agents end up moving incorrectly.
+	 * 
+	 * @param agent
+	 *            The agent to move.
+	 * @param point
+	 *            The point to move the agent to
+	 */
+	public static synchronized void moveAgent(IAgent agent, Point point) {
+		Initializer.agentGeography.move(agent, point);
+	}
+	
+	/**
+	 * Move an agent by a vector. This method is required -- rather than giving agents direct access to the
+	 * agentGeography -- because when multiple threads are used they can interfere with each other and agents end up
+	 * moving incorrectly.
+	 * 
+	 * @param agent
+	 *            The agent to move.
+	 * @param distToTravel
+	 *            The distance that they will travel
+	 * @param angle
+	 *            The angle at which to travel.
+	 * @see Geography
+	 */
+	public static synchronized void moveAgentByVector(IAgent agent, double distToTravel, double angle) {
+		agentGeography.moveByVector(agent, distToTravel, angle);
+	}
+	
+	/**
+	 * Get the geometry of the given agent. This method is required -- rather than giving agents direct access to the
+	 * agentGeography -- because when multiple threads are used they can interfere with each other and agents end up
+	 * moving incorrectly.
+	 */
+	public static synchronized Geometry getAgentGeometry(IAgent agent) {
+		return Initializer.agentGeography.getGeometry(agent);
+	}
+	
+	public static Geography<IAgent> getAgentGeography() {
+		return agentGeography;
 	}
 }

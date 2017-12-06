@@ -1,5 +1,6 @@
 package agents;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -24,6 +25,8 @@ public class ParkingLot extends IAgent {
 	
 	public double profit;
 	
+	private ArrayList<IAgent> agents;
+	private Coordinate currentPosition;
 	/**
 	 * Parking facility constructor
 	 * @param type
@@ -40,6 +43,17 @@ public class ParkingLot extends IAgent {
 		this.currLotation = 0;
 		this.profit = 0;
 		parkedDrivers = new HashMap<String, Driver>();
+	}
+	
+	public void update() {};
+	
+	public ParkingLot(Coordinate currentPosition) {
+		this.agents = new ArrayList<IAgent>();
+		this.currentPosition = currentPosition;
+	}
+	
+	public void addAgent(IAgent a) {
+		this.agents.add(a);
 	}
 	
 	@Override
@@ -197,5 +211,9 @@ public class ParkingLot extends IAgent {
 	
 	public String getParkingFacilityInfo() {
 		return "";
+	}
+	
+	public Coordinate getCurrentPosition() {
+		return currentPosition;
 	}
 }
