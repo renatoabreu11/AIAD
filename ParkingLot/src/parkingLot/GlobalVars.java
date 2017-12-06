@@ -36,13 +36,6 @@ public abstract class GlobalVars {
 	
 	private static Logger LOGGER = Logger.getLogger(GlobalVars.class.getName());
 	
-	/* These are strings that match entries in the repastcity.properties file.*/
-	public static final String GISDataDirectory = "GISDataDirectory";
-	public static final String BuildingShapefile = "BuildingShapefile";
-	public static final String RoadShapefile = "RoadShapefile";
-	public static final String BuildingsRoadsCoordsCache = "BuildingsRoadsCoordsCache";
-	public static final String BuildingsRoadsCache = "BuildingsRoadsCache";
-	
 	public static final class GEOGRAPHY_PARAMS {
 		/**
 		 * Different search distances used in functions that need to find objects that are
@@ -144,5 +137,32 @@ public abstract class GlobalVars {
 		}
 	}
 	
+	public static enum WEEKDAY {
+		MONDAY(1),
+		TUESDAY(2),
+		WEDNESDAY(3),
+		THURSDAY(4),
+		FRIDAY(5),
+		SATURDAY(6),
+		SUNDAY(0);
+		
+		WEEKDAY(int id){
+			this.id = id;
+		}
+		public final int id;
+		public static final int maxTicksInDay = 12000;
+		
+		public static WEEKDAY getNextDay(int id) {
+			WEEKDAY week = null;
+			int nextDay = (id + 1) % 7;
+			for(WEEKDAY day : WEEKDAY.values()) {
+				if(day.id == nextDay) {
+					week = day;
+					break;
+				}
+			}
+			return week;
+		}
 
+	}
 }
