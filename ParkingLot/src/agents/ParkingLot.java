@@ -1,6 +1,5 @@
 package agents;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -41,7 +40,7 @@ public class ParkingLot extends Agent {
 	
 	public void update() {};
 	
-	public ParkingLot(Coordinate position) { //construtor temporário
+	public ParkingLot(Coordinate position) { //construtor temporï¿½rio
 		super("park");
 		this.position = position;
 		this.capacity = 10;
