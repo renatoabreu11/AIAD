@@ -79,7 +79,6 @@ public class RequestEntryPerformer extends Behaviour {
 					// Entry successful.
 					System.out.println("Driver " + myAgent.getName() + " successfully parked at " + reply.getSender().getName());
 					System.out.println("Price = " + price + "\nParking duration: " + parkDuration );
-					myAgent.doDelete();
 				}
 				else {
 					System.out.println("Park entry failed: park at maximum capacity");
