@@ -29,5 +29,6 @@ public class RequestExitPerformer extends WakerBehaviour {
 		cfp.setConversationId("park-exit");
 		cfp.setReplyWith("cfp"+System.currentTimeMillis());
 		myAgent.send(cfp);
+		myAgent.doDelete();
 	}
 } 

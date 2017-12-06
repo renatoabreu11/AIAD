@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 
+import behaviours.AcceptEntryServer;
+import behaviours.RequestEntryServer;
+import behaviours.RequestExitServer;
 import sajas.domain.*;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -60,6 +63,10 @@ public class ParkingLot extends Agent {
 		} catch (FIPAException e) {
 			System.err.println(e.getMessage());
 		}
+		
+		addBehaviour(new AcceptEntryServer());
+		addBehaviour(new RequestEntryServer());
+		addBehaviour(new RequestExitServer());
 	}
 	
 	@Override

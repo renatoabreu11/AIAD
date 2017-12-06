@@ -13,13 +13,7 @@ public class RequestExitServer extends CyclicBehaviour {
 
 	/**
 	 * Cyclic behaviour that waits from requests to exit the park by driver agents
-	 * @param a
-	 * @param period
 	 */
-	public RequestExitServer(ParkingLot pl) {
-		super(pl);
-	}
-
 	@Override
 	public void action() {
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);

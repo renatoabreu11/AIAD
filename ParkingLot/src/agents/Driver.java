@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
+import behaviours.RequestEntryPerformer;
 import environment.Junction;
 import environment.Road;
 import environment.Route;
@@ -67,6 +68,8 @@ public class Driver extends Agent {
 
 	@Override
 	protected void setup() {
+		LOGGER.info("Driver " + getAID().getName()  + " is ready!");
+		
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -89,7 +92,7 @@ public class Driver extends Agent {
 			fe.printStackTrace();
 		}
 
-		LOGGER.info("Driver terminating");
+		LOGGER.info("Driver " + getAID().getName()  + " terminating");
 	}
 
 	private void getPossibleParks() {
@@ -134,7 +137,9 @@ public class Driver extends Agent {
 				if(!this.inPark) {
 					this.inPark = true;
 					System.out.println("CHEGOU");
-					//this.parkingLotDestiny.acceptDriver(this); // fazer a chamada para adicionar
+					
+					// Obtain current park and send AID
+					//addBehaviour(new RequestEntryPerformer(parkingLot.getAID()));
 				}
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
 			}
@@ -144,6 +149,11 @@ public class Driver extends Agent {
 		}
 	}
 
+	/**
+	 * Function that calculates the driver utility in a given park
+	 * @param price
+	 * @return
+	 */
 	public double getUtility(double price) {
 		double[] distAndAng = new double[2];
 		Route.distance(this.destination, this.currentPosition, distAndAng);
