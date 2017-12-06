@@ -29,6 +29,8 @@ import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ISchedule;
 import repast.simphony.engine.schedule.ScheduleParameters;
+import repast.simphony.parameter.Parameters;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.gis.SimpleAdder;
@@ -67,7 +69,7 @@ public class Initializer implements ContextBuilder<Object> {
 			SpatialIndexManager.createIndex(roadProjection, Road.class);
 						
 			// Create road network
-
+		
 			// 1.junctionContext and junctionGeography
 			junctionContext = new JunctionContext();
 			context.addSubContext(junctionContext);
@@ -100,24 +102,37 @@ public class Initializer implements ContextBuilder<Object> {
 		Road road;
 		Point point;
 		ParkingLot p;
-		for(int i = 0; i < 2; i++) {
+//		for(int i = 0; i < 2; i++) {
+//			p = new ParkingLot();
+//			junction = junctionContext.getRandomObject();
+//			point = junctionGeography.getGeometry(junction).getCentroid();
+//			agentContext.add(p);
+//			agentGeography.move(p,  point);
+//		}
+		
+		Parameters params = RunEnvironment.getInstance().getParameters();
+		int zombieCount = (Integer) params.getValue("parking_count");
+		//TODO change cycle to iterable of randomObject[]
+		for (int i = 0; i < zombieCount; i++) {
 			p = new ParkingLot();
 			junction = junctionContext.getRandomObject();
 			point = junctionGeography.getGeometry(junction).getCentroid();
 			agentContext.add(p);
 			agentGeography.move(p,  point);
 		}
-		Driver driver = new Driver();
-		road = roadContext.getRandomObject();
-		ArrayList<Junction> endpoints = road.getJunctions();
-		point = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
-		agentContext.add(driver);
-		agentGeography.move(driver, point);
-//		
-//		Junction j = junctionContext.getRandomObject();
-//		ShortestPath<Junction> shortest = new ShortestPath<Junction>(roadNetwork);
-//		List<RepastEdge<Junction>> shortestPath = shortest.getPath(endpoints.get(0), endpoints.get(1));
-		//double pathLength = shortest.getPathLength(endpoints.get(0), j);
+
+		int humanCount = (Integer) params.getValue("driver_count");
+		for (int i = 0; i < humanCount; i++) {
+			Driver driver = new Driver();
+			road = roadContext.getRandomObject();
+			ArrayList<Junction> endpoints = road.getJunctions();
+			point = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
+			agentContext.add(driver);
+			agentGeography.move(driver, point);
+		}
+		
+		Manager manager = new Manager();
+		agentContext.add(manager);
 		
 		if (RunEnvironment.getInstance().isBatch()) {
 			RunEnvironment.getInstance().endAt(20);
