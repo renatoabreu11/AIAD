@@ -22,6 +22,7 @@ import environment.Route;
 import environment.SpatialIndexManager;
 import environment.contexts.AgentContext;
 import environment.contexts.JunctionContext;
+import environment.contexts.ParkingLotContext;
 import environment.contexts.RoadContext;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -45,6 +46,9 @@ public class Initializer implements ContextBuilder<Object> {
 	
 	public static Context<IAgent> agentContext;
 	private static Geography<IAgent> agentGeography;
+	
+	public static Context<ParkingLot> parkingLotContext;
+	private static Geography<ParkingLot> parkingLotGeography;
 	
 	public static Context<Road> roadContext;
 	public static Geography<Road> roadProjection;
@@ -97,6 +101,12 @@ public class Initializer implements ContextBuilder<Object> {
 				GlobalVars.CONTEXT_NAMES.AGENT_GEOGRAPHY, agentContext,
 				new GeographyParameters<IAgent>(new SimpleAdder<IAgent>()));
 		
+		parkingLotContext = new ParkingLotContext();
+		context.addSubContext(parkingLotContext);
+		parkingLotGeography = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
+				GlobalVars.CONTEXT_NAMES.PARKINGLOT_GEOGRAPHY, parkingLotContext,
+				new GeographyParameters<ParkingLot>(new SimpleAdder<ParkingLot>()));
+		
 		//Adicionar elementos ao ambiente
 		Junction junction;
 		Road road;
@@ -106,9 +116,9 @@ public class Initializer implements ContextBuilder<Object> {
 			point = junctionGeography.getGeometry(junction).getCentroid();
 			System.out.println(junction.toString());
 			parks.add(new ParkingLot(new Coordinate(point.getX(),point.getY())));
-			Utils.getInstance().parks.add(new ParkingLot(new Coordinate(point.getX(),point.getY())));
 			agentContext.add(parks.get(i));
 			agentGeography.move(parks.get(i),  point);
+			parkingLotContext.add(parks.get(i));
 		}
 		
 		road = roadContext.getRandomObject();
@@ -122,12 +132,6 @@ public class Initializer implements ContextBuilder<Object> {
 		agentContext.add(driver);
 		agentGeography.move(driver, initialPoint);
 		
-		for(int i=0;i < parks.size();i++)
-		{
-			double[] vals = new double[2];
-			Route.distance(driver.getCurrentPosition(), parks.get(i).getCurrentPosition(),vals);
-			System.out.println("Dist: "+vals[0]);
-		}
 //		
 //		Junction j = junctionContext.getRandomObject();
 //		ShortestPath<Junction> shortest = new ShortestPath<Junction>(roadNetwork);

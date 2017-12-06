@@ -101,7 +101,9 @@ public abstract class GlobalVars {
 		
 		public static final String IAGENT_CONTEXT = "IAgentContext";
 		public static final String IAGENT_GEOGRAPHY = "IAgentGeography";
-	
+		
+		public static final String PARKINGLOT_CONTEXT = "ParkingLotContext";
+		public static final String PARKINGLOT_GEOGRAPHY = "ParkingLotGeography";
 	}
 	
 	// Parameters used by transport networks

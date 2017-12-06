@@ -10,7 +10,6 @@ import agents.ParkingLot;
 public class Utils {
 
 	private static Utils instance = null;
-	public static ArrayList<ParkingLot> parks = new ArrayList<>();
 
 	protected Utils() {
 		// Exists only to defeat instantiation.

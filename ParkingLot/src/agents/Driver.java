@@ -15,16 +15,19 @@ import parkingLot.Initializer;
 import parkingLot.Utils;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.graph.RepastEdge;
+import repast.simphony.util.collections.IndexedIterable;
 
 public class Driver extends IAgent {
 	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 
-	public int totalTicksParked = 0;
+	private int totalTicksParked = 0;
 
-	public int parkingDuration = 10; // definir valor default futuramente
-	public  double maxDist = 100.0; // definir valor default futuramente
+	private int parkingDuration = 10; // definir valor default futuramente
+	private  double maxDist = 200.0; // definir valor default futuramente
 
-	public boolean alive = true;
+	private boolean alive = true;
+	
+	private ArrayList<ParkingLot> parksInRange = new ArrayList<>();
 
 	public Coordinate destination;
 	public Coordinate currentPosition;
@@ -33,8 +36,7 @@ public class Driver extends IAgent {
 	public Road currentRoad;
 
 	Route route;
-	private boolean goingHome;
-
+	
 	public Driver() {
 
 	}
@@ -45,27 +47,36 @@ public class Driver extends IAgent {
 		this.currentRoad = firstRoad;
 		this.destination = destination;
 		
-		//this.getPossibleParks();
+		System.out.println("Destination "+this.destination.toString());
 		
-		for(int i=0; i<Initializer.agentContext.getObjects(ParkingLot.class).size();i++) {
-			
-		}
-		
-		IAgent b = Initializer.agentContext.getRandomObjects(ParkingLot.class, 1).iterator().next();
-		this.route = new Route(this, Initializer.getAgentGeography().getGeometry(b).getCoordinate(), b);
-		LOGGER.log(Level.FINE, this.toString() + " created new route to " + b.toString());
+		this.getPossibleParks();
+		this.pickParkToGo();
 	}
 	
 	private void getPossibleParks() {
 		Coordinate tmp = new Coordinate();
 		double[] distAndAng = new double[2];
-		for(int i = 0;i < Utils.getInstance().parks.size(); i++) {
-			tmp = Utils.getInstance().parks.get(i).getCurrentPosition();
-			Route.distance(this.destination, tmp, distAndAng);
-			System.out.println(tmp.toString()+" , "+distAndAng[0]);
-		}
+		IndexedIterable<ParkingLot> parks = Initializer.parkingLotContext.getObjects(ParkingLot.class);
 		
-		System.out.println("Destination "+this.destination.toString());
+		for(int i = 0;i<parks.size();i++) {
+			tmp = parks.get(i).getCurrentPosition();
+			Route.distance(this.destination, tmp, distAndAng);
+			System.out.println("I"+i+": "+distAndAng[0]+" ; "+distAndAng[1]);
+			if(distAndAng[0] < this.maxDist) {
+				parksInRange.add(parks.get(i));
+			}
+		}
+	}
+	
+	public void pickParkToGo() {
+		if(this.parksInRange.size() == 0) {
+			this.alive = false;
+		}
+		else {
+			ParkingLot tmpParking = this.parksInRange.get(0);
+			this.route = new Route(this, Initializer.getAgentGeography().getGeometry(tmpParking).getCoordinate(), tmpParking);
+			LOGGER.log(Level.FINE, this.toString() + " created new route to " + tmpParking.toString());
+		}
 	}
 
 	public Coordinate getDestination() {
