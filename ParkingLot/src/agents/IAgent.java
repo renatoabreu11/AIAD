@@ -8,7 +8,8 @@ public abstract class IAgent extends sajas.core.Agent{
 	public static enum Type {
 			EXPLORATORY_DRIVER,
 			RATIONAL_DRIVER,
-			PARKING_FACILITY
+			DYNAMIC_PARKING_FACILITY,
+			STATIC_PARKING_FACILITY
 	}
 	public static int tick = 0;
 	
