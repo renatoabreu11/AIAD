@@ -71,7 +71,7 @@ public class Route {
 	private IAgent agent;
 	private Coordinate destination;
 	private IAgent destinationBuilding;
-
+	private int k=0;
 	/*
 	 * The route consists of a list of coordinates which describe how to get to the destination. Each coordinate might
 	 * have an attached 'speed' which acts as a multiplier and is used to indicate whether or not the agent is
@@ -318,6 +318,7 @@ public class Route {
 			if (this.atDestination()) {
 				return;
 			}
+			System.out.println("AQUI: "+this.currentPosition+" "+this.routeX.size()+"; "+this.routeX.toString());
 			double time = System.nanoTime();
 
 			// Store the roads the agent walks along (used to populate the awareness space)

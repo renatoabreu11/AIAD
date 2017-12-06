@@ -18,9 +18,11 @@ import environment.GISFunctions;
 import environment.Junction;
 import environment.NetworkEdgeCreator;
 import environment.Road;
+import environment.Route;
 import environment.SpatialIndexManager;
 import environment.contexts.AgentContext;
 import environment.contexts.JunctionContext;
+import environment.contexts.ParkingLotContext;
 import environment.contexts.RoadContext;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -40,8 +42,13 @@ public class Initializer implements ContextBuilder<Object> {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	
+	public ArrayList<ParkingLot> parks = new ArrayList<>();
+	
 	public static Context<IAgent> agentContext;
 	private static Geography<IAgent> agentGeography;
+	
+	public static Context<ParkingLot> parkingLotContext;
+	private static Geography<ParkingLot> parkingLotGeography;
 	
 	public static Context<Road> roadContext;
 	public static Geography<Road> roadProjection;
@@ -56,7 +63,6 @@ public class Initializer implements ContextBuilder<Object> {
 		context.setId("ParkingLot");
 
 		try {
-			
 			roadContext = new RoadContext();
 			roadProjection = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
 					GlobalVars.CONTEXT_NAMES.ROAD_GEOGRAPHY, roadContext,
@@ -67,7 +73,6 @@ public class Initializer implements ContextBuilder<Object> {
 			SpatialIndexManager.createIndex(roadProjection, Road.class);
 						
 			// Create road network
-
 			// 1.junctionContext and junctionGeography
 			junctionContext = new JunctionContext();
 			context.addSubContext(junctionContext);
@@ -96,23 +101,37 @@ public class Initializer implements ContextBuilder<Object> {
 				GlobalVars.CONTEXT_NAMES.AGENT_GEOGRAPHY, agentContext,
 				new GeographyParameters<IAgent>(new SimpleAdder<IAgent>()));
 		
+		parkingLotContext = new ParkingLotContext();
+		context.addSubContext(parkingLotContext);
+		parkingLotGeography = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
+				GlobalVars.CONTEXT_NAMES.PARKINGLOT_GEOGRAPHY, parkingLotContext,
+				new GeographyParameters<ParkingLot>(new SimpleAdder<ParkingLot>()));
+		
+		//Adicionar elementos ao ambiente
 		Junction junction;
 		Road road;
 		Point point;
-		ParkingLot p;
 		for(int i = 0; i < 2; i++) {
-			p = new ParkingLot();
 			junction = junctionContext.getRandomObject();
 			point = junctionGeography.getGeometry(junction).getCentroid();
-			agentContext.add(p);
-			agentGeography.move(p,  point);
+			System.out.println(junction.toString());
+			parks.add(new ParkingLot(new Coordinate(point.getX(),point.getY())));
+			agentContext.add(parks.get(i));
+			agentGeography.move(parks.get(i),  point);
+			parkingLotContext.add(parks.get(i));
 		}
-		Driver driver = new Driver();
+		
 		road = roadContext.getRandomObject();
 		ArrayList<Junction> endpoints = road.getJunctions();
-		point = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
+		Point initialPoint = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
+		junction = junctionContext.getRandomObject();
+		Point finalPoint = junctionGeography.getGeometry(junction).getCentroid();
+		Coordinate initialCoordinates = new Coordinate(initialPoint.getX(),initialPoint.getY());
+		Coordinate finalCoordinates = new Coordinate(finalPoint.getX(),finalPoint.getY());
+		Driver driver = new Driver(initialCoordinates,finalCoordinates,endpoints,road);
 		agentContext.add(driver);
-		agentGeography.move(driver, point);
+		agentGeography.move(driver, initialPoint);
+		
 //		
 //		Junction j = junctionContext.getRandomObject();
 //		ShortestPath<Junction> shortest = new ShortestPath<Junction>(roadNetwork);
@@ -124,7 +143,6 @@ public class Initializer implements ContextBuilder<Object> {
 		}
 		
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-
 		// Schedule something that outputs ticks every 1000 iterations.
 		schedule.schedule(ScheduleParameters.createRepeating(1, 1000, ScheduleParameters.LAST_PRIORITY), this,
 				"printTicks");
@@ -133,7 +151,7 @@ public class Initializer implements ContextBuilder<Object> {
 		for (IAgent a : agentContext.getObjects(IAgent.class)) {
 			schedule.schedule(agentStepParams, a, "update");
 		}
-
+		
 		return context;
 	}
 	
