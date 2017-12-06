@@ -10,23 +10,20 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
-public class ParkingLot extends IAgent {
+public class ParkingLot extends Agent {
 	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 	
-	public Coordinate position;
-	
 	public int capacity;
-	protected int currLotation;
-	protected HashMap<String, Driver> parkedDrivers;
+	protected int currLotation = 0;
+	protected HashMap<String, Driver> parkedDrivers = new HashMap<String, Driver>();
 	
 	public double pricePerMinute;
 	public double minPricePerStay;
 	public double maxPricePerStay;
 	
-	public double profit;
+	public double profit = 0;
+	private Coordinate position;
 	
-	private ArrayList<IAgent> agents;
-	private Coordinate currentPosition;
 	/**
 	 * Parking facility constructor
 	 * @param type
@@ -34,26 +31,20 @@ public class ParkingLot extends IAgent {
 	 * @param position
 	 * @param maxCapacity
 	 */
-	public ParkingLot(Type type, String id, Coordinate position, int maxCapacity) {
-		super();
+	public ParkingLot(Type type, String id, Coordinate position, int maxCapacity,Coordinate currentPosition) {
+		super("park");
 		this.type = type;
 		this.id = id;
 		this.position = position;
 		this.capacity = maxCapacity;
-		this.currLotation = 0;
-		this.profit = 0;
-		parkedDrivers = new HashMap<String, Driver>();
 	}
 	
 	public void update() {};
 	
-	public ParkingLot(Coordinate currentPosition) {
-		this.agents = new ArrayList<IAgent>();
-		this.currentPosition = currentPosition;
-	}
-	
-	public void addAgent(IAgent a) {
-		this.agents.add(a);
+	public ParkingLot(Coordinate position) { //construtor temporário
+		super("park");
+		this.position = position;
+		this.capacity = 10;
 	}
 	
 	@Override
@@ -116,6 +107,7 @@ public class ParkingLot extends IAgent {
 	public void removeDriver(Driver driver) {
 		parkedDrivers.remove(driver.id);
 		currLotation--;
+		System.out.println("Park: "+this.id+" ; Driver: "+driver.id+" ; "+this.currLotation);
 	}
 	
 	/**
@@ -132,6 +124,7 @@ public class ParkingLot extends IAgent {
 		profit += finalPrice;
 		parkedDrivers.put(driver.id, driver);
 		currLotation++;
+		System.out.println("Park: "+this.id+" ; Driver: "+driver.id+" ; "+this.currLotation);
 		return true;
 	}
 	
@@ -211,9 +204,5 @@ public class ParkingLot extends IAgent {
 	
 	public String getParkingFacilityInfo() {
 		return "";
-	}
-	
-	public Coordinate getCurrentPosition() {
-		return currentPosition;
 	}
 }

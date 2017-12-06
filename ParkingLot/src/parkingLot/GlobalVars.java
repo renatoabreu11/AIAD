@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import agents.IAgent;
+import agents.Agent;
 
 /**
  * 
@@ -92,9 +92,6 @@ public abstract class GlobalVars {
 		public static final String AGENT_CONTEXT = "AgentContext";
 		public static final String AGENT_GEOGRAPHY = "AgentGeography";
 		
-		public static final String IAGENT_CONTEXT = "IAgentContext";
-		public static final String IAGENT_GEOGRAPHY = "IAgentGeography";
-		
 		public static final String PARKINGLOT_CONTEXT = "ParkingLotContext";
 		public static final String PARKINGLOT_GEOGRAPHY = "ParkingLotGeography";
 	}
@@ -105,7 +102,7 @@ public abstract class GlobalVars {
 		// This variable is used by NetworkEdge.getWeight() function so that it knows what travel options
 		// are available to the agent (e.g. has a car). Can't be passed as a parameter because NetworkEdge.getWeight()
 		// must override function in RepastEdge because this is the one called by ShortestPath.
-		public static IAgent currentAgent = null;
+		public static Agent currentAgent = null;
 		public static Object currentBurglarLock = new Object();
 
 		public static final String WALK = "walk";

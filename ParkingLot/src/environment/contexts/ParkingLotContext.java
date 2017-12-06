@@ -1,7 +1,7 @@
 package environment.contexts;
 
 import repast.simphony.context.DefaultContext;
-import agents.IAgent;
+import agents.Agent;
 import agents.ParkingLot;
 import parkingLot.GlobalVars;
 
