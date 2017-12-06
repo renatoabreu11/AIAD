@@ -1,12 +1,15 @@
 package agents;
 
+import java.util.List;
+
 import sajas.core.*;
 
-public abstract class IAgent extends Agent{
+public abstract class IAgent extends sajas.core.Agent{
 	public static enum Type {
 			EXPLORATORY_DRIVER,
 			RATIONAL_DRIVER,
-			PARKING_FACILITY
+			DYNAMIC_PARKING_FACILITY,
+			STATIC_PARKING_FACILITY
 	}
 	public static int tick = 0;
 	
@@ -31,5 +34,10 @@ public abstract class IAgent extends Agent{
 	
 	public static void updateTick() {
 		++IAgent.tick;
+	}
+	
+	
+	public List<String> getTransportAvailable() {
+		return null;
 	}
 }

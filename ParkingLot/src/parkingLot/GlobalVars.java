@@ -44,7 +44,6 @@ public abstract class GlobalVars {
 	public static final String BuildingsRoadsCache = "BuildingsRoadsCache";
 	
 	public static final class GEOGRAPHY_PARAMS {
-		
 		/**
 		 * Different search distances used in functions that need to find objects that are
 		 * close to them. A bigger buffer means that more objects will be analysed (less
@@ -99,7 +98,12 @@ public abstract class GlobalVars {
 		
 		public static final String AGENT_CONTEXT = "AgentContext";
 		public static final String AGENT_GEOGRAPHY = "AgentGeography";
-	
+		
+		public static final String IAGENT_CONTEXT = "IAgentContext";
+		public static final String IAGENT_GEOGRAPHY = "IAgentGeography";
+		
+		public static final String PARKINGLOT_CONTEXT = "ParkingLotContext";
+		public static final String PARKINGLOT_GEOGRAPHY = "ParkingLotGeography";
 	}
 	
 	// Parameters used by transport networks
