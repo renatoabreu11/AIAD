@@ -36,7 +36,7 @@ public class ParkingLot extends Agent {
 	 * @param maxCapacity
 	 */
 	public ParkingLot(Type type, Coordinate position, int maxCapacity,Coordinate currentPosition) {
-		super("park");
+		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
 		this.type = type;
 		this.position = position;
 		this.capacity = maxCapacity;
@@ -45,7 +45,7 @@ public class ParkingLot extends Agent {
 	public void update() {};
 	
 	public ParkingLot(Coordinate position) { //construtor tempor�rio
-		super("park");
+		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
 		this.position = position;
 		this.capacity = 10;
 	}
@@ -55,7 +55,7 @@ public class ParkingLot extends Agent {
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
-		sd.setName("ParkingLot");
+		sd.setName(getName());
 		sd.setType("ParkingLot");
 		dfd.addServices(sd);
 		try {

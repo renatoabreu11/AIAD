@@ -12,7 +12,7 @@ public class Manager extends Agent{
 	private int currentTicksInDay;
 	
 	public Manager() {
-		super("manager");
+		super("Manager", Type.MANAGER);
 		weekday = GlobalVars.WEEKDAY.SUNDAY;
 		currentTicksInDay = 0;
 	}

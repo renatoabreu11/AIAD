@@ -47,7 +47,7 @@ public class Driver extends Agent {
 	 * @param walkDistance
 	 */
 	public Driver(Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction) {
-		super("driver");
+		super("Driver", Type.RATIONAL_DRIVER);
 		this.destination = destPosition;
 		this.currentPosition = srcPosition;
 		this.durationOfStay = durationOfStay;
@@ -56,7 +56,7 @@ public class Driver extends Agent {
 	}
 
 	public Driver(Coordinate currentPosition, Coordinate destination) {
-		super("driver");
+		super("Driver", Type.RATIONAL_DRIVER);
 		this.currentPosition = currentPosition;
 		this.destination = destination;
 
@@ -73,7 +73,7 @@ public class Driver extends Agent {
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
-		sd.setName("Driver");
+		sd.setName(getName());
 		sd.setType("Driver");
 		dfd.addServices(sd);
 		try {

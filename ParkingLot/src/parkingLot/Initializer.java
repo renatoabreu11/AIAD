@@ -10,6 +10,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import agents.Agent;
+import agents.AgentManager;
 import agents.Driver;
 import agents.ParkingLot;
 import environment.GISFunctions;
@@ -21,6 +22,7 @@ import environment.contexts.AgentContext;
 import environment.contexts.JunctionContext;
 import environment.contexts.ParkingLotContext;
 import environment.contexts.RoadContext;
+import jade.wrapper.StaleProxyException;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
 import repast.simphony.context.space.graph.NetworkBuilder;
@@ -33,10 +35,14 @@ import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.gis.SimpleAdder;
 import repast.simphony.space.graph.Network;
+import sajas.sim.repasts.RepastSLauncher;
+import sajas.wrapper.ContainerController;
 
-public class Initializer implements ContextBuilder<Object> {
+public class Initializer extends RepastSLauncher implements ContextBuilder<Object> {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
+	
+	private static ContainerController mainContainer;
 	
 	public static Context<Agent> agentContext;
 	private static Geography<Agent> agentGeography;
@@ -54,8 +60,18 @@ public class Initializer implements ContextBuilder<Object> {
 	
 	@Override
 	public Context<Object> build(Context<Object> context) {
-		context.setId("ParkingLot");
+		context.setId("ParkingLotSimulation");
 
+		mainContainer = new ContainerController();
+		
+		AgentManager manager = new AgentManager(mainContainer);
+		
+		try {
+			mainContainer.acceptNewAgent(manager.getName(), manager).start();
+		} catch (StaleProxyException e) {
+			e.printStackTrace();
+		}
+		
 		try {
 			roadContext = new RoadContext();
 			roadProjection = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
@@ -122,6 +138,17 @@ public class Initializer implements ContextBuilder<Object> {
 		}
 		
 		return context;
+	}
+		
+	@Override
+	public String getName() {
+		return "Parking lot simulation";
+	}
+
+	@Override
+	protected void launchJADE() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	public void addAgentsToEnvironment() {
@@ -216,5 +243,4 @@ public class Initializer implements ContextBuilder<Object> {
 	public static Geography<ParkingLot> getParkingLotGeography() {
 		return parkingLotGeography;
 	}
-
 }
