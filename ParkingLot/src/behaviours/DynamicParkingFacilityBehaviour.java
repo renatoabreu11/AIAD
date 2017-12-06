@@ -1,6 +1,6 @@
 package behaviours;
 
-import agents.ParkingFacility;
+import agents.ParkingLot;
 import sajas.core.behaviours.*;
 
 public class DynamicParkingFacilityBehaviour extends Behaviour {
@@ -14,7 +14,7 @@ public class DynamicParkingFacilityBehaviour extends Behaviour {
 	 * Behaviour constructor
 	 * @param pf
 	 */
-	public DynamicParkingFacilityBehaviour(ParkingFacility pf) {
+	public DynamicParkingFacilityBehaviour(ParkingLot pf) {
 		super(pf);
 	}
 	

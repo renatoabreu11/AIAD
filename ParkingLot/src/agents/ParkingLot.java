@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 
-import sajas.core.behaviours.Behaviour;
+import sajas.domain.*;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 
-public class ParkingFacility extends IAgent {
-	private static Logger LOGGER = Logger.getLogger(ParkingFacility.class.getName());
+public class ParkingLot extends IAgent {
+	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 	
 	public Coordinate position;
 	
@@ -28,7 +31,7 @@ public class ParkingFacility extends IAgent {
 	 * @param position
 	 * @param maxCapacity
 	 */
-	public ParkingFacility(Type type, String id, Coordinate position, int maxCapacity) {
+	public ParkingLot(Type type, String id, Coordinate position, int maxCapacity) {
 		super();
 		this.type = type;
 		this.id = id;
@@ -39,16 +42,33 @@ public class ParkingFacility extends IAgent {
 		parkedDrivers = new HashMap<String, Driver>();
 	}
 	
+	@Override
 	protected void setup() {
-		
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd.setName(getAID());
+		ServiceDescription sd = new ServiceDescription();
+		sd.setName("ParkingLot");
+		sd.setType("ParkingLot");
+		dfd.addServices(sd);
+		try {
+			DFService.register(this, dfd);
+		} catch (FIPAException e) {
+			System.err.println(e.getMessage());
+		}
 	}
 	
-	/**
-	 * Adds a behaviour
-	 */
-	public void addBehaviour(Behaviour b) {
-		super.addBehaviour(b);
+	@Override
+	protected void takeDown() {
+		try {
+			DFService.deregister(this);
+		}
+		catch (FIPAException fe) {
+			fe.printStackTrace();
+		}
+
+		LOGGER.info("Parking facility terminating");
 	}
+
 	
 	/**
 	 * Returns the price to pay for the stay
@@ -173,5 +193,9 @@ public class ParkingFacility extends IAgent {
 
 	public void setMaxPricePerStay(double maxPricePerStay) {
 		this.maxPricePerStay = maxPricePerStay;
+	}
+	
+	public String getParkingFacilityInfo() {
+		return "";
 	}
 }
