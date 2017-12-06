@@ -12,10 +12,12 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 public class ParkingLot extends Agent {
 	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 	
+	// Parking spots info
+	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
 	public int capacity;
 	protected int currLotation = 0;
-	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
 	
+	// Pricing Scheme
 	public double pricePerMinute;
 	public double minPricePerStay;
 	public double maxPricePerStay;
@@ -30,10 +32,9 @@ public class ParkingLot extends Agent {
 	 * @param position
 	 * @param maxCapacity
 	 */
-	public ParkingLot(Type type, String id, Coordinate position, int maxCapacity,Coordinate currentPosition) {
+	public ParkingLot(Type type, Coordinate position, int maxCapacity,Coordinate currentPosition) {
 		super("park");
 		this.type = type;
-		this.id = id;
 		this.position = position;
 		this.capacity = maxCapacity;
 	}
@@ -107,7 +108,7 @@ public class ParkingLot extends Agent {
 	public void removeDriver(String AID) {
 		parkedDrivers.remove(AID);
 		currLotation--;
-		System.out.println("Park: "+this.id+" ; Driver: "+ AID +" ; "+this.currLotation);
+		System.out.println("Park: "+this.getAID() +" ; Driver: "+ AID +" ; "+this.currLotation);
 	}
 
 	/**
@@ -124,7 +125,7 @@ public class ParkingLot extends Agent {
 		
 		parkedDrivers.put(AID, Integer.parseInt(durationOfStay));
 		currLotation++;
-		System.out.println("Park: "+this.id+" ; Driver: "+ AID +" ; "+this.currLotation);
+		System.out.println("Park: \"+this.getAID() +\" ; Driver: "+ AID +" ; "+this.currLotation);
 		return true;
 	}
 	

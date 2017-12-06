@@ -12,20 +12,10 @@ public abstract class Agent extends sajas.core.Agent{
 	public static int tick = 0;
 	
 	public static int UniqueID = 0;
-	public String id;
 	public Type type;
 	
 	public Agent(String type) {
-		this.id = type+UniqueID;
 		Agent.UniqueID++;
-	}
-	
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public Type getType() {

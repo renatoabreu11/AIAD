@@ -21,7 +21,7 @@ public class RequestEntryPerformer extends Behaviour {
 	
 	public RequestEntryPerformer(Driver driver, ParkingLot pl) {
 		super(driver);
-		int parkingDuration = ((Driver) myAgent).getParkingDuration();
+		int parkingDuration = ((Driver) myAgent).getDurationOfStay();
 		this.parkDuration = String.valueOf(parkingDuration);
 		this.parkingAgent = (AID) pl.getAID();
 	}
