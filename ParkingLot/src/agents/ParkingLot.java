@@ -3,24 +3,33 @@ package agents;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Coordinate;
+
 public class ParkingLot extends IAgent {
+	
+	private Coordinate currentPosition;
 	
 	public void update() {};
 
 	
 	/** A list of agents who live here */
-	private List<Agent> agents;
+	private List<IAgent> agents;
 
-	public ParkingLot() {
-		this.agents = new ArrayList<Agent>();
+	public ParkingLot(Coordinate currentPosition) {
+		this.agents = new ArrayList<IAgent>();
+		this.currentPosition = currentPosition;
+	}
+	
+	public Coordinate getCurrentPosition() {
+		return currentPosition;
 	}
 	
 
-	public void addAgent(Agent a) {
+	public void addAgent(IAgent a) {
 		this.agents.add(a);
 	}
 
-	public List<Agent> getAgents() {
+	public List<IAgent> getAgents() {
 		return this.agents;
 	}
 }
