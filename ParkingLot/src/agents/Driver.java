@@ -120,4 +120,13 @@ public class Driver extends Agent {
 			this.parkingLotDestiny.removeDriver(this); // fazer a chamada para remover
 		}
 	}
+	
+	public int getParkingDuration() {
+		return parkingDuration;
+	}
+
+	public double getUtility(double price) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

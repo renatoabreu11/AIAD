@@ -2,8 +2,6 @@ package agents;
 
 import java.util.List;
 
-import sajas.core.*;
-
 public abstract class Agent extends sajas.core.Agent{
 	public static enum Type {
 			EXPLORATORY_DRIVER,
@@ -19,7 +17,7 @@ public abstract class Agent extends sajas.core.Agent{
 	
 	public Agent(String type) {
 		this.id = type+UniqueID;
-		this.UniqueID++;
+		Agent.UniqueID++;
 	}
 	
 	public String getId() {

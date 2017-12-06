@@ -105,8 +105,8 @@ public class Initializer implements ContextBuilder<Object> {
 		
 		this.addAgentsToEnvironment();
 		
-		Manager manager = new Manager();
-		agentContext.add(manager);
+		//Manager manager = new Manager();
+		//agentContext.add(manager);
 		
 		if (RunEnvironment.getInstance().isBatch()) {
 			RunEnvironment.getInstance().endAt(20);
