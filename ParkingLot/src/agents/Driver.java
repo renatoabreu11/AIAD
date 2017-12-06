@@ -99,7 +99,7 @@ public class Driver extends Agent {
 				if(!this.inPark) {
 					this.inPark = true;
 					System.out.println("CHEGOU");
-					this.parkingLotDestiny.acceptDriver(this); // fazer a chamada para adicionar
+					//this.parkingLotDestiny.acceptDriver(this); // fazer a chamada para adicionar
 				}
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
 				this.updateParkingTime();
@@ -117,7 +117,7 @@ public class Driver extends Agent {
 		}
 		else {
 			this.alive = false;
-			this.parkingLotDestiny.removeDriver(this); // fazer a chamada para remover
+			//this.parkingLotDestiny.removeDriver(this); // fazer a chamada para remover
 		}
 	}
 	

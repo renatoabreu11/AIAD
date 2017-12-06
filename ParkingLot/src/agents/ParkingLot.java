@@ -14,7 +14,7 @@ public class ParkingLot extends Agent {
 	
 	public int capacity;
 	protected int currLotation = 0;
-	protected HashMap<String, Driver> parkedDrivers = new HashMap<String, Driver>();
+	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
 	
 	public double pricePerMinute;
 	public double minPricePerStay;
@@ -79,8 +79,9 @@ public class ParkingLot extends Agent {
 	 * @param durationOfStay
 	 * @return
 	 */
-	public double getFinalPrice(String durationOfStay) {
-		double price = pricePerMinute * 1.0; // driver.getStaytime
+	public double getFinalPrice(String durationOfStayStr) {
+		double durationOfStay = Double.parseDouble(durationOfStayStr);
+		double price = pricePerMinute * durationOfStay;
 		
 		if(price > maxPricePerStay) {
 			price = maxPricePerStay;
@@ -101,28 +102,29 @@ public class ParkingLot extends Agent {
 	
 	/**
 	 * Removes a driver from the park
-	 * @param driver
+	 * @param string
 	 */
-	public void removeDriver(Driver driver) {
-		parkedDrivers.remove(driver.id);
+	public void removeDriver(String AID) {
+		parkedDrivers.remove(AID);
 		currLotation--;
-		System.out.println("Park: "+this.id+" ; Driver: "+driver.id+" ; "+this.currLotation);
+		System.out.println("Park: "+this.id+" ; Driver: "+ AID +" ; "+this.currLotation);
 	}
-	
+
 	/**
 	 * Accepts or reject a new driver, accordingly to the current capacity
 	 * @param driver
 	 * @return
 	 */
-	public boolean acceptDriver(Driver driver) {
+	public boolean acceptDriver(String durationOfStay, String AID) {
 		if(currLotation == capacity) {
 			return false;
 		}
-		
+		double finalPrice = this.getFinalPrice(durationOfStay);
 		profit += finalPrice;
-		parkedDrivers.put(driver.id, driver);
+		
+		parkedDrivers.put(AID, Integer.parseInt(durationOfStay));
 		currLotation++;
-		System.out.println("Park: "+this.id+" ; Driver: "+driver.id+" ; "+this.currLotation);
+		System.out.println("Park: "+this.id+" ; Driver: "+ AID +" ; "+this.currLotation);
 		return true;
 	}
 	
@@ -130,8 +132,20 @@ public class ParkingLot extends Agent {
 	 * Removes all drivers from the park
 	 */
 	public void closeParkingFacility() {
-		parkedDrivers = new HashMap<String, Driver>();
+		parkedDrivers = new HashMap<String, Integer>();
 		currLotation = 0;
+	}
+	
+	/**
+	 * Returns the info about a parking lot
+	 * @return
+	 */
+	public String getParkingFacilityInfo() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("Parking Lot Agent: " + getAID() + "\n");
+		
+		return sb.toString();
 	}
 	
 	/**
@@ -148,64 +162,27 @@ public class ParkingLot extends Agent {
 		return position;
 	}
 
-	public void setPosition(Coordinate position) {
-		this.position = position;
-	}
-
 	public int getCapacity() {
 		return capacity;
 	}
-
-	public void setCapacity(int capacity) {
-		this.capacity = capacity;
-	}
-
+	
 	public int getCurrLotation() {
 		return currLotation;
 	}
 
-	public void setCurrLotation(int currLotation) {
-		this.currLotation = currLotation;
-	}
-
-	public HashMap<String, Driver> getParkedDrivers() {
+	public HashMap<String, Integer> getParkedDrivers() {
 		return parkedDrivers;
-	}
-
-	public void setParkedDrivers(HashMap<String, Driver> parkedDrivers) {
-		this.parkedDrivers = parkedDrivers;
 	}
 
 	public double getPricePerMinute() {
 		return pricePerMinute;
 	}
 
-	public void setPricePerMinute(double pricePerMinute) {
-		this.pricePerMinute = pricePerMinute;
-	}
-
 	public double getMinPricePerStay() {
 		return minPricePerStay;
 	}
 
-	public void setMinPricePerStay(double minPricePerStay) {
-		this.minPricePerStay = minPricePerStay;
-	}
-
 	public double getMaxPricePerStay() {
 		return maxPricePerStay;
-	}
-
-	public void setMaxPricePerStay(double maxPricePerStay) {
-		this.maxPricePerStay = maxPricePerStay;
-	}
-	
-	public String getParkingFacilityInfo() {
-		return "";
-	}
-
-	public boolean acceptDriver(String durationOfStay, String name) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 }
