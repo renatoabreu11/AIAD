@@ -76,10 +76,10 @@ public class ParkingLot extends Agent {
 	
 	/**
 	 * Returns the price to pay for the stay
-	 * @param driver
+	 * @param durationOfStay
 	 * @return
 	 */
-	public double getFinalPrice(Driver driver) {
+	public double getFinalPrice(String durationOfStay) {
 		double price = pricePerMinute * 1.0; // driver.getStaytime
 		
 		if(price > maxPricePerStay) {
@@ -119,7 +119,6 @@ public class ParkingLot extends Agent {
 			return false;
 		}
 		
-		double finalPrice = getFinalPrice(driver);
 		profit += finalPrice;
 		parkedDrivers.put(driver.id, driver);
 		currLotation++;
@@ -203,5 +202,10 @@ public class ParkingLot extends Agent {
 	
 	public String getParkingFacilityInfo() {
 		return "";
+	}
+
+	public boolean acceptDriver(String durationOfStay, String name) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
