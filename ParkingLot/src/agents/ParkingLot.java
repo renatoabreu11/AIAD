@@ -1,6 +1,5 @@
 package agents;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -10,23 +9,20 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
-public class ParkingLot extends IAgent {
+public class ParkingLot extends Agent {
 	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 	
-	public Coordinate position;
-	
 	public int capacity;
-	protected int currLotation;
-	protected HashMap<String, Driver> parkedDrivers;
+	protected int currLotation = 0;
+	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
 	
 	public double pricePerMinute;
 	public double minPricePerStay;
 	public double maxPricePerStay;
 	
-	public double profit;
+	public double profit = 0;
+	private Coordinate position;
 	
-	private ArrayList<IAgent> agents;
-	private Coordinate currentPosition;
 	/**
 	 * Parking facility constructor
 	 * @param type
@@ -34,26 +30,20 @@ public class ParkingLot extends IAgent {
 	 * @param position
 	 * @param maxCapacity
 	 */
-	public ParkingLot(Type type, String id, Coordinate position, int maxCapacity) {
-		super();
+	public ParkingLot(Type type, String id, Coordinate position, int maxCapacity,Coordinate currentPosition) {
+		super("park");
 		this.type = type;
 		this.id = id;
 		this.position = position;
 		this.capacity = maxCapacity;
-		this.currLotation = 0;
-		this.profit = 0;
-		parkedDrivers = new HashMap<String, Driver>();
 	}
 	
 	public void update() {};
 	
-	public ParkingLot(Coordinate currentPosition) {
-		this.agents = new ArrayList<IAgent>();
-		this.currentPosition = currentPosition;
-	}
-	
-	public void addAgent(IAgent a) {
-		this.agents.add(a);
+	public ParkingLot(Coordinate position) { //construtor tempor�rio
+		super("park");
+		this.position = position;
+		this.capacity = 10;
 	}
 	
 	@Override
@@ -86,11 +76,12 @@ public class ParkingLot extends IAgent {
 	
 	/**
 	 * Returns the price to pay for the stay
-	 * @param driver
+	 * @param durationOfStay
 	 * @return
 	 */
-	public double getFinalPrice(Driver driver) {
-		double price = pricePerMinute * 1.0; // driver.getStaytime
+	public double getFinalPrice(String durationOfStayStr) {
+		double durationOfStay = Double.parseDouble(durationOfStayStr);
+		double price = pricePerMinute * durationOfStay;
 		
 		if(price > maxPricePerStay) {
 			price = maxPricePerStay;
@@ -111,27 +102,29 @@ public class ParkingLot extends IAgent {
 	
 	/**
 	 * Removes a driver from the park
-	 * @param driver
+	 * @param string
 	 */
-	public void removeDriver(Driver driver) {
-		parkedDrivers.remove(driver.id);
+	public void removeDriver(String AID) {
+		parkedDrivers.remove(AID);
 		currLotation--;
+		System.out.println("Park: "+this.id+" ; Driver: "+ AID +" ; "+this.currLotation);
 	}
-	
+
 	/**
 	 * Accepts or reject a new driver, accordingly to the current capacity
 	 * @param driver
 	 * @return
 	 */
-	public boolean acceptDriver(Driver driver) {
+	public boolean acceptDriver(String durationOfStay, String AID) {
 		if(currLotation == capacity) {
 			return false;
 		}
-		
-		double finalPrice = getFinalPrice(driver);
+		double finalPrice = this.getFinalPrice(durationOfStay);
 		profit += finalPrice;
-		parkedDrivers.put(driver.id, driver);
+		
+		parkedDrivers.put(AID, Integer.parseInt(durationOfStay));
 		currLotation++;
+		System.out.println("Park: "+this.id+" ; Driver: "+ AID +" ; "+this.currLotation);
 		return true;
 	}
 	
@@ -139,8 +132,20 @@ public class ParkingLot extends IAgent {
 	 * Removes all drivers from the park
 	 */
 	public void closeParkingFacility() {
-		parkedDrivers = new HashMap<String, Driver>();
+		parkedDrivers = new HashMap<String, Integer>();
 		currLotation = 0;
+	}
+	
+	/**
+	 * Returns the info about a parking lot
+	 * @return
+	 */
+	public String getParkingFacilityInfo() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("Parking Lot Agent: " + getAID() + "\n");
+		
+		return sb.toString();
 	}
 	
 	/**
@@ -157,63 +162,27 @@ public class ParkingLot extends IAgent {
 		return position;
 	}
 
-	public void setPosition(Coordinate position) {
-		this.position = position;
-	}
-
 	public int getCapacity() {
 		return capacity;
 	}
-
-	public void setCapacity(int capacity) {
-		this.capacity = capacity;
-	}
-
+	
 	public int getCurrLotation() {
 		return currLotation;
 	}
 
-	public void setCurrLotation(int currLotation) {
-		this.currLotation = currLotation;
-	}
-
-	public HashMap<String, Driver> getParkedDrivers() {
+	public HashMap<String, Integer> getParkedDrivers() {
 		return parkedDrivers;
-	}
-
-	public void setParkedDrivers(HashMap<String, Driver> parkedDrivers) {
-		this.parkedDrivers = parkedDrivers;
 	}
 
 	public double getPricePerMinute() {
 		return pricePerMinute;
 	}
 
-	public void setPricePerMinute(double pricePerMinute) {
-		this.pricePerMinute = pricePerMinute;
-	}
-
 	public double getMinPricePerStay() {
 		return minPricePerStay;
 	}
 
-	public void setMinPricePerStay(double minPricePerStay) {
-		this.minPricePerStay = minPricePerStay;
-	}
-
 	public double getMaxPricePerStay() {
 		return maxPricePerStay;
-	}
-
-	public void setMaxPricePerStay(double maxPricePerStay) {
-		this.maxPricePerStay = maxPricePerStay;
-	}
-	
-	public String getParkingFacilityInfo() {
-		return "";
-	}
-	
-	public Coordinate getCurrentPosition() {
-		return currentPosition;
 	}
 }

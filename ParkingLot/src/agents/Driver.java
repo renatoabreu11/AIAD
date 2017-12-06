@@ -1,50 +1,42 @@
 package agents;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
 
 import environment.Junction;
 import environment.Road;
 import environment.Route;
 import parkingLot.Initializer;
-import parkingLot.Utils;
-import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.util.collections.IndexedIterable;
 
-public class Driver extends IAgent {
+public class Driver extends Agent {
 	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 
 	private int totalTicksParked = 0;
 
 	private int parkingDuration = 10; // definir valor default futuramente
-	private  double maxDist = 200.0; // definir valor default futuramente
+	private  double maxDist = 400.0; // definir valor default futuramente
 
 	private boolean alive = true;
+	private boolean inPark = false;
 	
 	private ArrayList<ParkingLot> parksInRange = new ArrayList<>();
+	private ParkingLot parkingLotDestiny = null;
 
 	public Coordinate destination;
 	public Coordinate currentPosition;
-	public ArrayList<Junction> junctionsToPass;
+	//public ArrayList<Junction> junctionsToPass;
 	// public int currentJunction;
-	public Road currentRoad;
+	//public Road currentRoad;
 
 	Route route;
-	
-	public Driver() {
 
-	}
-
-	public Driver(Coordinate currentPosition, Coordinate destination, ArrayList<Junction> junctions, Road firstRoad) {
+	public Driver(Coordinate currentPosition, Coordinate destination) {
+		super("driver");
 		this.currentPosition = currentPosition;
-		this.junctionsToPass = junctions;
-		this.currentRoad = firstRoad;
 		this.destination = destination;
 		
 		System.out.println("Destination "+this.destination.toString());
@@ -59,7 +51,7 @@ public class Driver extends IAgent {
 		IndexedIterable<ParkingLot> parks = Initializer.parkingLotContext.getObjects(ParkingLot.class);
 		
 		for(int i = 0;i<parks.size();i++) {
-			tmp = parks.get(i).getCurrentPosition();
+			tmp = parks.get(i).getPosition();
 			Route.distance(this.destination, tmp, distAndAng);
 			System.out.println("I"+i+": "+distAndAng[0]+" ; "+distAndAng[1]);
 			if(distAndAng[0] < this.maxDist) {
@@ -73,9 +65,9 @@ public class Driver extends IAgent {
 			this.alive = false;
 		}
 		else {
-			ParkingLot tmpParking = this.parksInRange.get(0);
-			this.route = new Route(this, Initializer.getAgentGeography().getGeometry(tmpParking).getCoordinate(), tmpParking);
-			LOGGER.log(Level.FINE, this.toString() + " created new route to " + tmpParking.toString());
+			this.parkingLotDestiny = this.parksInRange.get(0);
+			this.route = new Route(this, Initializer.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
+			LOGGER.log(Level.FINE, this.toString() + " created new route to " + parkingLotDestiny.toString());
 		}
 	}
 
@@ -86,22 +78,14 @@ public class Driver extends IAgent {
 	public Coordinate getCurrentPosition() {
 		return currentPosition;
 	}
-
-	public ArrayList<Junction> getJunctionsToPass() {
-		return junctionsToPass;
-	}
-
-	public Road getCurrentRoad() {
-		return currentRoad;
-	}
-
+	
 	public boolean getAlive() {
 		return alive;
 	}
 
 	public void update() {
 		if(this.alive) {
-			IAgent.updateTick();
+			Agent.updateTick();
 			if (!this.route.atDestination()) {
 				try {
 					this.route.travel();
@@ -112,6 +96,11 @@ public class Driver extends IAgent {
 						this.toString() + " travelling to " + this.route.getDestinationBuilding().toString());
 			} else {
 				// Chegou ao destino
+				if(!this.inPark) {
+					this.inPark = true;
+					System.out.println("CHEGOU");
+					//this.parkingLotDestiny.acceptDriver(this); // fazer a chamada para adicionar
+				}
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
 				this.updateParkingTime();
 			}
@@ -128,6 +117,16 @@ public class Driver extends IAgent {
 		}
 		else {
 			this.alive = false;
+			//this.parkingLotDestiny.removeDriver(this); // fazer a chamada para remover
 		}
+	}
+	
+	public int getParkingDuration() {
+		return parkingDuration;
+	}
+
+	public double getUtility(double price) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
