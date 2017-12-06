@@ -14,12 +14,7 @@ public class AcceptEntryServer extends CyclicBehaviour {
 	/**
 	 * AcceptEntryServer behaviour. 
 	 * Cyclic behaviour active in each park that that allows or refuses the entry of drivers to the respective park
-	 * @param pl
 	 */
-	public AcceptEntryServer(ParkingLot pl) {
-		super(pl);
-	}
-
 	public void action() {
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL);
 		ACLMessage msg = myAgent.receive(mt);

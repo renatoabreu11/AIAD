@@ -19,11 +19,10 @@ public class RequestEntryPerformer extends Behaviour {
 	private MessageTemplate mt; // The template to receive replies
 	private int step = 0;
 	
-	public RequestEntryPerformer(Driver driver, ParkingLot pl) {
-		super(driver);
-		int parkingDuration = ((Driver) myAgent).getParkingDuration();
+	public RequestEntryPerformer(AID parkingLotAID) {
+		int parkingDuration = ((Driver) myAgent).getDurationOfStay();
 		this.parkDuration = String.valueOf(parkingDuration);
-		this.parkingAgent = (AID) pl.getAID();
+		this.parkingAgent = parkingLotAID;
 	}
 
 	public void action() {
@@ -79,6 +78,7 @@ public class RequestEntryPerformer extends Behaviour {
 					// Entry successful.
 					System.out.println("Driver " + myAgent.getName() + " successfully parked at " + reply.getSender().getName());
 					System.out.println("Price = " + price + "\nParking duration: " + parkDuration );
+					myAgent.addBehaviour(new RequestExitPerformer(myAgent, Long.parseLong(parkDuration), parkingAgent));
 				}
 				else {
 					System.out.println("Park entry failed: park at maximum capacity");

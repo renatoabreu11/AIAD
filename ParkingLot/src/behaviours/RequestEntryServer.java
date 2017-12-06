@@ -14,12 +14,7 @@ public class RequestEntryServer extends CyclicBehaviour {
 	/**
 	 * RequestEntryServer behaviour. 
 	 * Cyclic behaviour active in each park that accepts request from drivers and send them the price per stay
-	 * @param pl
 	 */
-	public RequestEntryServer(ParkingLot pl) {
-		super(pl);
-	}
-
 	public void action() {
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
 		ACLMessage msg = myAgent.receive(mt);
