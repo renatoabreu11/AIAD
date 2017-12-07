@@ -40,7 +40,7 @@ import com.vividsolutions.jts.operation.distance.DistanceOp;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.space.graph.ShortestPath;
-import agents.IAgent;
+import agents.Agent;
 import agents.ParkingLot;
 import exceptions.RoutingException;
 import parkingLot.GlobalVars;
@@ -68,9 +68,9 @@ public class Route {
 		// Route.routeCache = new Hashtable<CachedRoute, CachedRoute>();
 	}
 
-	private IAgent agent;
+	private Agent agent;
 	private Coordinate destination;
-	private IAgent destinationBuilding;
+	private Agent destinationBuilding;
 	private int k=0;
 	/*
 	 * The route consists of a list of coordinates which describe how to get to the destination. Each coordinate might
@@ -122,7 +122,7 @@ public class Route {
 	 * @param type
 	 *            The (optional) type of route, used by burglars who want to search.
 	 */
-	public Route(IAgent agent, Coordinate destination, IAgent destinationBuilding) {
+	public Route(Agent agent, Coordinate destination, Agent destinationBuilding) {
 		this.destination = destination;
 		this.agent = agent;
 		this.destinationBuilding = destinationBuilding;
@@ -318,7 +318,6 @@ public class Route {
 			if (this.atDestination()) {
 				return;
 			}
-			System.out.println("AQUI: "+this.currentPosition+" "+this.routeX.size()+"; "+this.routeX.toString());
 			double time = System.nanoTime();
 
 			// Store the roads the agent walks along (used to populate the awareness space)
@@ -400,7 +399,7 @@ public class Route {
 	 * @param destination
 	 * @return
 	 */
-	public double getDistance(IAgent theBurglar, Coordinate origin, Coordinate destination) {
+	public double getDistance(Agent theBurglar, Coordinate origin, Coordinate destination) {
 
 		synchronized (GlobalVars.TRANSPORT_PARAMS.currentBurglarLock) {
 			GlobalVars.TRANSPORT_PARAMS.currentAgent = theBurglar;
@@ -829,7 +828,7 @@ public class Route {
 	 * 
 	 * @return the destinationHouse
 	 */
-	public IAgent getDestinationBuilding() {
+	public Agent getDestinationBuilding() {
 		if (this.destinationBuilding == null) {
 			LOGGER.log(Level.WARNING, "Route: getDestinationBuilding(), warning, no destination building has "
 					+ "been set. This might be ok, the agent might be supposed to be heading to a coordinate "

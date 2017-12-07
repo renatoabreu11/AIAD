@@ -2,9 +2,9 @@ package parkingLot;
 
 import java.util.logging.Logger;
 
-import agents.IAgent;
+import agents.Agent;
 
-public class Manager extends IAgent{
+public class Manager extends Agent{
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	
@@ -12,6 +12,7 @@ public class Manager extends IAgent{
 	private int currentTicksInDay;
 	
 	public Manager() {
+		super("Manager", Type.MANAGER);
 		weekday = GlobalVars.WEEKDAY.SUNDAY;
 		currentTicksInDay = 0;
 	}
