@@ -155,11 +155,9 @@ public class ParkingLot extends Agent {
 		
 		return sb.toString();
 	}
-	
 	/**
 	 * Default Getters and Setters
 	 */
-	
 	public void setPricingScheme(double pricePerMinute, double minPricePerStay, double maxPricePerStay) {
 		this.pricePerMinute = pricePerMinute;
 		this.minPricePerStay = minPricePerStay;

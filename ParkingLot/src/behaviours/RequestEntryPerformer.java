@@ -13,27 +13,28 @@ public class RequestEntryPerformer extends Behaviour {
 	 */
 	private static final long serialVersionUID = -8161159508758712663L;
 	private AID parkingAgent;
-	private String parkDuration;
+	private String durationOfStay;
 	private double price;
 	private double driverUtility;
 	private MessageTemplate mt; // The template to receive replies
 	private int step = 0;
 	
-	public RequestEntryPerformer(AID parkingLotAID) {
-		int parkingDuration = ((Driver) myAgent).getDurationOfStay();
-		this.parkDuration = String.valueOf(parkingDuration);
+	public RequestEntryPerformer(AID parkingLotAID, int duratioOfStay) {
+		this.durationOfStay = String.valueOf(duratioOfStay);
 		this.parkingAgent = parkingLotAID;
 	}
 
 	public void action() {
+		System.out.println("ACTION");
 		switch (step) {
 		case 0:
 			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 			cfp.addReceiver(parkingAgent);
 			
-			cfp.setContent(parkDuration);
+			cfp.setContent(durationOfStay);
 			cfp.setConversationId("park-entry");
 			cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
+			System.out.println(cfp);
 			myAgent.send(cfp);
 			// Prepare the template to get proposals
 			mt = MessageTemplate.and(MessageTemplate.MatchConversationId("park-entry"),
@@ -61,7 +62,7 @@ public class RequestEntryPerformer extends Behaviour {
 		case 2:
 			ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 			order.addReceiver(parkingAgent);
-			order.setContent(parkDuration);
+			order.setContent(durationOfStay);
 			order.setConversationId("park-entry");
 			order.setReplyWith("entry "+System.currentTimeMillis());
 			myAgent.send(order);
@@ -77,8 +78,8 @@ public class RequestEntryPerformer extends Behaviour {
 				if (reply.getPerformative() == ACLMessage.INFORM) {
 					// Entry successful.
 					System.out.println("Driver " + myAgent.getName() + " successfully parked at " + reply.getSender().getName());
-					System.out.println("Price = " + price + "\nParking duration: " + parkDuration );
-					myAgent.addBehaviour(new RequestExitPerformer(myAgent, Long.parseLong(parkDuration), parkingAgent));
+					System.out.println("Price = " + price + "\nParking duration: " + durationOfStay );
+					myAgent.addBehaviour(new RequestExitPerformer(myAgent, Long.parseLong(durationOfStay), parkingAgent));
 				}
 				else {
 					System.out.println("Park entry failed: park at maximum capacity");

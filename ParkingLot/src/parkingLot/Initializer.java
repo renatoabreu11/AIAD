@@ -22,6 +22,8 @@ import environment.contexts.AgentContext;
 import environment.contexts.JunctionContext;
 import environment.contexts.ParkingLotContext;
 import environment.contexts.RoadContext;
+import jade.core.Profile;
+import jade.core.ProfileImpl;
 import jade.wrapper.StaleProxyException;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -36,13 +38,15 @@ import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.gis.SimpleAdder;
 import repast.simphony.space.graph.Network;
 import sajas.sim.repasts.RepastSLauncher;
+import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
 
-public class Initializer extends RepastSLauncher implements ContextBuilder<Object> {
+public class Initializer extends RepastSLauncher{
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	
 	private static ContainerController mainContainer;
+	private static ContainerController agentContainer;
 	
 	public static Context<Agent> agentContext;
 	private static Geography<Agent> agentGeography;
@@ -58,20 +62,13 @@ public class Initializer extends RepastSLauncher implements ContextBuilder<Objec
 	
 	public static Network<Junction> roadNetwork;
 	
+	private Driver driver;
+	private ParkingLot parkingLot;
+	
 	@Override
-	public Context<Object> build(Context<Object> context) {
+	public Context<?> build(Context<Object> context) {
 		context.setId("ParkingLotSimulation");
-
-		mainContainer = new ContainerController();
-		
-		AgentManager manager = new AgentManager(mainContainer);
-		
-		try {
-			mainContainer.acceptNewAgent(manager.getName(), manager).start();
-		} catch (StaleProxyException e) {
-			e.printStackTrace();
-		}
-		
+		System.out.println("BUILD");
 		try {
 			roadContext = new RoadContext();
 			roadProjection = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
@@ -137,7 +134,7 @@ public class Initializer extends RepastSLauncher implements ContextBuilder<Objec
 			schedule.schedule(agentStepParams, a, "update");
 		}
 		
-		return context;
+		return super.build(context);
 	}
 		
 	@Override
@@ -147,7 +144,23 @@ public class Initializer extends RepastSLauncher implements ContextBuilder<Objec
 
 	@Override
 	protected void launchJADE() {
-		// TODO Auto-generated method stub
+		System.out.println("LAUNCH");
+		sajas.core.Runtime rt = sajas.core.Runtime.instance();
+		
+		Profile profile = new ProfileImpl(null, 1200, null);
+		mainContainer = rt.createMainContainer(profile);
+		
+		Profile pContainer = new ProfileImpl(null, 1200, null);
+		agentContainer = rt.createAgentContainer(pContainer);
+		AgentManager manager = new AgentManager(mainContainer);
+		
+		try {
+			mainContainer.acceptNewAgent(manager.getName(), manager).start();
+			mainContainer.acceptNewAgent(driver.getName(), driver).start();
+			mainContainer.acceptNewAgent(parkingLot.getName(), parkingLot).start();
+		} catch (StaleProxyException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -155,7 +168,6 @@ public class Initializer extends RepastSLauncher implements ContextBuilder<Objec
 		Junction junction;
 		Road road;
 		Point point;
-		ParkingLot tmpParkingLot;
 		
 		Parameters params = RunEnvironment.getInstance().getParameters();
 		int numParks = 2;//(Integer) params.getValue("parking_count");
@@ -163,11 +175,12 @@ public class Initializer extends RepastSLauncher implements ContextBuilder<Objec
 		for (int i = 0; i < numParks; i++) {
 			junction = junctionContext.getRandomObject();
 			point = junctionGeography.getGeometry(junction).getCentroid();
-			tmpParkingLot = new ParkingLot(new Coordinate(point.getX(),point.getY()));
-			agentContext.add(tmpParkingLot);
-			agentGeography.move(tmpParkingLot,  point);
-			parkingLotContext.add(tmpParkingLot);
-			parkingLotGeography.move(tmpParkingLot,  point);
+			parkingLot = new ParkingLot(new Coordinate(point.getX(),point.getY()));
+			
+			agentContext.add(parkingLot);
+			agentGeography.move(parkingLot,  point);
+			parkingLotContext.add(parkingLot);
+			parkingLotGeography.move(parkingLot,  point);
 		}
 
 		int numDrivers = 1;//(Integer) params.getValue("driver_count");
@@ -182,8 +195,8 @@ public class Initializer extends RepastSLauncher implements ContextBuilder<Objec
 			Coordinate initialCoordinates = new Coordinate(initialPoint.getX(),initialPoint.getY());
 			Coordinate finalCoordinates = new Coordinate(finalPoint.getX(),finalPoint.getY());
 			
-			Driver driver = new Driver(initialCoordinates,finalCoordinates);
-			
+			driver = new Driver(initialCoordinates,finalCoordinates);
+		
 			agentContext.add(driver);
 			agentGeography.move(driver, initialPoint);
 		}

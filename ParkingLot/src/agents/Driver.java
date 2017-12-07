@@ -15,6 +15,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import parkingLot.Initializer;
 import repast.simphony.util.collections.IndexedIterable;
+import sajas.core.AID;
 import sajas.domain.DFService;
 
 public class Driver extends Agent {
@@ -69,7 +70,7 @@ public class Driver extends Agent {
 	@Override
 	protected void setup() {
 		LOGGER.info("Driver " + getAID().getName()  + " is ready!");
-		
+		System.out.println("Driver " + getAID().getName()  + " is ready!");
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -139,7 +140,8 @@ public class Driver extends Agent {
 					System.out.println("CHEGOU");
 					
 					// Obtain current park and send AID
-					//addBehaviour(new RequestEntryPerformer(parkingLot.getAID()));
+					System.out.println((AID) parkingLotDestiny.getAID());
+					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
 				}
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
 			}
