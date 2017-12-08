@@ -16,16 +16,16 @@ public class RequestEntryServer extends CyclicBehaviour {
 	 * Cyclic behaviour active in each park that accepts request from drivers and send them the price per stay
 	 */
 	public void action() {
-		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
+		MessageTemplate mt = MessageTemplate.MatchConversationId("park-entry");
 		ACLMessage msg = myAgent.receive(mt);
-		if (msg != null) {
-			// CFP Message received. Process it
+		if (msg != null && msg.getPerformative() == ACLMessage.CFP) {
 			String durationOfStay = msg.getContent();
 			ACLMessage reply = msg.createReply();
 
 			double price = ((ParkingLot) myAgent).getFinalPrice(durationOfStay);
 			reply.setPerformative(ACLMessage.PROPOSE);
 			reply.setContent(String.valueOf(price));
+			((ParkingLot) myAgent).logMessage("Request entry served\n" + reply);
 			myAgent.send(reply);
 		}
 		else {

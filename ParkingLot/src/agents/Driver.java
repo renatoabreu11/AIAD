@@ -7,20 +7,22 @@ import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 
 import behaviours.RequestEntryPerformer;
-import environment.Junction;
-import environment.Road;
 import environment.Route;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import parkingLot.Initializer;
+import parkingLot.Simulation;
+import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.collections.IndexedIterable;
+import sajas.core.AID;
 import sajas.domain.DFService;
 
 public class Driver extends Agent {
+	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
+	
 	public static double alfa = 0.5;
 	public static double beta = 0.5;
-	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 
 	private int durationOfStay = 10; // definir valor default futuramente
 	private double walkDistance = 400.0; // definir valor default futuramente
@@ -54,22 +56,14 @@ public class Driver extends Agent {
 		this.walkDistance = walkDistance;
 		this.defaultSatisfaction = defaultSatisfaction;
 	}
-
-	public Driver(Coordinate currentPosition, Coordinate destination) {
+	
+	public Driver() { // temporary
 		super("Driver", Type.RATIONAL_DRIVER);
-		this.currentPosition = currentPosition;
-		this.destination = destination;
-
-		System.out.println("Destination "+this.destination.toString());
-
-		this.getPossibleParks();
-		this.pickParkToGo();
 	}
 
 	@Override
 	protected void setup() {
 		LOGGER.info("Driver " + getAID().getName()  + " is ready!");
-		
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -94,11 +88,37 @@ public class Driver extends Agent {
 
 		LOGGER.info("Driver " + getAID().getName()  + " terminating");
 	}
+	
+	@ScheduledMethod(start = 1, interval = 1)
+	public void update() {
+		if(this.alive) {
+			Agent.updateTick();
+			if (!this.route.atDestination()) {
+				try {
+					this.route.travel();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				LOGGER.log(Level.FINE,
+						this.toString() + " travelling to " + this.route.getDestinationBuilding().toString());
+			} else {
+				if(!this.inPark) {
+					this.inPark = true;
+					
+					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
+				}
+				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
+			}
+		} else {
+			Simulation.removeAgent(this);
+			this.doDelete();
+		}
+	}
 
 	private void getPossibleParks() {
 		Coordinate tmp = new Coordinate();
 		double[] distAndAng = new double[2];
-		IndexedIterable<ParkingLot> parks = Initializer.parkingLotContext.getObjects(ParkingLot.class);
+		IndexedIterable<ParkingLot> parks = Simulation.parkingLotContext.getObjects(ParkingLot.class);
 
 		for(int i = 0;i<parks.size();i++) {
 			tmp = parks.get(i).getPosition();
@@ -116,36 +136,8 @@ public class Driver extends Agent {
 		}
 		else {
 			this.parkingLotDestiny = this.parksInRange.get(0);
-			this.route = new Route(this, Initializer.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
+			this.route = new Route(this, Simulation.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
 			LOGGER.log(Level.FINE, this.toString() + " created new route to " + parkingLotDestiny.toString());
-		}
-	}
-
-	public void update() {
-		if(this.alive) {
-			Agent.updateTick();
-			if (!this.route.atDestination()) {
-				try {
-					this.route.travel();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				LOGGER.log(Level.FINE,
-						this.toString() + " travelling to " + this.route.getDestinationBuilding().toString());
-			} else {
-				// Chegou ao destino
-				if(!this.inPark) {
-					this.inPark = true;
-					System.out.println("CHEGOU");
-					
-					// Obtain current park and send AID
-					//addBehaviour(new RequestEntryPerformer(parkingLot.getAID()));
-				}
-				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
-			}
-		}
-		else {
-			System.out.println("Sair do programa");
 		}
 	}
 
@@ -175,6 +167,19 @@ public class Driver extends Agent {
 
 		return utility;
 	}
+	
+	/**
+	 * Updates the driver coordinates
+	 * @param initialCoordinate
+	 * @param finalCoordinate
+	 */
+	public void setPositions(Coordinate initialCoordinate, Coordinate finalCoordinate) {
+		this.currentPosition = initialCoordinate;
+		this.destination = finalCoordinate;
+		
+		this.getPossibleParks();
+		this.pickParkToGo();
+	}
 
 	/**
 	 * Default Getters and Setters
@@ -195,5 +200,13 @@ public class Driver extends Agent {
 
 	public boolean getAlive() {
 		return alive;
+	}
+
+	public void logMessage(String message) {
+		LOGGER.info(message);
+	}
+
+	public void setAlive(boolean b) {
+		this.alive = b;
 	}
 }

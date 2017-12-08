@@ -13,15 +13,14 @@ public class RequestEntryPerformer extends Behaviour {
 	 */
 	private static final long serialVersionUID = -8161159508758712663L;
 	private AID parkingAgent;
-	private String parkDuration;
+	private String durationOfStay;
 	private double price;
 	private double driverUtility;
 	private MessageTemplate mt; // The template to receive replies
 	private int step = 0;
 	
-	public RequestEntryPerformer(AID parkingLotAID) {
-		int parkingDuration = ((Driver) myAgent).getDurationOfStay();
-		this.parkDuration = String.valueOf(parkingDuration);
+	public RequestEntryPerformer(AID parkingLotAID, int duratioOfStay) {
+		this.durationOfStay = String.valueOf(duratioOfStay);
 		this.parkingAgent = parkingLotAID;
 	}
 
@@ -31,10 +30,12 @@ public class RequestEntryPerformer extends Behaviour {
 			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 			cfp.addReceiver(parkingAgent);
 			
-			cfp.setContent(parkDuration);
+			cfp.setContent(durationOfStay);
 			cfp.setConversationId("park-entry");
-			cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
+			cfp.setReplyWith("cfp"+System.currentTimeMillis());
 			myAgent.send(cfp);
+			((Driver) myAgent).logMessage("Request entry performed\n" + cfp);
+			
 			// Prepare the template to get proposals
 			mt = MessageTemplate.and(MessageTemplate.MatchConversationId("park-entry"),
 					MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
@@ -49,9 +50,7 @@ public class RequestEntryPerformer extends Behaviour {
 					price = Double.parseDouble(reply.getContent());
 					
 					driverUtility = ((Driver) myAgent).getUtility(price);
-					if (driverUtility > 0.5) { // we need to check this
-						step = 2; 
-					}
+					step = 2; 
 				}
 			}
 			else {
@@ -61,10 +60,12 @@ public class RequestEntryPerformer extends Behaviour {
 		case 2:
 			ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 			order.addReceiver(parkingAgent);
-			order.setContent(parkDuration);
+			order.setContent(durationOfStay);
 			order.setConversationId("park-entry");
 			order.setReplyWith("entry "+System.currentTimeMillis());
 			myAgent.send(order);
+			
+			((Driver) myAgent).logMessage("Accept entry performed\n" + order);
 
 			mt = MessageTemplate.and(MessageTemplate.MatchConversationId("park-entry"),
 					MessageTemplate.MatchInReplyTo(order.getReplyWith()));
@@ -73,15 +74,13 @@ public class RequestEntryPerformer extends Behaviour {
 		case 3:      
 			reply = myAgent.receive(mt);
 			if (reply != null) {
-				// Entry reply received
 				if (reply.getPerformative() == ACLMessage.INFORM) {
-					// Entry successful.
-					System.out.println("Driver " + myAgent.getName() + " successfully parked at " + reply.getSender().getName());
-					System.out.println("Price = " + price + "\nParking duration: " + parkDuration );
-					myAgent.addBehaviour(new RequestExitPerformer(myAgent, Long.parseLong(parkDuration), parkingAgent));
+					((Driver) myAgent).logMessage("Driver " + myAgent.getName() + " successfully parked at " + reply.getSender().getName() + 
+							"\nPrice = " + price + "; Parking duration: " + durationOfStay);
+					myAgent.addBehaviour(new RequestExitPerformer(myAgent, Long.parseLong(durationOfStay), parkingAgent));
 				}
 				else {
-					System.out.println("Park entry failed: park at maximum capacity");
+					((Driver) myAgent).logMessage("Park entry failed: park at maximum capacity");
 				}
 
 				step = 4;
@@ -94,9 +93,9 @@ public class RequestEntryPerformer extends Behaviour {
 	}
 
 	public boolean done() {
-		if (step == 2 && driverUtility < 0.5) {
+		if (step == 2 && driverUtility > 2000) {
 			System.out.println("Attempt failed: Low utility value");
 		}
-		return ((step == 2 && driverUtility < 0.5) || step == 4);
+		return ((step == 2 && driverUtility > 2000) || step == 4);
 	}
 }

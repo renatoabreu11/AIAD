@@ -3,7 +3,6 @@ package agents;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
-
 import behaviours.AcceptEntryServer;
 import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
@@ -12,12 +11,14 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
+import repast.simphony.engine.schedule.ScheduledMethod;
+
 public class ParkingLot extends Agent {
 	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
-	
+
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
-	public int capacity;
+	public int capacity = 100;
 	protected int currLotation = 0;
 	
 	// Pricing Scheme
@@ -42,6 +43,7 @@ public class ParkingLot extends Agent {
 		this.capacity = maxCapacity;
 	}
 	
+	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {};
 	
 	public ParkingLot(Coordinate position) { //construtor tempor�rio
@@ -50,8 +52,13 @@ public class ParkingLot extends Agent {
 		this.capacity = 10;
 	}
 	
+	public ParkingLot() { // temporary
+		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
+	}
+
 	@Override
 	protected void setup() {
+		LOGGER.info("ParkingLot " + getAID().getName()  + " is ready!");
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -115,7 +122,6 @@ public class ParkingLot extends Agent {
 	public void removeDriver(String AID) {
 		parkedDrivers.remove(AID);
 		currLotation--;
-		System.out.println("Park: "+this.getAID() +" ; Driver: "+ AID +" ; "+this.currLotation);
 	}
 
 	/**
@@ -132,7 +138,6 @@ public class ParkingLot extends Agent {
 		
 		parkedDrivers.put(AID, Integer.parseInt(durationOfStay));
 		currLotation++;
-		System.out.println("Park: \"+this.getAID() +\" ; Driver: "+ AID +" ; "+this.currLotation);
 		return true;
 	}
 	
@@ -155,11 +160,9 @@ public class ParkingLot extends Agent {
 		
 		return sb.toString();
 	}
-	
 	/**
 	 * Default Getters and Setters
 	 */
-	
 	public void setPricingScheme(double pricePerMinute, double minPricePerStay, double maxPricePerStay) {
 		this.pricePerMinute = pricePerMinute;
 		this.minPricePerStay = minPricePerStay;
@@ -192,5 +195,13 @@ public class ParkingLot extends Agent {
 
 	public double getMaxPricePerStay() {
 		return maxPricePerStay;
+	}
+
+	public void setPosition(Coordinate position) {
+		this.position = position;
+	}
+
+	public void logMessage(String message) {
+		LOGGER.info(message);
 	}
 }

@@ -1,5 +1,5 @@
 /*
-©Copyright 2012 Nick Malleson
+ï¿½Copyright 2012 Nick Malleson
 This file is part of RepastCity.
 
 RepastCity is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ import agents.Agent;
 import agents.ParkingLot;
 import exceptions.RoutingException;
 import parkingLot.GlobalVars;
-import parkingLot.Initializer;
+import parkingLot.Simulation;
 
 /**
  * Create routes around a GIS road network. The <code>setRoute</code> function actually finds the route and can be
@@ -158,7 +158,7 @@ public class Route {
 			return;
 		}
 
-		Coordinate currentCoord = Initializer.getAgentGeometry(this.agent).getCoordinate();
+		Coordinate currentCoord = Simulation.getAgentGeometry(this.agent).getCoordinate();
 		Coordinate destCoord = this.destination;
 
 		try {
@@ -172,7 +172,7 @@ public class Route {
 			 * TODO EFFICIENCY: often the agent will be creating a new route from a building so will always find the
 			 * same road, could use a cache. Even better, could implement a cache in FindNearestObject() method!
 			 */
-			Road currentRoad = Route.findNearestObject(currentCoord, Initializer.roadProjection, null,
+			Road currentRoad = Route.findNearestObject(currentCoord, Simulation.roadProjection, null,
 					GlobalVars.GEOGRAPHY_PARAMS.BUFFER_DISTANCE.LARGE);
 			// Find which Junction is closest to us on the road.
 			List<Junction> currentJunctions = currentRoad.getJunctions();
@@ -180,7 +180,7 @@ public class Route {
 			/* Find the nearest Junctions to our destination (road endpoints) */
 
 			// Find the road that this coordinate is on
-			Road destRoad = Route.findNearestObject(destCoord, Initializer.roadProjection, null,
+			Road destRoad = Route.findNearestObject(destCoord, Simulation.roadProjection, null,
 					GlobalVars.GEOGRAPHY_PARAMS.BUFFER_DISTANCE.SMALL);
 			// Find which Junction connected to the edge is closest to the coordinate.
 			List<Junction> destJunctions = destRoad.getJunctions();
@@ -210,7 +210,7 @@ public class Route {
 			 */
 
 			tempCoordList.clear();
-			this.getCoordsAlongRoad(Initializer.junctionGeography.getGeometry(destJunction).getCoordinate(),
+			this.getCoordsAlongRoad(Simulation.junctionGeography.getGeometry(destJunction).getCoordinate(),
 					destCoord, destRoad, false, tempCoordList);
 			addToRoute(tempCoordList, destRoad, 1, "getCoordsAlongRoad (fromJunction)");
 
@@ -328,7 +328,7 @@ public class Route {
 			boolean travelledMaxDist = false; // True when travelled maximum distance this iteration
 			double speed; // The speed to travel to next coord
 			GeometryFactory geomFac = new GeometryFactory();
-			currentCoord = Initializer.getAgentGeometry(this.agent).getCoordinate();
+			currentCoord = Simulation.getAgentGeometry(this.agent).getCoordinate();
 
 			while (!travelledMaxDist && !this.atDestination()) {
 				target = this.routeX.get(this.currentPosition);
@@ -346,8 +346,8 @@ public class Route {
 
 					// See if agent has reached the end of the route.
 					if (this.currentPosition == (this.routeX.size() - 1)) {
-						Initializer.moveAgent(this.agent, geomFac.createPoint(currentCoord));
-						// Initializer.agentGeography.move(this.agent, geomFac.createPoint(currentCoord));
+						Simulation.moveAgent(this.agent, geomFac.createPoint(currentCoord));
+						// Simulation.agentGeography.move(this.agent, geomFac.createPoint(currentCoord));
 						break; // Break out of while loop, have reached end of route.
 					}
 					// Haven't reached end of route, increment the counter
@@ -358,8 +358,8 @@ public class Route {
 				// distance allowed to travel (unlikely but possible)
 				else if (distTravelled + distToTarget == GlobalVars.GEOGRAPHY_PARAMS.TRAVEL_PER_TURN) {
 					travelledMaxDist = true;
-					Initializer.moveAgent(agent, geomFac.createPoint(target));
-					// Initializer.agentGeography.move(agent, geomFac.createPoint(target));
+					Simulation.moveAgent(agent, geomFac.createPoint(target));
+					// Simulation.agentGeography.move(agent, geomFac.createPoint(target));
 					this.currentPosition++;
 					LOGGER.log(Level.WARNING, "Travel(): UNUSUAL CONDITION HAS OCCURED!");
 				} else {
@@ -369,11 +369,11 @@ public class Route {
 					double distToTravel = (GlobalVars.GEOGRAPHY_PARAMS.TRAVEL_PER_TURN - distTravelled) * speed;
 					// Move the agent, first move them to the current coord (the first part of the while loop doesn't do
 					// this for efficiency)
-					// Initializer.agentGeography.move(this.agent, geomFac.createPoint(currentCoord));
-					Initializer.moveAgent(this.agent, geomFac.createPoint(currentCoord));
+					// Simulation.agentGeography.move(this.agent, geomFac.createPoint(currentCoord));
+					Simulation.moveAgent(this.agent, geomFac.createPoint(currentCoord));
 					// Now move by vector towards target (calculated angle earlier).
-					Initializer.moveAgentByVector(this.agent, distToTravel, distAndAngle[1]);
-					// Initializer.agentGeography.moveByVector(this.agent, distToTravel, distAndAngle[1]);
+					Simulation.moveAgentByVector(this.agent, distToTravel, distAndAngle[1]);
+					// Simulation.agentGeography.moveByVector(this.agent, distToTravel, distAndAngle[1]);
 
 					travelledMaxDist = true;
 				} // else
@@ -412,11 +412,11 @@ public class Route {
 			DistanceOp distOp = null;
 			GeometryFactory geomFac = new GeometryFactory();
 			// TODO EFFICIENCY: here could iterate over near junctions instead of all?
-			for (Junction j : Initializer.junctionContext.getObjects(Junction.class)) {
+			for (Junction j : Simulation.junctionContext.getObjects(Junction.class)) {
 				// Check that the agent can actually get to the junction (if might be part of a transport route
 				// that the agent doesn't have access to)
 				boolean accessibleJunction = false;
-				accessibleJunc: for (RepastEdge<Junction> e : Initializer.roadNetwork.getEdges(j)) {
+				/*accessibleJunc: for (RepastEdge<Junction> e : Simulation.roadNetwork.getEdges(j)) {
 					NetworkEdge<Junction> edge = (NetworkEdge<Junction>) e;
 					for (String s : edge.getTypes()) {
 						if (theBurglar.getTransportAvailable().contains(s)) {
@@ -425,7 +425,7 @@ public class Route {
 						}
 					} // for types
 				}// for edges
-				if (!accessibleJunction) { // Agent can't get to the junction, ignore it
+*/				if (!accessibleJunction) { // Agent can't get to the junction, ignore it
 					continue;
 				}
 				Point juncPoint = geomFac.createPoint(j.getCoords());
@@ -444,7 +444,7 @@ public class Route {
 					closestDestJunc = j;
 				}
 			}
-			ShortestPath<Junction> p = new ShortestPath<Junction>(Initializer.roadNetwork);
+			ShortestPath<Junction> p = new ShortestPath<Junction>(Simulation.roadNetwork);
 			double theDist = p.getPathLength(closestOriginJunc, closestDestJunc);
 			p.finalize();
 			p = null;
@@ -486,7 +486,7 @@ public class Route {
 								+ "junction is null. This can be caused by disconnected roads. It's probably OK"
 								+ "to ignore this as a route should still be created anyway.");
 					} else {
-						p = new ShortestPath<Junction>(Initializer.roadNetwork);
+						p = new ShortestPath<Junction>(Simulation.roadNetwork);
 						pathLength = p.getPathLength(o,d);
 						if (pathLength < shortestPathLength) {
 							shortestPathLength = pathLength;
@@ -544,7 +544,7 @@ public class Route {
 		Route.checkNotNull(currentCoord, destinationCoord, road, coordList);
 
 		double time = System.nanoTime();
-		Coordinate[] roadCoords = Initializer.roadProjection.getGeometry(road).getCoordinates();
+		Coordinate[] roadCoords = Simulation.roadProjection.getGeometry(road).getCoordinates();
 
 		// Check that the either the destination or current coordinate are actually part of the road
 		boolean currentCorrect = false, destinationCorrect = false;
@@ -721,7 +721,7 @@ public class Route {
 					}
 				} else {
 					// This edge is a road, add all the coords which make up its geometry
-					Coordinate[] roadCoords = Initializer.roadProjection.getGeometry(r).getCoordinates();
+					Coordinate[] roadCoords = Simulation.roadProjection.getGeometry(r).getCoordinates();
 					if (roadCoords.length < 2)
 						throw new RoutingException("Route.getRouteBetweenJunctions: for some reason road " + "'"
 								+ r.toString() + "' doesn't have at least two coords as part of its geometry ("
@@ -760,7 +760,7 @@ public class Route {
 	 * @return True if the person is at their destination
 	 */
 	public boolean atDestination() {
-		return Initializer.getAgentGeometry(this.agent).getCoordinate().equals(this.destination);
+		return Simulation.getAgentGeometry(this.agent).getCoordinate().equals(this.destination);
 	}
 
 	private void printRoute() {
@@ -863,7 +863,7 @@ public class Route {
 	 */
 	public static synchronized double distance(Coordinate c1, Coordinate c2, double[] returnVals) {
 		// TODO check this now, might be different way of getting distance in new Simphony
-		GeodeticCalculator calculator = new GeodeticCalculator(Initializer.roadProjection.getCRS());
+		GeodeticCalculator calculator = new GeodeticCalculator(Simulation.roadProjection.getCRS());
 		calculator.setStartingGeographicPoint(c1.x, c1.y);
 		calculator.setDestinationGeographicPoint(c2.x, c2.y);
 		double distance = calculator.getOrthodromicDistance();
@@ -902,8 +902,8 @@ public class Route {
 	public static synchronized String distanceToMeters(double dist) throws Exception {
 		// Works by creating two coords (close to a randomly chosen object) which are a certain distance apart
 		// then using similar method as other distance() function
-		GeodeticCalculator calculator = new GeodeticCalculator(Initializer.roadProjection.getCRS());
-		Coordinate c1 = Initializer.junctionContext.getRandomObject().getCoords();
+		GeodeticCalculator calculator = new GeodeticCalculator(Simulation.roadProjection.getCRS());
+		Coordinate c1 = Simulation.junctionContext.getRandomObject().getCoords();
 		calculator.setStartingGeographicPoint(c1.x, c1.y);
 		calculator.setDestinationGeographicPoint(c1.x, c1.y + dist);
 		return String.valueOf(calculator.getOrthodromicDistance());

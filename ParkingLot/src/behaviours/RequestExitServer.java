@@ -16,9 +16,9 @@ public class RequestExitServer extends CyclicBehaviour {
 	 */
 	@Override
 	public void action() {
-		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
+		MessageTemplate mt = MessageTemplate.MatchConversationId("park-exit");
 		ACLMessage msg = myAgent.receive(mt);
-		if (msg != null) {
+		if (msg != null && msg.getPerformative() == ACLMessage.INFORM) {
 			((ParkingLot) myAgent).removeDriver(msg.getSender().getName());
 		}
 		else {

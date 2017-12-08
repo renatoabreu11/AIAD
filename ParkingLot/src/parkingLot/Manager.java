@@ -1,8 +1,11 @@
 package parkingLot;
 
+import java.util.Iterator;
 import java.util.logging.Logger;
 
+import agents.Driver;
 import agents.Agent;
+import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class Manager extends Agent{
 	
@@ -17,10 +20,22 @@ public class Manager extends Agent{
 		currentTicksInDay = 0;
 	}
 	
+	@ScheduledMethod(start = 1, interval = 12000)
 	public void update() {
-		if((++currentTicksInDay) >= GlobalVars.WEEKDAY.maxTicksInDay) {
-			weekday = GlobalVars.WEEKDAY.getNextDay(weekday.id);
-			LOGGER.info("Started new day: " + weekday.toString());
-		}
+		currentTicksInDay = 0;
+		weekday = GlobalVars.WEEKDAY.getNextDay(weekday.id);
+		LOGGER.severe("Started new day: " + weekday.toString());
+	/*	Iterator<Agent> iterator = Initializer.agentContext.getRandomObjects(Driver.class, 1).iterator();
+		if(!iterator.hasNext()) return;
+		Agent driver = iterator.next();
+		Simulation.removeAgent(driver);*/
+	}
+	
+	public void setup() {
+		
+	}
+	
+	public void finalize() {
+		
 	}
 }
