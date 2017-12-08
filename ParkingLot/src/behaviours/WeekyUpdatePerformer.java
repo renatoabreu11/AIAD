@@ -22,9 +22,9 @@ public class WeekyUpdatePerformer extends TickerBehaviour{
 		((ParkingLot) myAgent).closeParkingFacility();
 		((ParkingLot) myAgent).saveWeeklyInfo();
 		Type type = ((ParkingLot) myAgent).type;
-		if(type == Type.DYNAMIC_PARKING_LOT)
+		if(type.equals(Type.DYNAMIC_PARKING_LOT))
 			((DynamicParkingLot) myAgent).updatePricingSheme();
-		else if(type == Type.COOPERATIVE_PARKING_LOT) {
+		else if(type.equals(Type.COOPERATIVE_PARKING_LOT)) {
 			myAgent.addBehaviour(new ShareWeeklyInfoPerformer());
 		}
 	}

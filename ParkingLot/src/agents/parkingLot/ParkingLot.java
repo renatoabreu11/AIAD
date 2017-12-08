@@ -70,7 +70,7 @@ public abstract class ParkingLot extends Agent {
 		addBehaviour(new AcceptEntryServer());
 		addBehaviour(new RequestEntryServer());
 		addBehaviour(new RequestExitServer());
-		if(this.getType() == Type.COOPERATIVE_PARKING_LOT)
+		if(this.getType().equals(Type.COOPERATIVE_PARKING_LOT))
 			addBehaviour(new ShareWeeklyInfoServer());
 	}
 	

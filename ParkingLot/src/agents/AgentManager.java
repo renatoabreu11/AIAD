@@ -1,6 +1,7 @@
 package agents;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import agents.driver.Driver;
@@ -12,6 +13,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.wrapper.StaleProxyException;
 import repast.simphony.parameter.Parameters;
+import sajas.core.AID;
 import sajas.domain.DFService;
 import sajas.wrapper.ContainerController;
 
@@ -75,7 +77,6 @@ public class AgentManager extends Agent{
 
 	public void startAgents() {
 		for(int i = 0; i < driverAgents.size(); i++) {
-			Driver d = new RationalDriver();
 			try {
 				mainContainer.acceptNewAgent(driverAgents.get(i).getName(), driverAgents.get(i)).start();
 			} catch (StaleProxyException e) {
@@ -89,6 +90,16 @@ public class AgentManager extends Agent{
 			} catch (StaleProxyException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	public synchronized void removeAgent(String AID) {
+		for (Iterator<Driver> iterator = driverAgents.iterator(); iterator.hasNext();) {
+		    Driver d = iterator.next();
+		    if (AID.equals(d.getAID().toString())) {
+		        iterator.remove();
+		        return;
+		    }
 		}
 	}
 }

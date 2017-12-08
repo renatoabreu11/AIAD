@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 
 import agents.Agent;
-import agents.Agent.Type;
 import agents.parkingLot.ParkingLot;
 import behaviours.RequestEntryPerformer;
 import environment.Route;
@@ -16,6 +15,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import parkingLot.Initializer;
 import parkingLot.Simulation;
+import agents.AgentManager;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.collections.IndexedIterable;
 import sajas.core.AID;
@@ -119,6 +119,7 @@ public abstract class Driver extends Agent {
 			}
 		} else {
 			Simulation.removeAgent(this);
+			Initializer.agentManager.removeAgent(this.getAID().toString());
 			this.doDelete();
 		}
 	}

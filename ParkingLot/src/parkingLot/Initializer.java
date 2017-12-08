@@ -18,7 +18,7 @@ public class Initializer extends RepastSLauncher{
 	private static long speedTimer = -1;
 	
 	private static ContainerController mainContainer;
-	private AgentManager agentManager;
+	public static AgentManager agentManager;
 	private Simulation simulation;
 
 	@Override
@@ -45,7 +45,6 @@ public class Initializer extends RepastSLauncher{
 		Parameters params = RunEnvironment.getInstance().getParameters();
 		agentManager.initAgents(params);
 		simulation.AddAgentsToEnvironent(agentManager.parkingAgents, agentManager.driverAgents);
-		simulation.scheduleSimulation(this);
 		agentManager.startAgents();
 		
 	}
