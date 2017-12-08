@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 
+import Utils.PricingScheme;
+import Utils.WeeklyInfo;
 import agents.Agent;
 import behaviours.AcceptEntryServer;
 import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
 import behaviours.ShareWeeklyInfoServer;
+import behaviours.WeekyUpdatePerformer;
 import sajas.domain.*;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -24,12 +27,10 @@ public abstract class ParkingLot extends Agent {
 	public int capacity = 100;
 	protected int currLotation = 0;
 	
-	// Pricing Scheme
-	public double pricePerMinute;
-	public double minPricePerStay;
-	public double maxPricePerStay;
+	private HashMap<String, WeeklyInfo> weeklyInfo = new HashMap<String, WeeklyInfo>();
+	private PricingScheme pricingScheme;
+	private double profit = 0;
 	
-	public double profit = 0;
 	private Coordinate position;
 	
 	/**
@@ -43,10 +44,12 @@ public abstract class ParkingLot extends Agent {
 		super("park");
 		this.position = position;
 		this.capacity = maxCapacity;
+		pricingScheme = new PricingScheme();
 	}
 	
 	public ParkingLot(String name, Type type) {
 		super(name, type);
+		pricingScheme = new PricingScheme();
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -70,6 +73,8 @@ public abstract class ParkingLot extends Agent {
 		addBehaviour(new AcceptEntryServer());
 		addBehaviour(new RequestEntryServer());
 		addBehaviour(new RequestExitServer());
+		// change the second value to the number of ms per week
+		addBehaviour(new WeekyUpdatePerformer(this, 10000));
 		if(this.getType().equals(Type.COOPERATIVE_PARKING_LOT))
 			addBehaviour(new ShareWeeklyInfoServer());
 	}
@@ -93,23 +98,8 @@ public abstract class ParkingLot extends Agent {
 	 */
 	public double getFinalPrice(String durationOfStayStr) {
 		double durationOfStay = Double.parseDouble(durationOfStayStr);
-		double price = pricePerMinute * durationOfStay;
-		
-		if(price > maxPricePerStay) {
-			price = maxPricePerStay;
-		} else if (price < minPricePerStay) {
-			price = minPricePerStay;
-		}
-		
 		double scale = currLotation / capacity;
-		
-		if(scale < 0.3) {
-			price -= price * (0.3 - scale);
-		} else if (scale > 0.7) {
-			price += price * (scale - 0.7);
-		}
-		
-		return price;
+		return pricingScheme.calculatePrice(durationOfStay, scale);
 	}
 	
 	/**
@@ -131,7 +121,7 @@ public abstract class ParkingLot extends Agent {
 			return false;
 		}
 		double finalPrice = this.getFinalPrice(durationOfStay);
-		profit += finalPrice;
+		this.setProfit(this.getProfit() + finalPrice);
 		
 		parkedDrivers.put(AID, Integer.parseInt(durationOfStay));
 		currLotation++;
@@ -147,7 +137,7 @@ public abstract class ParkingLot extends Agent {
 	}
 	
 	/**
-	 * Saves the info related to the passing week
+	 * Saves the info related to the last week
 	 */
 	public void saveWeeklyInfo() {
 		// TODO Auto-generated method stub
@@ -157,12 +147,6 @@ public abstract class ParkingLot extends Agent {
 	/**
 	 * Default Getters and Setters
 	 */
-	public void setPricingScheme(double pricePerMinute, double minPricePerStay, double maxPricePerStay) {
-		this.pricePerMinute = pricePerMinute;
-		this.minPricePerStay = minPricePerStay;
-		this.maxPricePerStay = maxPricePerStay;
-	}
-	
 	public Coordinate getPosition() {
 		return position;
 	}
@@ -179,23 +163,27 @@ public abstract class ParkingLot extends Agent {
 		return parkedDrivers;
 	}
 
-	public double getPricePerMinute() {
-		return pricePerMinute;
-	}
-
-	public double getMinPricePerStay() {
-		return minPricePerStay;
-	}
-
-	public double getMaxPricePerStay() {
-		return maxPricePerStay;
-	}
-
 	public void setPosition(Coordinate position) {
 		this.position = position;
 	}
 
 	public void logMessage(String message) {
 		LOGGER.info(message);
+	}
+
+	public double getProfit() {
+		return profit;
+	}
+
+	public void setProfit(double profit) {
+		this.profit = profit;
+	}
+
+	public HashMap<String, WeeklyInfo> getWeeklyInfo() {
+		return weeklyInfo;
+	}
+
+	public void setWeeklyInfo(HashMap<String, WeeklyInfo> weeklyInfo) {
+		this.weeklyInfo = weeklyInfo;
 	}
 }
