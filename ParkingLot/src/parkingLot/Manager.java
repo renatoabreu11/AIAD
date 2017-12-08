@@ -1,15 +1,10 @@
 package parkingLot;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import com.vividsolutions.jts.geom.Point;
-
 import agents.Driver;
 import agents.Agent;
-import environment.Junction;
-import environment.Road;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class Manager extends Agent{
@@ -30,10 +25,10 @@ public class Manager extends Agent{
 		currentTicksInDay = 0;
 		weekday = GlobalVars.WEEKDAY.getNextDay(weekday.id);
 		LOGGER.severe("Started new day: " + weekday.toString());
-		Iterator<Agent> iterator = Initializer.agentContext.getRandomObjects(Driver.class, 1).iterator();
+	/*	Iterator<Agent> iterator = Initializer.agentContext.getRandomObjects(Driver.class, 1).iterator();
 		if(!iterator.hasNext()) return;
 		Agent driver = iterator.next();
-		Initializer.removeAgent(driver);
+		Simulation.removeAgent(driver);*/
 	}
 	
 	public void setup() {

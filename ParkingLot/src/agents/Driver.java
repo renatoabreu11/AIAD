@@ -12,6 +12,7 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import parkingLot.Initializer;
+import parkingLot.Simulation;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.collections.IndexedIterable;
 import sajas.core.AID;
@@ -19,6 +20,7 @@ import sajas.domain.DFService;
 
 public class Driver extends Agent {
 	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
+	
 	public static double alfa = 0.5;
 	public static double beta = 0.5;
 
@@ -108,7 +110,7 @@ public class Driver extends Agent {
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
 			}
 		} else {
-			Initializer.context.remove(this);
+			Simulation.removeAgent(this);
 			this.doDelete();
 		}
 	}
@@ -116,7 +118,7 @@ public class Driver extends Agent {
 	private void getPossibleParks() {
 		Coordinate tmp = new Coordinate();
 		double[] distAndAng = new double[2];
-		IndexedIterable<ParkingLot> parks = Initializer.parkingLotContext.getObjects(ParkingLot.class);
+		IndexedIterable<ParkingLot> parks = Simulation.parkingLotContext.getObjects(ParkingLot.class);
 
 		for(int i = 0;i<parks.size();i++) {
 			tmp = parks.get(i).getPosition();
@@ -134,7 +136,7 @@ public class Driver extends Agent {
 		}
 		else {
 			this.parkingLotDestiny = this.parksInRange.get(0);
-			this.route = new Route(this, Initializer.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
+			this.route = new Route(this, Simulation.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
 			LOGGER.log(Level.FINE, this.toString() + " created new route to " + parkingLotDestiny.toString());
 		}
 	}
@@ -177,7 +179,6 @@ public class Driver extends Agent {
 		
 		this.getPossibleParks();
 		this.pickParkToGo();
-		System.out.println(this.parkingLotDestiny);
 	}
 
 	/**

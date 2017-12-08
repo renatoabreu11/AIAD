@@ -1,6 +1,5 @@
 package agents;
 
-import java.util.List;
 import sajas.core.AID;
 
 public abstract class Agent extends sajas.core.Agent{
