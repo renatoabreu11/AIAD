@@ -3,6 +3,7 @@ package behaviours;
 import agents.Driver;
 import agents.ParkingLot;
 import jade.lang.acl.ACLMessage;
+import parkingLot.Initializer;
 import sajas.core.AID;
 import sajas.core.Agent;
 import sajas.core.behaviours.WakerBehaviour;
@@ -32,6 +33,6 @@ public class RequestExitPerformer extends WakerBehaviour {
 		cfp.setReplyWith("cfp"+System.currentTimeMillis());
 		myAgent.send(cfp);
 		((Driver) myAgent).logMessage("Request exit performed\n" + cfp);
-		myAgent.doDelete();
+		((Driver) myAgent).setAlive(false);
 	}
 } 

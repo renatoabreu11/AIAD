@@ -43,6 +43,7 @@ public class Initializer extends RepastSLauncher{
 	private static long speedTimer = -1;
 	
 	private static ContainerController mainContainer;
+	public static Context context;
 	private AgentManager agentManager;
 	private Simulation simulation;
 	
@@ -93,7 +94,6 @@ public class Initializer extends RepastSLauncher{
 	@Override
 	public Context<?> build(Context<Object> context) {
 		context.setId("ParkingLotSimulation");
-		System.out.println("BUILD");
 		try {
 			roadContext = new RoadContext();
 			roadProjection = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
@@ -141,6 +141,7 @@ public class Initializer extends RepastSLauncher{
 				GlobalVars.CONTEXT_NAMES.PARKINGLOT_GEOGRAPHY, parkingLotContext,
 				new GeographyParameters<ParkingLot>(new SimpleAdder<ParkingLot>()));
 		
+		Initializer.context = context;
 		return super.build(context);
 	}
 	

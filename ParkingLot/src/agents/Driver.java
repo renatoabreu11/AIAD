@@ -145,6 +145,9 @@ public class Driver extends Agent {
 				}
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
 			}
+		} else {
+			Initializer.context.remove(this);
+			this.doDelete();
 		}
 	}
 
@@ -207,5 +210,9 @@ public class Driver extends Agent {
 
 	public void logMessage(String message) {
 		LOGGER.info(message);
+	}
+
+	public void setAlive(boolean b) {
+		this.alive = b;
 	}
 }
