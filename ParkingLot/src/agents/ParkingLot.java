@@ -120,7 +120,6 @@ public class ParkingLot extends Agent {
 	public void removeDriver(String AID) {
 		parkedDrivers.remove(AID);
 		currLotation--;
-		System.out.println("Park: "+this.getAID() +" ; Driver: "+ AID +" ; "+this.currLotation);
 	}
 
 	/**
@@ -137,7 +136,6 @@ public class ParkingLot extends Agent {
 		
 		parkedDrivers.put(AID, Integer.parseInt(durationOfStay));
 		currLotation++;
-		System.out.println("Park: \"+this.getAID() +\" ; Driver: "+ AID +" ; "+this.currLotation);
 		return true;
 	}
 	
