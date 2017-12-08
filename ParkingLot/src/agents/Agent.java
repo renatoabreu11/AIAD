@@ -1,7 +1,6 @@
 package agents;
 
 import java.util.List;
-
 import sajas.core.AID;
 
 public abstract class Agent extends sajas.core.Agent{
@@ -13,8 +12,8 @@ public abstract class Agent extends sajas.core.Agent{
 			AGENT_MANAGER,
 			MANAGER
 	}
-	public static int tick = 0;
 	
+	public static int tick = 0;
 	public static int UniqueID = 0;
 	public Type type;
 	
@@ -34,9 +33,5 @@ public abstract class Agent extends sajas.core.Agent{
 	
 	public static void updateTick() {
 		++Agent.tick;
-	}
-	
-	public List<String> getTransportAvailable() {
-		return null;
 	}
 }

@@ -17,7 +17,7 @@ public class ParkingLot extends Agent {
 	
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
-	public int capacity;
+	public int capacity = 100;
 	protected int currLotation = 0;
 	
 	// Pricing Scheme
@@ -50,8 +50,13 @@ public class ParkingLot extends Agent {
 		this.capacity = 10;
 	}
 	
+	public ParkingLot() { // temporary
+		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
+	}
+
 	@Override
 	protected void setup() {
+		LOGGER.info("ParkingLot " + getAID().getName()  + " is ready!");
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -190,5 +195,9 @@ public class ParkingLot extends Agent {
 
 	public double getMaxPricePerStay() {
 		return maxPricePerStay;
+	}
+
+	public void setPosition(Coordinate position) {
+		this.position = position;
 	}
 }

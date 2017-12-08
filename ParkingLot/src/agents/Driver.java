@@ -5,23 +5,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
 
 import behaviours.RequestEntryPerformer;
-import environment.Junction;
-import environment.Road;
 import environment.Route;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import parkingLot.Initializer;
+import parkingLot.Simulation;
 import repast.simphony.util.collections.IndexedIterable;
 import sajas.core.AID;
 import sajas.domain.DFService;
 
 public class Driver extends Agent {
+	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 	public static double alfa = 0.5;
 	public static double beta = 0.5;
-	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 
 	private int durationOfStay = 10; // definir valor default futuramente
 	private double walkDistance = 400.0; // definir valor default futuramente
@@ -66,11 +66,14 @@ public class Driver extends Agent {
 		this.getPossibleParks();
 		this.pickParkToGo();
 	}
+	
+	public Driver() { // temporary
+		super("Driver", Type.RATIONAL_DRIVER);
+	}
 
 	@Override
 	protected void setup() {
 		LOGGER.info("Driver " + getAID().getName()  + " is ready!");
-		System.out.println("Driver " + getAID().getName()  + " is ready!");
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -146,9 +149,6 @@ public class Driver extends Agent {
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
 			}
 		}
-		else {
-			System.out.println("Sair do programa");
-		}
 	}
 
 	/**
@@ -197,5 +197,14 @@ public class Driver extends Agent {
 
 	public boolean getAlive() {
 		return alive;
+	}
+
+	public void setPositions(Coordinate initialCoordinate, Coordinate finalCoordinate) {
+		this.currentPosition = initialCoordinate;
+		this.destination = finalCoordinate;
+		
+		this.getPossibleParks();
+		this.pickParkToGo();
+		System.out.println(this.parkingLotDestiny);
 	}
 }

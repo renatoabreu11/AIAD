@@ -1,5 +1,5 @@
 /*
-©Copyright 2012 Nick Malleson
+ï¿½Copyright 2012 Nick Malleson
 This file is part of RepastCity.
 
 RepastCity is free software: you can redistribute it and/or modify
@@ -416,7 +416,7 @@ public class Route {
 				// Check that the agent can actually get to the junction (if might be part of a transport route
 				// that the agent doesn't have access to)
 				boolean accessibleJunction = false;
-				accessibleJunc: for (RepastEdge<Junction> e : Initializer.roadNetwork.getEdges(j)) {
+				/*accessibleJunc: for (RepastEdge<Junction> e : Initializer.roadNetwork.getEdges(j)) {
 					NetworkEdge<Junction> edge = (NetworkEdge<Junction>) e;
 					for (String s : edge.getTypes()) {
 						if (theBurglar.getTransportAvailable().contains(s)) {
@@ -425,7 +425,7 @@ public class Route {
 						}
 					} // for types
 				}// for edges
-				if (!accessibleJunction) { // Agent can't get to the junction, ignore it
+*/				if (!accessibleJunction) { // Agent can't get to the junction, ignore it
 					continue;
 				}
 				Point juncPoint = geomFac.createPoint(j.getCoords());
