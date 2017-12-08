@@ -1,4 +1,4 @@
-package agents;
+package agents.driver;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -6,6 +6,9 @@ import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
+import agents.Agent;
+import agents.Agent.Type;
+import agents.parkingLot.ParkingLot;
 import behaviours.RequestEntryPerformer;
 import environment.Route;
 import jade.domain.FIPAException;
@@ -18,7 +21,7 @@ import repast.simphony.util.collections.IndexedIterable;
 import sajas.core.AID;
 import sajas.domain.DFService;
 
-public class Driver extends Agent {
+public abstract class Driver extends Agent {
 	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 	
 	public static double alfa = 0.5;
@@ -57,8 +60,13 @@ public class Driver extends Agent {
 		this.defaultSatisfaction = defaultSatisfaction;
 	}
 	
-	public Driver() { // temporary
-		super("Driver", Type.RATIONAL_DRIVER);
+	/**
+	 * Default constructor
+	 * @param name
+	 * @param type
+	 */
+	public Driver(String name, Type type) {
+		super(name, type);
 	}
 
 	@Override

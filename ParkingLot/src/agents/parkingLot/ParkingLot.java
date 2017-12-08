@@ -1,11 +1,14 @@
-package agents;
+package agents.parkingLot;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
+
+import agents.Agent;
 import behaviours.AcceptEntryServer;
 import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
+import behaviours.ShareWeeklyInfoServer;
 import sajas.domain.*;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -13,7 +16,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 import repast.simphony.engine.schedule.ScheduledMethod;
 
-public class ParkingLot extends Agent {
+public abstract class ParkingLot extends Agent {
 	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 
 	// Parking spots info
@@ -36,24 +39,18 @@ public class ParkingLot extends Agent {
 	 * @param position
 	 * @param maxCapacity
 	 */
-	public ParkingLot(Coordinate position, int maxCapacity,Coordinate currentPosition) {
+	public ParkingLot(Coordinate position, int maxCapacity, Coordinate currentPosition) {
 		super("park");
 		this.position = position;
 		this.capacity = maxCapacity;
 	}
 	
+	public ParkingLot(String name, Type type) {
+		super(name, type);
+	}
+	
 	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {};
-	
-	public ParkingLot(Coordinate position) { //construtor tempor�rio
-		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
-		this.position = position;
-		this.capacity = 10;
-	}
-	
-	public ParkingLot() { // temporary
-		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
-	}
 
 	@Override
 	protected void setup() {
@@ -62,7 +59,7 @@ public class ParkingLot extends Agent {
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
 		sd.setName(getName());
-		sd.setType("ParkingLot");
+		sd.setType(this.getType().toString());
 		dfd.addServices(sd);
 		try {
 			DFService.register(this, dfd);
@@ -73,6 +70,8 @@ public class ParkingLot extends Agent {
 		addBehaviour(new AcceptEntryServer());
 		addBehaviour(new RequestEntryServer());
 		addBehaviour(new RequestExitServer());
+		if(this.getType() == Type.COOPERATIVE_PARKING_LOT)
+			addBehaviour(new ShareWeeklyInfoServer());
 	}
 	
 	@Override
@@ -84,9 +83,8 @@ public class ParkingLot extends Agent {
 			fe.printStackTrace();
 		}
 
-		LOGGER.info("Parking facility terminating");
+		LOGGER.info("Parking lot terminating");
 	}
-
 	
 	/**
 	 * Returns the price to pay for the stay
@@ -105,10 +103,10 @@ public class ParkingLot extends Agent {
 		
 		double scale = currLotation / capacity;
 		
-		if(scale <= 0.3) {
-			
-		} else if (scale >= 0.7) {
-			
+		if(scale < 0.3) {
+			price -= price * (0.3 - scale);
+		} else if (scale > 0.7) {
+			price += price * (scale - 0.7);
 		}
 		
 		return price;
@@ -149,16 +147,13 @@ public class ParkingLot extends Agent {
 	}
 	
 	/**
-	 * Returns the info about a parking lot
-	 * @return
+	 * Saves the info related to the passing week
 	 */
-	public String getParkingFacilityInfo() {
-		StringBuilder sb = new StringBuilder();
+	public void saveWeeklyInfo() {
+		// TODO Auto-generated method stub
 		
-		sb.append("Parking Lot Agent: " + getAID() + "\n");
-		
-		return sb.toString();
 	}
+	
 	/**
 	 * Default Getters and Setters
 	 */

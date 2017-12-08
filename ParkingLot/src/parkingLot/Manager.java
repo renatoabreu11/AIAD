@@ -3,8 +3,8 @@ package parkingLot;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import agents.Driver;
 import agents.Agent;
+import agents.driver.Driver;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class Manager extends Agent{

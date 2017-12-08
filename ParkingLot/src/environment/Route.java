@@ -41,7 +41,7 @@ import repast.simphony.space.gis.Geography;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.space.graph.ShortestPath;
 import agents.Agent;
-import agents.ParkingLot;
+import agents.parkingLot.ParkingLot;
 import exceptions.RoutingException;
 import parkingLot.GlobalVars;
 import parkingLot.Simulation;

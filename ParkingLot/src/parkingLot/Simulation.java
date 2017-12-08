@@ -10,8 +10,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import agents.Agent;
-import agents.Driver;
-import agents.ParkingLot;
+import agents.driver.Driver;
+import agents.parkingLot.ParkingLot;
 import environment.GISFunctions;
 import environment.Junction;
 import environment.NetworkEdgeCreator;
