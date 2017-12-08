@@ -36,9 +36,8 @@ public class ParkingLot extends Agent {
 	 * @param position
 	 * @param maxCapacity
 	 */
-	public ParkingLot(Type type, Coordinate position, int maxCapacity,Coordinate currentPosition) {
-		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
-		this.type = type;
+	public ParkingLot(Coordinate position, int maxCapacity,Coordinate currentPosition) {
+		super("park");
 		this.position = position;
 		this.capacity = maxCapacity;
 	}

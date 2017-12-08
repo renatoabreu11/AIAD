@@ -21,6 +21,11 @@ public abstract class Agent extends sajas.core.Agent{
 		this.type = type;
 		Agent.UniqueID++;
 	}
+	
+	public Agent(String name) {
+		this.setAID(new AID(name + "#" + UniqueID, true));
+		Agent.UniqueID++;
+	}
 
 	public Type getType() {
 		return type;
