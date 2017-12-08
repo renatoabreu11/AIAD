@@ -132,7 +132,7 @@ public class Initializer implements ContextBuilder<Object> {
 		}
 		
 		Manager manager = new Manager();
-		agentContext.add(manager);
+		//agentContext.add(manager);
 		
 		if (RunEnvironment.getInstance().isBatch()) {
 			RunEnvironment.getInstance().endAt(20);
