@@ -67,7 +67,7 @@ public class Initializer extends RepastSLauncher{
 
 	@Override
 	protected void launchJADE() {
-		LOGGER.info("Launching JADE wrapper");
+		LOGGER.info("Launching JADE wrapper 1111");
 		sajas.core.Runtime rt = sajas.core.Runtime.instance();
 		
 		simulation = new Simulation();

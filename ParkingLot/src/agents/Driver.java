@@ -140,10 +140,7 @@ public class Driver extends Agent {
 				// Chegou ao destino
 				if(!this.inPark) {
 					this.inPark = true;
-					System.out.println("CHEGOU");
 					
-					// Obtain current park and send AID
-					System.out.println((AID) parkingLotDestiny.getAID());
 					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
 				}
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
@@ -206,5 +203,9 @@ public class Driver extends Agent {
 		this.getPossibleParks();
 		this.pickParkToGo();
 		System.out.println(this.parkingLotDestiny);
+	}
+
+	public void logMessage(String message) {
+		LOGGER.info(message);
 	}
 }

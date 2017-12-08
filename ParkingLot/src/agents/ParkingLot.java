@@ -200,4 +200,8 @@ public class ParkingLot extends Agent {
 	public void setPosition(Coordinate position) {
 		this.position = position;
 	}
+
+	public void logMessage(String message) {
+		LOGGER.info(message);
+	}
 }
