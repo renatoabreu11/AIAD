@@ -3,7 +3,6 @@ package agents;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
-
 import behaviours.AcceptEntryServer;
 import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
@@ -12,9 +11,11 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
+import repast.simphony.engine.schedule.ScheduledMethod;
+
 public class ParkingLot extends Agent {
 	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
-	
+
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
 	public int capacity = 100;
@@ -42,6 +43,7 @@ public class ParkingLot extends Agent {
 		this.capacity = maxCapacity;
 	}
 	
+	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {};
 	
 	public ParkingLot(Coordinate position) { //construtor tempor�rio

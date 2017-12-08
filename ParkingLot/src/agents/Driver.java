@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
 
 import behaviours.RequestEntryPerformer;
 import environment.Route;
@@ -13,7 +12,7 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import parkingLot.Initializer;
-import parkingLot.Simulation;
+import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.collections.IndexedIterable;
 import sajas.core.AID;
 import sajas.domain.DFService;
@@ -55,17 +54,6 @@ public class Driver extends Agent {
 		this.walkDistance = walkDistance;
 		this.defaultSatisfaction = defaultSatisfaction;
 	}
-
-	public Driver(Coordinate currentPosition, Coordinate destination) {
-		super("Driver", Type.RATIONAL_DRIVER);
-		this.currentPosition = currentPosition;
-		this.destination = destination;
-
-		System.out.println("Destination "+this.destination.toString());
-
-		this.getPossibleParks();
-		this.pickParkToGo();
-	}
 	
 	public Driver() { // temporary
 		super("Driver", Type.RATIONAL_DRIVER);
@@ -98,6 +86,32 @@ public class Driver extends Agent {
 
 		LOGGER.info("Driver " + getAID().getName()  + " terminating");
 	}
+	
+	@ScheduledMethod(start = 1, interval = 1)
+	public void update() {
+		if(this.alive) {
+			Agent.updateTick();
+			if (!this.route.atDestination()) {
+				try {
+					this.route.travel();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				LOGGER.log(Level.FINE,
+						this.toString() + " travelling to " + this.route.getDestinationBuilding().toString());
+			} else {
+				if(!this.inPark) {
+					this.inPark = true;
+					
+					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
+				}
+				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
+			}
+		} else {
+			Initializer.context.remove(this);
+			this.doDelete();
+		}
+	}
 
 	private void getPossibleParks() {
 		Coordinate tmp = new Coordinate();
@@ -122,32 +136,6 @@ public class Driver extends Agent {
 			this.parkingLotDestiny = this.parksInRange.get(0);
 			this.route = new Route(this, Initializer.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
 			LOGGER.log(Level.FINE, this.toString() + " created new route to " + parkingLotDestiny.toString());
-		}
-	}
-
-	public void update() {
-		if(this.alive) {
-			Agent.updateTick();
-			if (!this.route.atDestination()) {
-				try {
-					this.route.travel();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				LOGGER.log(Level.FINE,
-						this.toString() + " travelling to " + this.route.getDestinationBuilding().toString());
-			} else {
-				// Chegou ao destino
-				if(!this.inPark) {
-					this.inPark = true;
-					
-					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
-				}
-				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
-			}
-		} else {
-			Initializer.context.remove(this);
-			this.doDelete();
 		}
 	}
 
@@ -177,6 +165,20 @@ public class Driver extends Agent {
 
 		return utility;
 	}
+	
+	/**
+	 * Updates the driver coordinates
+	 * @param initialCoordinate
+	 * @param finalCoordinate
+	 */
+	public void setPositions(Coordinate initialCoordinate, Coordinate finalCoordinate) {
+		this.currentPosition = initialCoordinate;
+		this.destination = finalCoordinate;
+		
+		this.getPossibleParks();
+		this.pickParkToGo();
+		System.out.println(this.parkingLotDestiny);
+	}
 
 	/**
 	 * Default Getters and Setters
@@ -197,15 +199,6 @@ public class Driver extends Agent {
 
 	public boolean getAlive() {
 		return alive;
-	}
-
-	public void setPositions(Coordinate initialCoordinate, Coordinate finalCoordinate) {
-		this.currentPosition = initialCoordinate;
-		this.destination = finalCoordinate;
-		
-		this.getPossibleParks();
-		this.pickParkToGo();
-		System.out.println(this.parkingLotDestiny);
 	}
 
 	public void logMessage(String message) {

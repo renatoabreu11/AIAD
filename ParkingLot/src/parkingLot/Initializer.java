@@ -5,7 +5,6 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
@@ -186,6 +185,11 @@ public class Initializer extends RepastSLauncher{
 	
 	public static synchronized Geography<Agent> getAgentGeography() {
 		return agentGeography;
+	}
+	
+	public static void removeAgent(Agent agent) {
+		agentContext.remove(agent);
+		agentGeography.move(agent, null);
 	}
 	
 	public static synchronized Geography<ParkingLot> getParkingLotGeography() {
