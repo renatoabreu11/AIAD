@@ -20,6 +20,7 @@ public class Driver extends IAgent {
 	Route route;
 	private boolean goingHome;
 	
+	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {
 
 		if (this.route == null) {

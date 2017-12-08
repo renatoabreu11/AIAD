@@ -3,16 +3,13 @@ package parkingLot;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
-import agents.IAgent;
-import agents.Agent;
 import agents.Driver;
+import agents.IAgent;
 import agents.ParkingLot;
 import environment.GISFunctions;
 import environment.Junction;
@@ -27,16 +24,11 @@ import repast.simphony.context.space.gis.GeographyFactoryFinder;
 import repast.simphony.context.space.graph.NetworkBuilder;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.schedule.ISchedule;
-import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.parameter.Parameters;
-import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.gis.SimpleAdder;
 import repast.simphony.space.graph.Network;
-import repast.simphony.space.graph.RepastEdge;
-import repast.simphony.space.graph.ShortestPath;
 
 public class Initializer implements ContextBuilder<Object> {
 	
@@ -102,13 +94,6 @@ public class Initializer implements ContextBuilder<Object> {
 		Road road;
 		Point point;
 		ParkingLot p;
-//		for(int i = 0; i < 2; i++) {
-//			p = new ParkingLot();
-//			junction = junctionContext.getRandomObject();
-//			point = junctionGeography.getGeometry(junction).getCentroid();
-//			agentContext.add(p);
-//			agentGeography.move(p,  point);
-//		}
 		
 		Parameters params = RunEnvironment.getInstance().getParameters();
 		int zombieCount = (Integer) params.getValue("parking_count");
@@ -132,22 +117,22 @@ public class Initializer implements ContextBuilder<Object> {
 		}
 		
 		Manager manager = new Manager();
-		//agentContext.add(manager);
+		agentContext.add(manager);
 		
 		if (RunEnvironment.getInstance().isBatch()) {
 			RunEnvironment.getInstance().endAt(20);
 		}
 		
-		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-
-		// Schedule something that outputs ticks every 1000 iterations.
-		schedule.schedule(ScheduleParameters.createRepeating(1, 1000, ScheduleParameters.LAST_PRIORITY), this,
-				"printTicks");
-		ScheduleParameters agentStepParams = ScheduleParameters.createRepeating(1, 1, 0);
-		// Schedule the agents' step methods.
-		for (IAgent a : agentContext.getObjects(IAgent.class)) {
-			schedule.schedule(agentStepParams, a, "update");
-		}
+//		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
+//
+//		// Schedule something that outputs ticks every 1000 iterations.
+//		schedule.schedule(ScheduleParameters.createRepeating(1, 1000, ScheduleParameters.LAST_PRIORITY), this,
+//				"printTicks");
+//		ScheduleParameters agentStepParams = ScheduleParameters.createRepeating(1, 1, 0);
+//		// Schedule the agents' step methods.
+//		for (IAgent a : agentContext.getObjects(IAgent.class)) {
+//			schedule.schedule(agentStepParams, a, "update");
+//		}
 
 		return context;
 	}
@@ -201,5 +186,11 @@ public class Initializer implements ContextBuilder<Object> {
 	
 	public static Geography<IAgent> getAgentGeography() {
 		return agentGeography;
+	}
+	
+	public static void removeAgent(IAgent agent) {
+		
+		agentContext.remove(agent);
+		agentGeography.move(agent, null);
 	}
 }

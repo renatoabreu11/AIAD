@@ -3,8 +3,11 @@ package agents;
 import java.util.ArrayList;
 import java.util.List;
 
+import repast.simphony.engine.schedule.ScheduledMethod;
+
 public class ParkingLot extends IAgent {
 	
+	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {};
 
 	
