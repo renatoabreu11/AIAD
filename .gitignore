@@ -4,3 +4,5 @@
 *.log
 
 ParkingLot/velocity\.log\.1
+
+ParkingLot/debug\.log\.1

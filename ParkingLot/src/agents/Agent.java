@@ -6,10 +6,11 @@ public abstract class Agent extends sajas.core.Agent{
 	public static enum Type {
 			EXPLORATORY_DRIVER,
 			RATIONAL_DRIVER,
-			DYNAMIC_PARKING_FACILITY,
-			STATIC_PARKING_FACILITY,
+			DYNAMIC_PARKING_LOT,
+			STATIC_PARKING_LOT,
 			AGENT_MANAGER,
-			MANAGER
+			MANAGER,
+			COOPERATIVE_PARKING_LOT
 	}
 	
 	public static int tick = 0;

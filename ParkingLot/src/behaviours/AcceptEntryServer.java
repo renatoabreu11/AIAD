@@ -1,6 +1,6 @@
 package behaviours;
 
-import agents.ParkingLot;
+import agents.parkingLot.ParkingLot;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import sajas.core.behaviours.CyclicBehaviour;

@@ -1,7 +1,7 @@
 package behaviours;
 
-import agents.Driver;
-import agents.ParkingLot;
+import agents.driver.Driver;
+import agents.parkingLot.ParkingLot;
 import jade.lang.acl.ACLMessage;
 import parkingLot.Initializer;
 import sajas.core.AID;
