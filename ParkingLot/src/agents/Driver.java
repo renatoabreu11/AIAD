@@ -11,7 +11,6 @@ import environment.Route;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import parkingLot.Initializer;
 import parkingLot.Simulation;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.collections.IndexedIterable;

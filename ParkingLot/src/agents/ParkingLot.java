@@ -14,7 +14,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class ParkingLot extends Agent {
-	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
+	static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
@@ -29,6 +29,9 @@ public class ParkingLot extends Agent {
 	public double profit = 0;
 	private Coordinate position;
 	
+	double[] prices;
+	double[] profits;
+	
 	/**
 	 * Parking facility constructor
 	 * @param type
@@ -40,6 +43,9 @@ public class ParkingLot extends Agent {
 		super("park");
 		this.position = position;
 		this.capacity = maxCapacity;
+		
+		this.prices = new double[7];
+		this.profits = new double[7];
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -49,10 +55,13 @@ public class ParkingLot extends Agent {
 		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
 		this.position = position;
 		this.capacity = 10;
+		
+		this.prices = new double[7];
 	}
 	
 	public ParkingLot() { // temporary
 		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
+		this.prices = new double[7];
 	}
 
 	@Override
@@ -167,6 +176,8 @@ public class ParkingLot extends Agent {
 		this.minPricePerStay = minPricePerStay;
 		this.maxPricePerStay = maxPricePerStay;
 	}
+	
+	public void updatePrice(int day) {};
 	
 	public Coordinate getPosition() {
 		return position;
