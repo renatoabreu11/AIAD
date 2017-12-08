@@ -13,6 +13,11 @@ public class WeekyUpdatePerformer extends TickerBehaviour{
 	 */
 	private static final long serialVersionUID = 7618648962155948099L;
 
+	/**
+	 * Weekly behavior that saves the weekly park info
+	 * @param a
+	 * @param period
+	 */
 	public WeekyUpdatePerformer(Agent a, long period) {
 		super(a, period);
 	}

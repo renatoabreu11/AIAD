@@ -8,6 +8,7 @@ import Utils.PricingScheme;
 import Utils.WeeklyInfo;
 import agents.Agent;
 import behaviours.AcceptEntryServer;
+import behaviours.DailyUpdatePerformer;
 import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
 import behaviours.ShareWeeklyInfoServer;
@@ -75,6 +76,7 @@ public abstract class ParkingLot extends Agent {
 		addBehaviour(new RequestExitServer());
 		// change the second value to the number of ms per week
 		addBehaviour(new WeekyUpdatePerformer(this, 10000));
+		addBehaviour(new DailyUpdatePerformer(this, 10000));
 		if(this.getType().equals(Type.COOPERATIVE_PARKING_LOT))
 			addBehaviour(new ShareWeeklyInfoServer());
 	}
@@ -140,6 +142,14 @@ public abstract class ParkingLot extends Agent {
 	 * Saves the info related to the last week
 	 */
 	public void saveWeeklyInfo() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/**
+	 * Saves the info related to the last day
+	 */
+	public void saveDailyInfo() {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,11 +1,11 @@
 package Utils;
 
-import java.util.ArrayList;
+import parkingLot.GlobalVars.WEEKDAY;
 
 public class DailyInfo {
-	
-	private ArrayList<Integer> entriesPerHour = new ArrayList<>();
-	private ArrayList<Integer> exitsPerHour = new ArrayList<>();
+	private WEEKDAY day;
+	private int[] entriesPerHour;
+	private int[] exitsPerHour;
 	private double totalProfit;
 	private double totalDrivers;
 	
@@ -14,7 +14,8 @@ public class DailyInfo {
 	 * @param ps
 	 */
 	public DailyInfo() {
-		
+		setEntriesPerHour(new int[24]);
+		setExitsPerHour(new int[24]);
 	}
 
 	/**
@@ -37,19 +38,27 @@ public class DailyInfo {
 		this.totalDrivers = totalDrivers;
 	}
 
-	public ArrayList<Integer> getExitsPerHour() {
-		return exitsPerHour;
+	public WEEKDAY getDay() {
+		return day;
 	}
 
-	public void setExitsPerHour(ArrayList<Integer> exitsPerHour) {
-		this.exitsPerHour = exitsPerHour;
+	public void setDay(WEEKDAY day) {
+		this.day = day;
 	}
 
-	public ArrayList<Integer> getEntriesPerHour() {
+	public int[] getEntriesPerHour() {
 		return entriesPerHour;
 	}
 
-	public void setEntriesPerHour(ArrayList<Integer> entriesPerHour) {
+	public void setEntriesPerHour(int[] entriesPerHour) {
 		this.entriesPerHour = entriesPerHour;
+	}
+
+	public int[] getExitsPerHour() {
+		return exitsPerHour;
+	}
+
+	public void setExitsPerHour(int[] exitsPerHour) {
+		this.exitsPerHour = exitsPerHour;
 	}
 }
