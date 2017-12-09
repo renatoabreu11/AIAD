@@ -4,32 +4,29 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 
-import Utils.PricingScheme;
-import Utils.WeeklyInfo;
 import agents.Agent;
 import behaviours.AcceptEntryServer;
 import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
 import behaviours.ShareWeeklyInfoServer;
-import behaviours.WeeklyUpdatePerformer;
 import sajas.domain.*;
+import utils.WeeklyInfo;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import parkingLot.Manager;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public abstract class ParkingLot extends Agent {
-	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
+	static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
 	public int capacity = 1;
 	protected int currLotation = 1;
 	
-	private WeeklyInfo weeklyInfo;
-	private PricingScheme pricingScheme;
-	private double profit = 0;
+	protected WeeklyInfo weeklyInfo;
+	protected WeeklyInfo previousWeeklyInfo;
+	private double globalProfit = 0;
 	
 	private Coordinate position;
 	
@@ -44,14 +41,12 @@ public abstract class ParkingLot extends Agent {
 		super("park");
 		this.position = position;
 		this.capacity = maxCapacity;
-		pricingScheme = new PricingScheme();
-		setWeeklyInfo(new WeeklyInfo(pricingScheme));
+		setWeeklyInfo(new WeeklyInfo());
 	}
 	
 	public ParkingLot(String name, Type type) {
 		super(name, type);
-		pricingScheme = new PricingScheme();
-		setWeeklyInfo(new WeeklyInfo(pricingScheme));
+		setWeeklyInfo(new WeeklyInfo());
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -99,7 +94,7 @@ public abstract class ParkingLot extends Agent {
 	public double getFinalPrice(String durationOfStayStr) {
 		double durationOfStay = Double.parseDouble(durationOfStayStr);
 		double scale = currLotation / capacity;
-		return pricingScheme.calculatePrice(durationOfStay, scale);
+		return weeklyInfo.calculatePrice(durationOfStay, scale);
 	}
 	
 	/**
@@ -122,7 +117,7 @@ public abstract class ParkingLot extends Agent {
 			return false;
 		}
 		double finalPrice = this.getFinalPrice(durationOfStay);
-		this.setProfit(this.getProfit() + finalPrice);
+		this.setGlobalProfit(this.getGlobalProfit() + finalPrice);
 		
 		parkedDrivers.put(AID, Integer.parseInt(durationOfStay));
 		currLotation++;
@@ -138,14 +133,6 @@ public abstract class ParkingLot extends Agent {
 	public void closeParkingFacility() {
 		parkedDrivers = new HashMap<String, Integer>();
 		currLotation = 0;
-	}
-	
-	/**
-	 * Saves the info related to the last week
-	 */
-	public void saveWeeklyInfo() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	/**
@@ -175,14 +162,6 @@ public abstract class ParkingLot extends Agent {
 		LOGGER.info(message);
 	}
 
-	public double getProfit() {
-		return profit;
-	}
-
-	public void setProfit(double profit) {
-		this.profit = profit;
-	}
-
 	public WeeklyInfo getWeeklyInfo() {
 		return weeklyInfo;
 	}
@@ -197,5 +176,13 @@ public abstract class ParkingLot extends Agent {
 	
 	public double getWeeklyPriceAverage() {
 		return 0;
+	}
+
+	public double getGlobalProfit() {
+		return globalProfit;
+	}
+
+	public void setGlobalProfit(double globalProfit) {
+		this.globalProfit = globalProfit;
 	}
 }

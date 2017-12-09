@@ -1,8 +1,14 @@
-package Utils;
+package utils;
+
+import java.io.Serializable;
 
 import parkingLot.GlobalVars.WEEKDAY;
 
-public class DailyInfo {
+public class DailyInfo implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5477026229300722690L;
 	private WEEKDAY day;
 	private int[] entriesPerHour;
 	private int[] exitsPerHour;

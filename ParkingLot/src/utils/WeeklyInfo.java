@@ -1,11 +1,16 @@
-package Utils;
+package utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import parkingLot.Initializer;
 import parkingLot.GlobalVars.WEEKDAY;
 
-public class WeeklyInfo {
+public class WeeklyInfo implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private PricingScheme pricingScheme;
 	private ArrayList<DailyInfo> days = new ArrayList<>();
 	private double totalProfit;
@@ -28,6 +33,19 @@ public class WeeklyInfo {
 		totalDrivers = 0;
 	}
 	
+	public WeeklyInfo() {
+		pricingScheme = new PricingScheme();
+		days.add(new DailyInfo(WEEKDAY.MONDAY));
+		days.add(new DailyInfo(WEEKDAY.TUESDAY));
+		days.add(new DailyInfo(WEEKDAY.WEDNESDAY));
+		days.add(new DailyInfo(WEEKDAY.THURSDAY));
+		days.add(new DailyInfo(WEEKDAY.FRIDAY));
+		days.add(new DailyInfo(WEEKDAY.SATURDAY));
+		days.add(new DailyInfo(WEEKDAY.SUNDAY));
+		totalProfit = 0;
+		totalDrivers = 0;
+	}
+
 	public void addDriver(double finalPrice) {
 		totalProfit += finalPrice;
 		totalDrivers++;
@@ -75,5 +93,9 @@ public class WeeklyInfo {
 
 	public void setTotalDrivers(int totalDrivers) {
 		this.totalDrivers = totalDrivers;
+	}
+
+	public double calculatePrice(double durationOfStay, double scale) {
+		return pricingScheme.calculatePrice(durationOfStay, scale);
 	}
 }

@@ -1,6 +1,12 @@
-package Utils;
+package utils;
 
-public class PricingScheme {
+import java.io.Serializable;
+
+public class PricingScheme implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 403309766518328856L;
 	public double pricePerMinute;
 	public double minPricePerStay;
 	public double maxPricePerStay;
