@@ -9,6 +9,7 @@ import behaviours.AcceptEntryServer;
 import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
 import behaviours.ShareWeeklyInfoServer;
+import sajas.core.AID;
 import sajas.domain.*;
 import utils.WeeklyInfo;
 import jade.domain.FIPAException;
@@ -41,12 +42,12 @@ public abstract class ParkingLot extends Agent {
 		super("park");
 		this.position = position;
 		this.capacity = maxCapacity;
-		setWeeklyInfo(new WeeklyInfo());
+		setWeeklyInfo(new WeeklyInfo((AID) this.getAID()));
 	}
 	
 	public ParkingLot(String name, Type type) {
 		super(name, type);
-		setWeeklyInfo(new WeeklyInfo());
+		setWeeklyInfo(new WeeklyInfo((AID) this.getAID()));
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -131,6 +132,7 @@ public abstract class ParkingLot extends Agent {
 	 * Removes all drivers from the park
 	 */
 	public void closeParkingFacility() {
+		weeklyInfo.endWeek();
 		parkedDrivers = new HashMap<String, Integer>();
 		currLotation = 0;
 	}
@@ -156,6 +158,7 @@ public abstract class ParkingLot extends Agent {
 
 	public void setPosition(Coordinate position) {
 		this.position = position;
+		this.weeklyInfo.setParkingLotPosition(position);
 	}
 
 	public void logMessage(String message) {

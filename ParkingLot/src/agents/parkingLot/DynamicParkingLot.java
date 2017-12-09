@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
+import sajas.core.AID;
 import utils.DailyInfo;
 import utils.PricingScheme;
 import utils.WeeklyInfo;
@@ -41,7 +42,7 @@ public class DynamicParkingLot extends ParkingLot {
 		    double newCost = ps.getPricePerMinute()+ learningRate * ps.getPricePerMinute() * (variation - 1);
 		    
 		    previousWeeklyInfo = weeklyInfo;
-		    weeklyInfo = new WeeklyInfo(new PricingScheme(newCost, newMin, newMax));
+		    weeklyInfo = new WeeklyInfo((AID) this.getAID(), new PricingScheme(newCost, newMin, newMax));
 		}
 	}
 }

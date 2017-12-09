@@ -22,7 +22,7 @@ public class WeeklyUpdatePerformer extends OneShotBehaviour{
 		((ParkingLot) myAgent).logMessage("Weekly update performed\n");
 		((ParkingLot) myAgent).closeParkingFacility();
 		Type type = ((ParkingLot) myAgent).type;
-		if(type.equals(Type.DYNAMIC_PARKING_LOT))
+		if(type.equals(Type.DYNAMIC_PARKING_LOT) || type.equals(Type.STATIC_PARKING_LOT))
 			((DynamicParkingLot) myAgent).updatePricingSheme();
 		else if(type.equals(Type.COOPERATIVE_PARKING_LOT)) {
 			myAgent.addBehaviour(new ShareWeeklyInfoPerformer());
