@@ -192,4 +192,12 @@ public abstract class ParkingLot extends Agent {
 	public void setWeeklyInfo(WeeklyInfo weeklyInfo) {
 		this.weeklyInfo = weeklyInfo;
 	}
+	
+	public double getWeeklyProfit() {
+		return weeklyInfo.getTotalProfit();
+	}
+	
+	public double getWeeklyPriceAverage() {
+		return 0;
+	}
 }
