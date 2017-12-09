@@ -11,7 +11,7 @@ import behaviours.AcceptEntryServer;
 import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
 import behaviours.ShareWeeklyInfoServer;
-import behaviours.WeekyUpdatePerformer;
+import behaviours.WeeklyUpdatePerformer;
 import sajas.domain.*;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -75,8 +75,6 @@ public abstract class ParkingLot extends Agent {
 		addBehaviour(new AcceptEntryServer());
 		addBehaviour(new RequestEntryServer());
 		addBehaviour(new RequestExitServer());
-		// WATCH THIS!
-		addBehaviour(new WeekyUpdatePerformer(this, Manager.ticksPerWeek));
 		if(this.getType().equals(Type.COOPERATIVE_PARKING_LOT))
 			addBehaviour(new ShareWeeklyInfoServer());
 	}

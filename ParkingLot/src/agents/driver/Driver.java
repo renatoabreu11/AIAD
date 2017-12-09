@@ -10,13 +10,13 @@ import com.vividsolutions.jts.geom.Coordinate;
 import agents.Agent;
 import agents.parkingLot.ParkingLot;
 import behaviours.RequestEntryPerformer;
+import behaviours.RequestExitPerformer;
 import environment.Route;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import parkingLot.Initializer;
 import parkingLot.Simulation;
-import agents.AgentManager;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.collections.IndexedIterable;
 import sajas.core.AID;
@@ -36,7 +36,9 @@ public abstract class Driver extends Agent {
 
 	private boolean alive = true;
 	private boolean inPark = false;
+	private boolean parked = false;
 	public boolean searchForNewPark = false; //TODO
+	private int parkedTime = 0;
 
 	private ArrayList<ParkDistance> parksInRange = new ArrayList<>();
 	private int currentParkSelected = -1;
@@ -117,10 +119,15 @@ public abstract class Driver extends Agent {
 					this.inPark = true;
 					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
 				}
-				
-				
-				
+
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
+			}
+			
+			if(this.parked) {
+				if(parkedTime == durationOfStay) {
+					addBehaviour(new RequestExitPerformer(this, (AID) this.parkingLotDestiny.getAID()));
+				}
+				++parkedTime;
 			}
 		} else {
 			Simulation.removeAgent(this);
@@ -262,5 +269,10 @@ public abstract class Driver extends Agent {
 		public String toString() {
 			return "Park: "+park.getName()+"; "+distance;
 		}
+	}
+
+	public void setParked(boolean b) {
+		this.parked = true;
+		
 	}
 }
