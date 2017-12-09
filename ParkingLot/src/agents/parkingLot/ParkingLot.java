@@ -10,7 +10,6 @@ import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
 import behaviours.ShareWeeklyInfoServer;
 import sajas.domain.*;
-import utils.PricingScheme;
 import utils.WeeklyInfo;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -18,14 +17,15 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public abstract class ParkingLot extends Agent {
-	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
+	static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
 	public int capacity = 100;
 	protected int currLotation = 0;
 	
-	private WeeklyInfo weeklyInfo;
+	protected WeeklyInfo weeklyInfo;
+	protected WeeklyInfo previousWeeklyInfo;
 	private double globalProfit = 0;
 	
 	private Coordinate position;

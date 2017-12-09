@@ -47,6 +47,7 @@ public class Manager extends Agent {
 				hour = 0;
 				currentTickInDay = 0;
 				day = GlobalVars.WEEKDAY.getNextDay(day.id);
+				
 				if(day.equals(GlobalVars.WEEKDAY.MONDAY)) { // next week
 					week++;
 					setCurrentTickInWeek(0);
@@ -102,6 +103,10 @@ public class Manager extends Agent {
 
 	public int getDay() {
 		return this.day.id;
+	}
+	
+	public int getPreviousDay() {
+		return (this.day.id - 1 + 7) % 7;
 	}
 
 	public int getCurrentTickInWeek() {
