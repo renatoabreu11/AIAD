@@ -1,5 +1,7 @@
 package behaviours;
 
+import java.io.IOException;
+
 import agents.parkingLot.ParkingLot;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -26,8 +28,13 @@ public class ShareWeeklyInfoPerformer extends OneShotBehaviour {
 	public void action() {
 		ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
 		cfp.setConversationId("park-cooperation");
+		try {
+			cfp.setContentObject(((ParkingLot) myAgent).getWeeklyInfo());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		cfp.setReplyWith("cfp"+System.currentTimeMillis());
-		((ParkingLot) myAgent).logMessage("Weekly info share performed\n" + cfp);
+		((ParkingLot) myAgent).logMessage("Weekly info share performed\n");
 		
 		DFAgentDescription template = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
@@ -36,7 +43,9 @@ public class ShareWeeklyInfoPerformer extends OneShotBehaviour {
 		try {
 			DFAgentDescription[] result = DFService.search(myAgent, template); 
 			for (int i = 0; i < result.length; ++i) {
-				cfp.addReceiver((AID) result[i].getName());
+				AID aid = (AID) result[i].getName();
+				if(!aid.equals(myAgent.getAID()))
+					cfp.addReceiver(aid);
 			}
 		}
 		catch (FIPAException fe) {

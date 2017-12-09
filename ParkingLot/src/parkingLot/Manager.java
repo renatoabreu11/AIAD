@@ -36,6 +36,7 @@ public class Manager extends Agent {
 	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {
 		++totalTicks;
+		++currentTickInWeek;
 		++currentTickInDay;
 		++currentTickInHour;
 		

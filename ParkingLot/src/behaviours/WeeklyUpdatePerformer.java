@@ -19,8 +19,8 @@ public class WeeklyUpdatePerformer extends OneShotBehaviour{
 	 */
 	@Override
 	public void action() {
+		((ParkingLot) myAgent).logMessage("Weekly update performed\n");
 		((ParkingLot) myAgent).closeParkingFacility();
-		((ParkingLot) myAgent).saveWeeklyInfo();
 		Type type = ((ParkingLot) myAgent).type;
 		if(type.equals(Type.DYNAMIC_PARKING_LOT))
 			((DynamicParkingLot) myAgent).updatePricingSheme();
