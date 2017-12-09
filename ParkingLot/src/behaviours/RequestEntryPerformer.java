@@ -61,18 +61,19 @@ public class RequestEntryPerformer extends Behaviour {
 			ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 			order.addReceiver(parkingAgent);
 			order.setContent(durationOfStay);
-			order.setConversationId("park-entry");
+			order.setConversationId("park-accept");
 			order.setReplyWith("entry "+System.currentTimeMillis());
 			myAgent.send(order);
 			
 			((Driver) myAgent).logMessage("Accept entry performed\n" + order);
 
-			mt = MessageTemplate.and(MessageTemplate.MatchConversationId("park-entry"),
+			mt = MessageTemplate.and(MessageTemplate.MatchConversationId("park-accept"),
 					MessageTemplate.MatchInReplyTo(order.getReplyWith()));
 			step = 3;
 			break;
 		case 3:      
 			reply = myAgent.receive(mt);
+			
 			if (reply != null) {
 				if (reply.getPerformative() == ACLMessage.INFORM) {
 					((Driver) myAgent).logMessage("Driver " + myAgent.getName() + " successfully parked at " + reply.getSender().getName() + 
@@ -90,8 +91,7 @@ public class RequestEntryPerformer extends Behaviour {
 						this.parkingAgent = (AID) ((Driver) myAgent).getParkingLotDestiny().getAID();
 					}
 				}
-			}
-			else {
+			} else {
 				block();
 			}
 			break;

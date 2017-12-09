@@ -16,9 +16,9 @@ public class AcceptEntryServer extends CyclicBehaviour {
 	 * Cyclic behaviour active in each park that that allows or refuses the entry of drivers to the respective park
 	 */
 	public void action() {
-		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL);
+		MessageTemplate mt = MessageTemplate.MatchConversationId("park-accept");
 		ACLMessage msg = myAgent.receive(mt);
-		if (msg != null) {
+		if (msg != null && msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
 			String durationOfStay = msg.getContent();
 			ACLMessage reply = msg.createReply();
 		
@@ -27,7 +27,6 @@ public class AcceptEntryServer extends CyclicBehaviour {
 				reply.setPerformative(ACLMessage.INFORM);
 				myAgent.send(reply);
 			} else {
-				System.out.println("FAILURE");
 				reply.setPerformative(ACLMessage.FAILURE);
 				reply.setContent("no-spots-available");
 				myAgent.send(reply);

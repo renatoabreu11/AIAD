@@ -106,7 +106,7 @@ public abstract class ParkingLot extends Agent {
 	 * Removes a driver from the park
 	 * @param string
 	 */
-	public void removeDriver(String AID) {
+	public synchronized void removeDriver(String AID) {
 		parkedDrivers.remove(AID);
 		currLotation--;
 		weeklyInfo.removeDriver();
@@ -117,8 +117,7 @@ public abstract class ParkingLot extends Agent {
 	 * @param driver
 	 * @return
 	 */
-	public boolean acceptDriver(String durationOfStay, String AID) {
-		System.out.println("LOTATION: "+currLotation+" ; "+capacity);
+	public synchronized boolean acceptDriver(String durationOfStay, String AID) {
 		if(currLotation == capacity) {
 			return false;
 		}
