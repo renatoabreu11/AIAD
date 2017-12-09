@@ -2,9 +2,12 @@ package Utils;
 
 import java.util.ArrayList;
 
+import parkingLot.Initializer;
+import parkingLot.GlobalVars.WEEKDAY;
+
 public class WeeklyInfo {
 	private PricingScheme pricingScheme;
-	private ArrayList<DailyInfo> dailyInfo = new ArrayList<>();
+	private ArrayList<DailyInfo> days = new ArrayList<>();
 	private double totalProfit;
 	private int totalDrivers;
 	
@@ -14,8 +17,27 @@ public class WeeklyInfo {
 	 */
 	public WeeklyInfo(PricingScheme ps) {
 		this.setPricingScheme(ps);
+		days.add(new DailyInfo(WEEKDAY.MONDAY));
+		days.add(new DailyInfo(WEEKDAY.TUESDAY));
+		days.add(new DailyInfo(WEEKDAY.WEDNESDAY));
+		days.add(new DailyInfo(WEEKDAY.THURSDAY));
+		days.add(new DailyInfo(WEEKDAY.FRIDAY));
+		days.add(new DailyInfo(WEEKDAY.SATURDAY));
+		days.add(new DailyInfo(WEEKDAY.SUNDAY));
 		totalProfit = 0;
 		totalDrivers = 0;
+	}
+	
+	public void addDriver(double finalPrice) {
+		totalProfit += finalPrice;
+		totalDrivers++;
+		DailyInfo di = days.get(Initializer.manager.getDay());
+		di.addDriver(finalPrice, Initializer.manager.getHour());
+	}
+
+	public void removeDriver() {
+		DailyInfo di = days.get(Initializer.manager.getDay());
+		di.removeDriver(Initializer.manager.getHour());
 	}
 
 	/**
@@ -40,11 +62,11 @@ public class WeeklyInfo {
 	}
 
 	public ArrayList<DailyInfo> getDailyInfo() {
-		return dailyInfo;
+		return days;
 	}
 
 	public void setDailyInfo(ArrayList<DailyInfo> dailyInfo) {
-		this.dailyInfo = dailyInfo;
+		this.days = dailyInfo;
 	}
 
 	public int getTotalDrivers() {

@@ -13,11 +13,22 @@ public class DailyInfo {
 	 * DailyInfo constructor. This class keeps all the information about a park during a single day
 	 * @param ps
 	 */
-	public DailyInfo() {
+	public DailyInfo(WEEKDAY day) {
+		this.day = day;
 		setEntriesPerHour(new int[24]);
 		setExitsPerHour(new int[24]);
 		totalProfit = 0;
 		totalDrivers = 0;
+	}
+	
+	public void addDriver(double finalPrice, int hour) {
+		this.totalDrivers++;
+		this.totalProfit += finalPrice;
+		entriesPerHour[hour]++;
+	}
+	
+	public void removeDriver(int hour) {
+		exitsPerHour[hour]++;
 	}
 
 	/**

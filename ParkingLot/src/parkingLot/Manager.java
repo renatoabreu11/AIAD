@@ -96,4 +96,8 @@ public class Manager extends Agent {
 	public void setCurrentTickInHour(int currentTickInHour) {
 		this.currentTickInHour = currentTickInHour;
 	}
+
+	public int getDay() {
+		return this.day.id;
+	}
 }
