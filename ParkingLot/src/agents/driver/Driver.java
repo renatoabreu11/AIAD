@@ -1,6 +1,7 @@
 package agents.driver;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,8 +36,10 @@ public abstract class Driver extends Agent {
 
 	private boolean alive = true;
 	private boolean inPark = false;
+	public boolean searchForNewPark = false; //TODO
 
-	private ArrayList<ParkingLot> parksInRange = new ArrayList<>();
+	private ArrayList<ParkDistance> parksInRange = new ArrayList<>();
+	private int currentParkSelected = -1;
 	private ParkingLot parkingLotDestiny = null;
 
 	public Coordinate destination;
@@ -112,9 +115,11 @@ public abstract class Driver extends Agent {
 			} else {
 				if(!this.inPark) {
 					this.inPark = true;
-					
 					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
 				}
+				
+				
+				
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
 			}
 		} else {
@@ -132,19 +137,40 @@ public abstract class Driver extends Agent {
 		for(int i = 0;i<parks.size();i++) {
 			tmp = parks.get(i).getPosition();
 			Route.distance(this.destination, tmp, distAndAng);
-			System.out.println("I"+i+": "+distAndAng[0]+" ; "+distAndAng[1]);
+			System.out.println("I"+i+": "+distAndAng[0]);
 			if(distAndAng[0] < this.walkDistance) {
-				parksInRange.add(parks.get(i));
+				parksInRange.add(new ParkDistance(parks.get(i),distAndAng[0]));
 			}
+		}
+		
+		System.out.println("Sem ordem");
+		for(int i=0;i<parksInRange.size();i++) {
+			System.out.println(parksInRange.get(i));
+		}
+		
+		if(this.type == Type.RATIONAL_DRIVER) {
+			System.out.println("Racional");
+			parksInRange.sort(new Comparator<ParkDistance>() {
+		        @Override
+		        public int compare(ParkDistance pd1, ParkDistance pd2) {
+		            return pd1.compareTo(pd2);
+		        }
+		    });
+		}
+		
+		System.out.println("Com ordem");
+		for(int i=0;i<parksInRange.size();i++) {
+			System.out.println(parksInRange.get(i));
 		}
 	}
 
 	public void pickParkToGo() {
-		if(this.parksInRange.size() == 0) {
+		this.currentParkSelected++;
+		if(this.currentParkSelected >= this.parksInRange.size()) {
 			this.alive = false;
 		}
 		else {
-			this.parkingLotDestiny = this.parksInRange.get(0);
+			this.parkingLotDestiny = this.parksInRange.get(this.currentParkSelected).park;
 			this.route = new Route(this, Simulation.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
 			LOGGER.log(Level.FINE, this.toString() + " created new route to " + parkingLotDestiny.toString());
 		}
@@ -217,5 +243,24 @@ public abstract class Driver extends Agent {
 
 	public void setAlive(boolean b) {
 		this.alive = b;
+	}
+	
+	private class ParkDistance implements Comparable<ParkDistance>{
+		public ParkingLot park;
+		public double distance;
+		
+		public ParkDistance(ParkingLot park, double distance) {
+			this.park = park;
+			this.distance = distance;
+		}
+
+		@Override
+		public int compareTo(ParkDistance arg) {
+			return (int)(this.distance-arg.distance);
+		}
+		
+		public String toString() {
+			return "Park: "+park.getName()+"; "+distance;
+		}
 	}
 }
