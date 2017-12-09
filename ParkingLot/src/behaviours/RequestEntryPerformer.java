@@ -79,18 +79,13 @@ public class RequestEntryPerformer extends Behaviour {
 							"\nPrice = " + price + "; Parking duration: " + durationOfStay);
 					((Driver) myAgent).setState(DriverState.PARKED);
 					Initializer.manager.addUtility(driverUtility);
-					step = 4;
 				}
 				else {
 					((Driver) myAgent).logMessage("Park entry failed: park at maximum capacity");
 					((Driver) myAgent).setState(DriverState.PICKING);
 					((Driver) myAgent).pickParkToGo();
-					
-					if(((Driver) myAgent).getState().equals(DriverState.MOVING)) {
-						step = 0;
-						this.parkingAgent = (AID) ((Driver) myAgent).getParkingLotDestiny().getAID();
-					}
 				}
+				step = 4;
 			} else {
 				block();
 			}

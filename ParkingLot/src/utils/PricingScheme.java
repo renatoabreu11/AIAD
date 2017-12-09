@@ -2,29 +2,35 @@ package utils;
 
 import java.io.Serializable;
 
+import parkingLot.Initializer;
+
 public class PricingScheme implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 403309766518328856L;
-	public double pricePerMinute;
+	public double pricePerHour;
+	public double[] pricesPerHour; // throughout a day. Each minute will have different values accordingly to the hour
 	public double minPricePerStay;
 	public double maxPricePerStay;
 	
-	public PricingScheme(double pricePerMinute, double minPricePerStay, double maxPricePerStay) {
-		this.pricePerMinute = pricePerMinute;
+	public PricingScheme(double pricePerHour, double minPricePerStay, double maxPricePerStay) {
+		this.pricePerHour = pricePerHour;
 		this.minPricePerStay = minPricePerStay;
 		this.maxPricePerStay = maxPricePerStay;
 	}
 	
 	public PricingScheme() {
-		pricePerMinute = 0.2;
+		pricePerHour = 1;
 		minPricePerStay = 5;
 		maxPricePerStay = 50;
 	}
 	
-	public double getPricePerMinute() {
-		return pricePerMinute;
+	public PricingScheme(double[] pricesPerHour) {
+		this.pricePerHour = -1;
+		this.pricesPerHour = pricesPerHour;
+		minPricePerStay = 5;
+		maxPricePerStay = 50;
 	}
 
 	public double getMinPricePerStay() {
@@ -34,9 +40,22 @@ public class PricingScheme implements Serializable {
 	public double getMaxPricePerStay() {
 		return maxPricePerStay;
 	}
+	
+	public double getPricePerHour() {
+		return pricePerHour;
+	}
+
+	public void setPricePerHour(double pricePerHour) {
+		this.pricePerHour = pricePerHour;
+	}
 
 	public double calculatePrice(double durationOfStay, double scale) {
-		double price = pricePerMinute * durationOfStay;
+		double price;
+		if(pricePerHour == -1) { // depends on the current hour
+			price = pricesPerHour[Initializer.manager.getHour()] * durationOfStay;
+		} else { // constant price per minute
+			price = pricePerHour * durationOfStay;
+		}
 		
 		if(price > maxPricePerStay) {
 			price = maxPricePerStay;
@@ -52,4 +71,13 @@ public class PricingScheme implements Serializable {
 		
 		return price;
 	}
+	
+	public double[] getPricesPerHour() {
+		return pricesPerHour;
+	}
+
+	public void setPricesPerHour(double[] pricesPerHour) {
+		this.pricesPerHour = pricesPerHour;
+	}
+
 }

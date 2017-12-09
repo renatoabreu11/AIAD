@@ -14,6 +14,7 @@ public class DailyInfo implements Serializable {
 	private int[] exitsPerHour;
 	private double totalProfit;
 	private int totalDrivers;
+	private double profitPerDriver;
 	
 	/**
 	 * DailyInfo constructor. This class keeps all the information about a park during a single day
@@ -79,5 +80,19 @@ public class DailyInfo implements Serializable {
 
 	public void setExitsPerHour(int[] exitsPerHour) {
 		this.exitsPerHour = exitsPerHour;
+	}
+
+	public void endDay() {
+		if(totalDrivers > 0)
+			profitPerDriver = totalProfit / totalDrivers;
+		else profitPerDriver = 0;
+	}
+
+	public double getProfitPerDriver() {
+		return profitPerDriver;
+	}
+
+	public void setProfitPerDriver(double profitPerDriver) {
+		this.profitPerDriver = profitPerDriver;
 	}
 }
