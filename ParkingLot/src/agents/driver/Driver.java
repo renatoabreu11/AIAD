@@ -16,6 +16,7 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import parkingLot.Initializer;
+import parkingLot.Manager;
 import parkingLot.Simulation;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.collections.IndexedIterable;
@@ -199,6 +200,7 @@ public abstract class Driver extends Agent {
 		System.out.println("Vou escolher o park indice: "+this.currentParkSelected);
 		if(this.currentParkSelected >= this.parksInRange.size()) {
 			this.state = DriverState.EXIT;
+			Initializer.manager.addUtility(Manager.noParkAvailableUtility);
 		}
 		else {
 			this.state = DriverState.MOVING;

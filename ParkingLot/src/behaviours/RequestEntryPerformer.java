@@ -4,6 +4,7 @@ import agents.driver.Driver;
 import agents.driver.Driver.DriverState;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import parkingLot.Initializer;
 import sajas.core.AID;
 import sajas.core.behaviours.Behaviour;
 
@@ -77,6 +78,7 @@ public class RequestEntryPerformer extends Behaviour {
 					((Driver) myAgent).logMessage("Driver " + myAgent.getName() + " successfully parked at " + reply.getSender().getName() + 
 							"\nPrice = " + price + "; Parking duration: " + durationOfStay);
 					((Driver) myAgent).setState(DriverState.PARKED);
+					Initializer.manager.addUtility(driverUtility);
 					step = 4;
 				}
 				else {

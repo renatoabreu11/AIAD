@@ -11,6 +11,7 @@ public class Manager extends Agent {
 	public static int ticksPerWeek = 21000;
 	public static int ticksPerDay = 3000;
 	public static int ticksPerHour = 125;
+	public static double noParkAvailableUtility = -50.0; // TODO change this 
 	
 	private int totalTicks;
 	
@@ -20,6 +21,8 @@ public class Manager extends Agent {
 	private int currentTickInWeek;
 	private int currentTickInDay;
 	private int currentTickInHour;
+	
+	private double globalUtility;
 	
 	public Manager() {
 		super("Manager", Type.MANAGER);
@@ -31,6 +34,8 @@ public class Manager extends Agent {
 		setCurrentTickInDay(0);
 		setCurrentTickInHour(0);
 		setCurrentTickInWeek(0);
+		
+		globalUtility = 0;
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -115,5 +120,17 @@ public class Manager extends Agent {
 
 	public void setCurrentTickInWeek(int currentTickInWeek) {
 		this.currentTickInWeek = currentTickInWeek;
+	}
+
+	public double getGlobalUtility() {
+		return globalUtility;
+	}
+
+	public void setGlobalUtility(double globalUtility) {
+		this.globalUtility = globalUtility;
+	}
+
+	public void addUtility(double driverUtility) {
+		this.globalUtility += driverUtility;
 	}
 }
