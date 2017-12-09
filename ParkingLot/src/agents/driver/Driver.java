@@ -44,11 +44,6 @@ public abstract class Driver extends Agent {
 	private double payCoefficient = 0.5;
 
 	private DriverState state; 
-	private boolean alive = true;
-	//private boolean inPark = false;
-	private boolean hasMadeRequest = false;
-	private boolean parked = false;
-	public boolean searchForNewPark = false; //TODO
 	private int parkedTime = 0;
 
 	private ArrayList<ParkDistance> parksInRange = new ArrayList<>();
