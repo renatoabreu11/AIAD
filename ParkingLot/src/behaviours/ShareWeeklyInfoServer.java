@@ -1,6 +1,5 @@
 package behaviours;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -51,7 +50,6 @@ public class ShareWeeklyInfoServer extends CyclicBehaviour {
 		if (msg != null && msg.getPerformative() == ACLMessage.INFORM) {
 			try{
 				WeeklyInfo wi = (WeeklyInfo) msg.getContentObject();
-				System.out.println(wi.getTotalProfit());
 				String name = msg.getSender().getName();
 				parksWeeklyInfo.put(name, wi);
 			} catch(UnreadableException e){}

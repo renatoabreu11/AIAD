@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import agents.driver.Driver;
 import agents.driver.RationalDriver;
-import agents.parkingLot.CooperativeParkingLot;
 import agents.parkingLot.DynamicParkingLot;
 import agents.parkingLot.ParkingLot;
 import jade.domain.FIPAException;
@@ -75,7 +74,7 @@ public class AgentManager extends Agent{
 	
 	public void initAgents(Parameters params) {
 		int nrDriverAgents = 1;//params.getInteger("driver_count");
-		int nrParkingAgents = 4;//params.getInteger("parking_count");
+		int nrParkingAgents = 2;//params.getInteger("parking_count");
 		
 		for(int i = 0; i < nrDriverAgents; i++) {
 			Driver d = new RationalDriver();
@@ -83,7 +82,7 @@ public class AgentManager extends Agent{
 		}
 		
 		for(int i = 0; i < nrParkingAgents; i++) {
-			ParkingLot pl = new CooperativeParkingLot();
+			ParkingLot pl = new DynamicParkingLot();
 			parkingAgents.add(pl);
 		}
 	}

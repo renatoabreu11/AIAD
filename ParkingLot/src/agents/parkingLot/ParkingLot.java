@@ -10,7 +10,6 @@ import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
 import behaviours.ShareWeeklyInfoServer;
 import sajas.domain.*;
-import utils.PricingScheme;
 import utils.WeeklyInfo;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -18,14 +17,15 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public abstract class ParkingLot extends Agent {
-	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
+	static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
-	public int capacity = 100;
-	protected int currLotation = 0;
+	public int capacity = 1;
+	protected int currLotation = 1;
 	
-	private WeeklyInfo weeklyInfo;
+	protected WeeklyInfo weeklyInfo;
+	protected WeeklyInfo previousWeeklyInfo;
 	private double globalProfit = 0;
 	
 	private Coordinate position;
@@ -101,7 +101,7 @@ public abstract class ParkingLot extends Agent {
 	 * Removes a driver from the park
 	 * @param string
 	 */
-	public void removeDriver(String AID) {
+	public synchronized void removeDriver(String AID) {
 		parkedDrivers.remove(AID);
 		currLotation--;
 		weeklyInfo.removeDriver();
@@ -112,7 +112,7 @@ public abstract class ParkingLot extends Agent {
 	 * @param driver
 	 * @return
 	 */
-	public boolean acceptDriver(String durationOfStay, String AID) {
+	public synchronized boolean acceptDriver(String durationOfStay, String AID) {
 		if(currLotation == capacity) {
 			return false;
 		}

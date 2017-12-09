@@ -16,6 +16,7 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import parkingLot.Initializer;
+import parkingLot.Manager;
 import parkingLot.Simulation;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.collections.IndexedIterable;
@@ -23,21 +24,27 @@ import sajas.core.AID;
 import sajas.domain.DFService;
 
 public abstract class Driver extends Agent {
+	public static enum DriverState {
+		ENTER, // Entering system
+		MOVING, // Moving to park
+		PICKING, // Picking a park
+		REQUEST, // Request to entry
+		PARKED, // Parked at the selected park
+		EXIT // Exiting system
+	}
+	
 	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 	
 	public static double alfa = 0.5;
 	public static double beta = 0.5;
 
 	private int durationOfStay = 10; // definir valor default futuramente
-	private double walkDistance = 400.0; // definir valor default futuramente
+	private double walkDistance = 600.0; // definir valor default futuramente
 	private double defaultSatisfaction = 0.5;
 	private double walkCoefficient = 0.5;
 	private double payCoefficient = 0.5;
 
-	private boolean alive = true;
-	private boolean inPark = false;
-	private boolean parked = false;
-	public boolean searchForNewPark = false; //TODO
+	private DriverState state; 
 	private int parkedTime = 0;
 
 	private ArrayList<ParkDistance> parksInRange = new ArrayList<>();
@@ -58,6 +65,7 @@ public abstract class Driver extends Agent {
 	 */
 	public Driver(Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction) {
 		super("Driver", Type.RATIONAL_DRIVER);
+		this.state = DriverState.ENTER;
 		this.destination = destPosition;
 		this.currentPosition = srcPosition;
 		this.durationOfStay = durationOfStay;
@@ -72,6 +80,7 @@ public abstract class Driver extends Agent {
 	 */
 	public Driver(String name, Type type) {
 		super(name, type);
+		this.state = DriverState.ENTER;
 	}
 
 	@Override
@@ -104,35 +113,50 @@ public abstract class Driver extends Agent {
 	
 	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {
-		if(this.alive) {
-			Agent.updateTick();
-			if (!this.route.atDestination()) {
-				try {
-					this.route.travel();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				LOGGER.log(Level.FINE,
-						this.toString() + " travelling to " + this.route.getDestinationBuilding().toString());
-			} else {
-				if(!this.inPark) {
-					this.inPark = true;
+		Agent.updateTick();
+		switch(this.state) {
+			case ENTER: {
+				LOGGER.log(Level.FINE, this.getName() + " is entering the system.");
+				break;
+			}
+			case MOVING: {
+				if (!this.route.atDestination()) {
+					try {
+						this.route.travel();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					LOGGER.log(Level.FINE,
+							this.getName() + " travelling to " + this.route.getDestinationBuilding().toString());
+				} else {
+					this.state = DriverState.REQUEST;
 					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
 				}
-
-				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
+				break;
 			}
-			
-			if(this.parked) {
+			case PICKING: {
+				LOGGER.log(Level.FINE, this.getName() + " is picking a new park.");
+				break;
+			}
+			case REQUEST: {
+				LOGGER.log(Level.FINE, this.getName() + " is requesting a entry to the park.");
+				break;
+			}
+			case PARKED: {
+				LOGGER.log(Level.FINE, this.getName() + " is parked.");
 				if(parkedTime == durationOfStay) {
 					addBehaviour(new RequestExitPerformer(this, (AID) this.parkingLotDestiny.getAID()));
 				}
 				++parkedTime;
+				break;
 			}
-		} else {
-			Simulation.removeAgent(this);
-			Initializer.agentManager.removeAgent(this.getAID().toString());
-			this.doDelete();
+			case EXIT: {
+				Simulation.removeAgent(this);
+				Initializer.agentManager.removeAgent(this.getAID().toString());
+				this.doDelete();
+			}
+			default:
+				break;
 		}
 	}
 
@@ -173,10 +197,13 @@ public abstract class Driver extends Agent {
 
 	public void pickParkToGo() {
 		this.currentParkSelected++;
+		System.out.println("Vou escolher o park indice: "+this.currentParkSelected);
 		if(this.currentParkSelected >= this.parksInRange.size()) {
-			this.alive = false;
+			this.state = DriverState.EXIT;
+			Initializer.manager.addUtility(Manager.noParkAvailableUtility);
 		}
 		else {
+			this.state = DriverState.MOVING;
 			this.parkingLotDestiny = this.parksInRange.get(this.currentParkSelected).park;
 			this.route = new Route(this, Simulation.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
 			LOGGER.log(Level.FINE, this.toString() + " created new route to " + parkingLotDestiny.toString());
@@ -219,37 +246,9 @@ public abstract class Driver extends Agent {
 		this.currentPosition = initialCoordinate;
 		this.destination = finalCoordinate;
 		
+		this.state = DriverState.PICKING;
 		this.getPossibleParks();
 		this.pickParkToGo();
-	}
-
-	/**
-	 * Default Getters and Setters
-	 * @return
-	 */
-
-	public int getDurationOfStay() {
-		return durationOfStay;
-	}
-
-	public Coordinate getDestination() {
-		return destination;
-	}
-
-	public Coordinate getCurrentPosition() {
-		return currentPosition;
-	}
-
-	public boolean getAlive() {
-		return alive;
-	}
-
-	public void logMessage(String message) {
-		LOGGER.info(message);
-	}
-
-	public void setAlive(boolean b) {
-		this.alive = b;
 	}
 	
 	private class ParkDistance implements Comparable<ParkDistance>{
@@ -271,8 +270,36 @@ public abstract class Driver extends Agent {
 		}
 	}
 
-	public void setParked(boolean b) {
-		this.parked = true;
-		
+	/**
+	 * Default Getters and Setters
+	 * @return
+	 */
+
+	public int getDurationOfStay() {
+		return durationOfStay;
+	}
+
+	public Coordinate getDestination() {
+		return destination;
+	}
+
+	public Coordinate getCurrentPosition() {
+		return currentPosition;
+	}
+	
+	public ParkingLot getParkingLotDestiny() {
+		return parkingLotDestiny;
+	}
+
+	public void logMessage(String message) {
+		LOGGER.info(message);
+	}
+
+	public DriverState getState() {
+		return state;
+	}
+
+	public void setState(DriverState state) {
+		this.state = state;
 	}
 }
