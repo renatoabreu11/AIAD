@@ -22,7 +22,7 @@ import parkingLot.Manager;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public abstract class ParkingLot extends Agent {
-	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
+	static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
@@ -31,7 +31,7 @@ public abstract class ParkingLot extends Agent {
 	
 	WeeklyInfo weeklyInfo;
 	WeeklyInfo previousWeeklyInfo;
-	private PricingScheme pricingScheme;
+	PricingScheme pricingScheme;
 	private double profit = 0;
 	
 	private Coordinate position;

@@ -16,6 +16,7 @@ public class DynamicParkingLot extends ParkingLot {
 
 	public DynamicParkingLot() {
 		super("DynamicParkingLot", Type.DYNAMIC_PARKING_LOT);
+		pricingScheme = new PricingScheme();
 	}
 
 	public void updatePricingSheme() {
@@ -28,7 +29,10 @@ public class DynamicParkingLot extends ParkingLot {
 			double variation = 0;
 			
 			for (int i = 0; i < days.size(); i++) {
-				variation += days.get(i).getTotalProfit() / previousDays.get(i).getTotalProfit();
+				if(previousDays.get(i).getTotalProfit() != 0)
+					variation += days.get(i).getTotalProfit() / previousDays.get(i).getTotalProfit();
+				else
+					variation += days.get(i).getTotalProfit();
 			}
 			variation /= 7; 
 			 
