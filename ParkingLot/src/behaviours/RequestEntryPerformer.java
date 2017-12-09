@@ -1,6 +1,7 @@
 package behaviours;
 
 import agents.driver.Driver;
+import agents.driver.Driver.DriverState;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import sajas.core.AID;
@@ -75,14 +76,15 @@ public class RequestEntryPerformer extends Behaviour {
 				if (reply.getPerformative() == ACLMessage.INFORM) {
 					((Driver) myAgent).logMessage("Driver " + myAgent.getName() + " successfully parked at " + reply.getSender().getName() + 
 							"\nPrice = " + price + "; Parking duration: " + durationOfStay);
-					((Driver) myAgent).setParked(true);
+					((Driver) myAgent).setState(DriverState.PARKED);
 					step = 4;
 				}
 				else {
 					((Driver) myAgent).logMessage("Park entry failed: park at maximum capacity");
+					((Driver) myAgent).setState(DriverState.PICKING);
 					((Driver) myAgent).pickParkToGo();
 					
-					if(((Driver) myAgent).getAlive()) {
+					if(((Driver) myAgent).getState().equals(DriverState.MOVING)) {
 						step = 0;
 						this.parkingAgent = (AID) ((Driver) myAgent).getParkingLotDestiny().getAID();
 					}

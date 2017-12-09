@@ -23,6 +23,15 @@ import sajas.core.AID;
 import sajas.domain.DFService;
 
 public abstract class Driver extends Agent {
+	public static enum DriverState {
+		ENTER, // Entering system
+		MOVING, // Moving to park
+		PICKING, // Picking a park
+		REQUEST, // Request to entry
+		PARKED, // Parked at the selected park
+		EXIT // Exiting system
+	}
+	
 	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 	
 	public static double alfa = 0.5;
@@ -34,6 +43,7 @@ public abstract class Driver extends Agent {
 	private double walkCoefficient = 0.5;
 	private double payCoefficient = 0.5;
 
+	private DriverState state; 
 	private boolean alive = true;
 	//private boolean inPark = false;
 	private boolean hasMadeRequest = false;
@@ -59,6 +69,7 @@ public abstract class Driver extends Agent {
 	 */
 	public Driver(Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction) {
 		super("Driver", Type.RATIONAL_DRIVER);
+		this.state = DriverState.ENTER;
 		this.destination = destPosition;
 		this.currentPosition = srcPosition;
 		this.durationOfStay = durationOfStay;
@@ -73,6 +84,7 @@ public abstract class Driver extends Agent {
 	 */
 	public Driver(String name, Type type) {
 		super(name, type);
+		this.state = DriverState.ENTER;
 	}
 
 	@Override
@@ -105,36 +117,50 @@ public abstract class Driver extends Agent {
 	
 	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {
-		if(this.alive) {
-			Agent.updateTick();
-			if (!this.route.atDestination()) {
-				try {
-					this.route.travel();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				LOGGER.log(Level.FINE,
-						this.toString() + " travelling to " + this.route.getDestinationBuilding().toString());
-			} else {
-				if(!this.hasMadeRequest) {
-					this.hasMadeRequest = true;
+		Agent.updateTick();
+		switch(this.state) {
+			case ENTER: {
+				LOGGER.log(Level.FINE, this.getName() + " is entering the system.");
+				break;
+			}
+			case MOVING: {
+				if (!this.route.atDestination()) {
+					try {
+						this.route.travel();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					LOGGER.log(Level.FINE,
+							this.getName() + " travelling to " + this.route.getDestinationBuilding().toString());
+				} else {
+					this.state = DriverState.REQUEST;
 					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
 				}
-				
-				if(this.parked) {
-					System.out.println("ESTOU ESTACIONAD");
-					if(parkedTime == durationOfStay) {
-						addBehaviour(new RequestExitPerformer(this, (AID) this.parkingLotDestiny.getAID()));
-					}
-					++parkedTime;
-				}
-
-				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
+				break;
 			}
-		} else {
-			Simulation.removeAgent(this);
-			Initializer.agentManager.removeAgent(this.getAID().toString());
-			this.doDelete();
+			case PICKING: {
+				LOGGER.log(Level.FINE, this.getName() + " is picking a new park.");
+				break;
+			}
+			case REQUEST: {
+				LOGGER.log(Level.FINE, this.getName() + " is requesting a entry to the park.");
+				break;
+			}
+			case PARKED: {
+				LOGGER.log(Level.FINE, this.getName() + " is parked.");
+				if(parkedTime == durationOfStay) {
+					addBehaviour(new RequestExitPerformer(this, (AID) this.parkingLotDestiny.getAID()));
+				}
+				++parkedTime;
+				break;
+			}
+			case EXIT: {
+				Simulation.removeAgent(this);
+				Initializer.agentManager.removeAgent(this.getAID().toString());
+				this.doDelete();
+			}
+			default:
+				break;
 		}
 	}
 
@@ -177,10 +203,10 @@ public abstract class Driver extends Agent {
 		this.currentParkSelected++;
 		System.out.println("Vou escolher o park indice: "+this.currentParkSelected);
 		if(this.currentParkSelected >= this.parksInRange.size()) {
-			this.alive = false;
+			this.state = DriverState.EXIT;
 		}
 		else {
-			this.hasMadeRequest = false;
+			this.state = DriverState.MOVING;
 			this.parkingLotDestiny = this.parksInRange.get(this.currentParkSelected).park;
 			this.route = new Route(this, Simulation.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
 			LOGGER.log(Level.FINE, this.toString() + " created new route to " + parkingLotDestiny.toString());
@@ -223,8 +249,28 @@ public abstract class Driver extends Agent {
 		this.currentPosition = initialCoordinate;
 		this.destination = finalCoordinate;
 		
+		this.state = DriverState.PICKING;
 		this.getPossibleParks();
 		this.pickParkToGo();
+	}
+	
+	private class ParkDistance implements Comparable<ParkDistance>{
+		public ParkingLot park;
+		public double distance;
+		
+		public ParkDistance(ParkingLot park, double distance) {
+			this.park = park;
+			this.distance = distance;
+		}
+
+		@Override
+		public int compareTo(ParkDistance arg) {
+			return (int)(this.distance-arg.distance);
+		}
+		
+		public String toString() {
+			return "Park: "+park.getName()+"; "+distance;
+		}
 	}
 
 	/**
@@ -248,39 +294,15 @@ public abstract class Driver extends Agent {
 		return parkingLotDestiny;
 	}
 
-	public boolean getAlive() {
-		return alive;
-	}
-
 	public void logMessage(String message) {
 		LOGGER.info(message);
 	}
 
-	public void setAlive(boolean b) {
-		this.alive = b;
-	}
-	
-	private class ParkDistance implements Comparable<ParkDistance>{
-		public ParkingLot park;
-		public double distance;
-		
-		public ParkDistance(ParkingLot park, double distance) {
-			this.park = park;
-			this.distance = distance;
-		}
-
-		@Override
-		public int compareTo(ParkDistance arg) {
-			return (int)(this.distance-arg.distance);
-		}
-		
-		public String toString() {
-			return "Park: "+park.getName()+"; "+distance;
-		}
+	public DriverState getState() {
+		return state;
 	}
 
-	public void setParked(boolean b) {
-		this.parked = true;
-		
+	public void setState(DriverState state) {
+		this.state = state;
 	}
 }

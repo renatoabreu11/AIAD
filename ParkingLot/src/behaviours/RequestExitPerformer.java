@@ -1,6 +1,7 @@
 package behaviours;
 
 import agents.driver.Driver;
+import agents.driver.Driver.DriverState;
 import jade.lang.acl.ACLMessage;
 import sajas.core.AID;
 import sajas.core.Agent;
@@ -31,6 +32,6 @@ public class RequestExitPerformer extends OneShotBehaviour {
 		cfp.setReplyWith("cfp"+System.currentTimeMillis());
 		myAgent.send(cfp);
 		((Driver) myAgent).logMessage("Request exit performed\n" + cfp);
-		((Driver) myAgent).setAlive(false);
+		((Driver) myAgent).setState(DriverState.EXIT);
 	}
 } 
