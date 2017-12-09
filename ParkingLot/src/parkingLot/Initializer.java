@@ -19,6 +19,7 @@ public class Initializer extends RepastSLauncher{
 	
 	private static ContainerController mainContainer;
 	public static AgentManager agentManager;
+	public static Manager manager;
 	private Simulation simulation;
 
 	@Override
@@ -54,7 +55,8 @@ public class Initializer extends RepastSLauncher{
 		context.setId("ParkingLotSimulation");
 		simulation = new Simulation(context);
 		simulation.addEnvironment();
-		simulation.addAgentsToContext();
+		manager = new Manager();
+		simulation.addAgentsToContext(manager);
 		
 		return super.build(simulation.getContext());
 	}

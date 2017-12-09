@@ -6,7 +6,7 @@ public class WeeklyInfo {
 	private PricingScheme pricingScheme;
 	private ArrayList<DailyInfo> dailyInfo = new ArrayList<>();
 	private double totalProfit;
-	private double totalDrivers;
+	private int totalDrivers;
 	
 	/**
 	 * WeeklyInfo constructor. This class keeps all the information about a park during a full week
@@ -14,6 +14,8 @@ public class WeeklyInfo {
 	 */
 	public WeeklyInfo(PricingScheme ps) {
 		this.setPricingScheme(ps);
+		totalProfit = 0;
+		totalDrivers = 0;
 	}
 
 	/**
@@ -45,11 +47,11 @@ public class WeeklyInfo {
 		this.dailyInfo = dailyInfo;
 	}
 
-	public double getTotalDrivers() {
+	public int getTotalDrivers() {
 		return totalDrivers;
 	}
 
-	public void setTotalDrivers(double totalDrivers) {
+	public void setTotalDrivers(int totalDrivers) {
 		this.totalDrivers = totalDrivers;
 	}
 }

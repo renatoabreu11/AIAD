@@ -1,41 +1,99 @@
 package parkingLot;
 
-import java.util.Iterator;
 import java.util.logging.Logger;
 
 import agents.Agent;
-import agents.driver.Driver;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
-public class Manager extends Agent{
+public class Manager extends Agent {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
+	public static int ticksPerWeek = 21000;
+	public static int ticksPerDay = 3000;
+	public static int ticksPerHour = 125;
 	
-	private GlobalVars.WEEKDAY weekday;
-	private int currentTicksInDay;
+	private int totalTicks;
+	
+	private int week;
+	private GlobalVars.WEEKDAY day;
+	private int hour;
+	private int currentTickInDay;
+	private int currentTickInHour;
 	
 	public Manager() {
 		super("Manager", Type.MANAGER);
-		weekday = GlobalVars.WEEKDAY.SUNDAY;
-		currentTicksInDay = 0;
+		setTotalTicks(0);
+		
+		setWeek(0);
+		day = GlobalVars.WEEKDAY.MONDAY;
+		setHour(0);
+		setCurrentTickInDay(0);
+		setCurrentTickInHour(0);
 	}
 	
-	@ScheduledMethod(start = 1, interval = 12000)
+	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {
-		currentTicksInDay = 0;
-		weekday = GlobalVars.WEEKDAY.getNextDay(weekday.id);
-		LOGGER.severe("Started new day: " + weekday.toString());
-	/*	Iterator<Agent> iterator = Initializer.agentContext.getRandomObjects(Driver.class, 1).iterator();
-		if(!iterator.hasNext()) return;
-		Agent driver = iterator.next();
-		Simulation.removeAgent(driver);*/
+		++totalTicks;
+		++currentTickInDay;
+		++currentTickInHour;
+		
+		if(currentTickInHour == ticksPerHour) { // next hour
+			currentTickInHour = 0;
+			hour++;
+			if(hour == 24) { // next day
+				hour = 0;
+				currentTickInDay = 0;
+				day = GlobalVars.WEEKDAY.getNextDay(day.id);
+				if(day.equals(GlobalVars.WEEKDAY.MONDAY)) { // next week
+					week++;
+				}
+			}
+		}
+		LOGGER.info("Week: " + week + "; Day: "+ day + "; Hour " + hour);
 	}
 	
-	public void setup() {
-		
+	/**
+	 * Default getters and setters
+	 * @return
+	 */
+
+	public int getTotalTicks() {
+		return totalTicks;
 	}
-	
-	public void finalize() {
-		
+
+	public void setTotalTicks(int totalTicks) {
+		this.totalTicks = totalTicks;
+	}
+
+	public int getWeek() {
+		return week;
+	}
+
+	public void setWeek(int week) {
+		this.week = week;
+	}
+
+	public int getHour() {
+		return hour;
+	}
+
+	public void setHour(int hour) {
+		this.hour = hour;
+	}
+
+	public int getCurrentTickInDay() {
+		return currentTickInDay;
+	}
+
+	public void setCurrentTickInDay(int currentTickInDay) {
+		this.currentTickInDay = currentTickInDay;
+	}
+
+	public int getCurrentTickInHour() {
+		return currentTickInHour;
+	}
+
+	public void setCurrentTickInHour(int currentTickInHour) {
+		this.currentTickInHour = currentTickInHour;
 	}
 }
