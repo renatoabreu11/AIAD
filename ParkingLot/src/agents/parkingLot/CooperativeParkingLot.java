@@ -63,7 +63,6 @@ public class CooperativeParkingLot extends ParkingLot {
 			
 		}
 		
-		PricingScheme ps = new PricingScheme(pricesPerHour);
-		weeklyInfo = new WeeklyInfo((AID) this.getAID());
+		weeklyInfo = new WeeklyInfo((AID) this.getAID(), new PricingScheme(pricesPerHour));
 	}
 }

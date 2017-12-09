@@ -39,7 +39,7 @@ public class DynamicParkingLot extends ParkingLot {
 		    double learningRate = 0.3; 
 		    double newMin = ps.getMinPricePerStay() + learningRate * ps.getMinPricePerStay() * (variation - 1);
 		    double newMax = ps.getMaxPricePerStay() + learningRate * ps.getMaxPricePerStay() * (variation - 1);
-		    double newCost = ps.getPricePerMinute()+ learningRate * ps.getPricePerMinute() * (variation - 1);
+		    double newCost = ps.getPricePerHour()+ learningRate * ps.getPricePerHour() * (variation - 1);
 		    
 		    previousWeeklyInfo = weeklyInfo;
 		    weeklyInfo = new WeeklyInfo((AID) this.getAID(), new PricingScheme(newCost, newMin, newMax));
