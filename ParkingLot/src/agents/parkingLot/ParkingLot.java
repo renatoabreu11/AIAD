@@ -8,16 +8,15 @@ import Utils.PricingScheme;
 import Utils.WeeklyInfo;
 import agents.Agent;
 import behaviours.AcceptEntryServer;
-import behaviours.DailyUpdatePerformer;
 import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
 import behaviours.ShareWeeklyInfoServer;
-import behaviours.WeekyUpdatePerformer;
+import behaviours.WeeklyUpdatePerformer;
 import sajas.domain.*;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-
+import parkingLot.Manager;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public abstract class ParkingLot extends Agent {
@@ -28,7 +27,7 @@ public abstract class ParkingLot extends Agent {
 	public int capacity = 100;
 	protected int currLotation = 0;
 	
-	private HashMap<String, WeeklyInfo> weeklyInfo = new HashMap<String, WeeklyInfo>();
+	private WeeklyInfo weeklyInfo;
 	private PricingScheme pricingScheme;
 	private double profit = 0;
 	
@@ -46,11 +45,13 @@ public abstract class ParkingLot extends Agent {
 		this.position = position;
 		this.capacity = maxCapacity;
 		pricingScheme = new PricingScheme();
+		setWeeklyInfo(new WeeklyInfo(pricingScheme));
 	}
 	
 	public ParkingLot(String name, Type type) {
 		super(name, type);
 		pricingScheme = new PricingScheme();
+		setWeeklyInfo(new WeeklyInfo(pricingScheme));
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -74,9 +75,6 @@ public abstract class ParkingLot extends Agent {
 		addBehaviour(new AcceptEntryServer());
 		addBehaviour(new RequestEntryServer());
 		addBehaviour(new RequestExitServer());
-		// change the second value to the number of ms per week
-		addBehaviour(new WeekyUpdatePerformer(this, 10000));
-		addBehaviour(new DailyUpdatePerformer(this, 10000));
 		if(this.getType().equals(Type.COOPERATIVE_PARKING_LOT))
 			addBehaviour(new ShareWeeklyInfoServer());
 	}
@@ -111,6 +109,7 @@ public abstract class ParkingLot extends Agent {
 	public void removeDriver(String AID) {
 		parkedDrivers.remove(AID);
 		currLotation--;
+		weeklyInfo.removeDriver();
 	}
 
 	/**
@@ -127,6 +126,9 @@ public abstract class ParkingLot extends Agent {
 		
 		parkedDrivers.put(AID, Integer.parseInt(durationOfStay));
 		currLotation++;
+		
+		weeklyInfo.addDriver(finalPrice);
+		
 		return true;
 	}
 	
@@ -142,14 +144,6 @@ public abstract class ParkingLot extends Agent {
 	 * Saves the info related to the last week
 	 */
 	public void saveWeeklyInfo() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	/**
-	 * Saves the info related to the last day
-	 */
-	public void saveDailyInfo() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -189,11 +183,19 @@ public abstract class ParkingLot extends Agent {
 		this.profit = profit;
 	}
 
-	public HashMap<String, WeeklyInfo> getWeeklyInfo() {
+	public WeeklyInfo getWeeklyInfo() {
 		return weeklyInfo;
 	}
 
-	public void setWeeklyInfo(HashMap<String, WeeklyInfo> weeklyInfo) {
+	public void setWeeklyInfo(WeeklyInfo weeklyInfo) {
 		this.weeklyInfo = weeklyInfo;
+	}
+	
+	public double getWeeklyProfit() {
+		return weeklyInfo.getTotalProfit();
+	}
+	
+	public double getWeeklyPriceAverage() {
+		return 0;
 	}
 }

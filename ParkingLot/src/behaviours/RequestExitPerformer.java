@@ -1,14 +1,12 @@
 package behaviours;
 
 import agents.driver.Driver;
-import agents.parkingLot.ParkingLot;
 import jade.lang.acl.ACLMessage;
-import parkingLot.Initializer;
 import sajas.core.AID;
 import sajas.core.Agent;
-import sajas.core.behaviours.WakerBehaviour;
+import sajas.core.behaviours.OneShotBehaviour;
 
-public class RequestExitPerformer extends WakerBehaviour {
+public class RequestExitPerformer extends OneShotBehaviour {
 	/**
 	 * 
 	 */
@@ -16,17 +14,17 @@ public class RequestExitPerformer extends WakerBehaviour {
 	private AID currParkingAgent;
 
 	/**
-	 * Behaviour that executes only once, after a given timeout. In this case, sends a message to the park, informing that it will exit
+	 * Behaviour that executes only once. In this case, sends a message to the park, informing that it will exit
 	 * @param a
 	 * @param period
 	 */
-	public RequestExitPerformer(Agent a, long timeout, AID currParkingAgent) {
-		super(a, timeout);
+	public RequestExitPerformer(Agent a, AID currParkingAgent) {
+		super(a);
 		this.currParkingAgent = currParkingAgent;
 	}
 	
 	@Override
-	protected void onWake() {
+	public void action() {
 		ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
 		cfp.addReceiver(currParkingAgent);
 		cfp.setConversationId("park-exit");

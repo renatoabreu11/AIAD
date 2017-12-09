@@ -95,7 +95,7 @@ public class Simulation {
 	/**
 	 * Add agents (driver and parks) to the context
 	 */
-	public void addAgentsToContext() {
+	public void addAgentsToContext(Manager manager) {
 		// creates agent context
 		agentContext = new AgentContext();
 		context.addSubContext(agentContext);
@@ -110,6 +110,7 @@ public class Simulation {
 				GlobalVars.CONTEXT_NAMES.PARKINGLOT_GEOGRAPHY, parkingLotContext,
 				new GeographyParameters<ParkingLot>(new SimpleAdder<ParkingLot>()));
 
+		agentContext.add(manager);
 	}
 
 	/**

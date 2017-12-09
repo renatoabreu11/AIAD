@@ -7,15 +7,28 @@ public class DailyInfo {
 	private int[] entriesPerHour;
 	private int[] exitsPerHour;
 	private double totalProfit;
-	private double totalDrivers;
+	private int totalDrivers;
 	
 	/**
 	 * DailyInfo constructor. This class keeps all the information about a park during a single day
 	 * @param ps
 	 */
-	public DailyInfo() {
+	public DailyInfo(WEEKDAY day) {
+		this.day = day;
 		setEntriesPerHour(new int[24]);
 		setExitsPerHour(new int[24]);
+		totalProfit = 0;
+		totalDrivers = 0;
+	}
+	
+	public void addDriver(double finalPrice, int hour) {
+		this.totalDrivers++;
+		this.totalProfit += finalPrice;
+		entriesPerHour[hour]++;
+	}
+	
+	public void removeDriver(int hour) {
+		exitsPerHour[hour]++;
 	}
 
 	/**
@@ -30,11 +43,11 @@ public class DailyInfo {
 		this.totalProfit = totalProfit;
 	}
 
-	public double getTotalDrivers() {
+	public int getTotalDrivers() {
 		return totalDrivers;
 	}
 
-	public void setTotalDrivers(double totalDrivers) {
+	public void setTotalDrivers(int totalDrivers) {
 		this.totalDrivers = totalDrivers;
 	}
 
