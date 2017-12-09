@@ -1,8 +1,10 @@
 package parkingLot;
 
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import agents.Agent;
+import agents.parkingLot.ParkingLot;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class Manager extends Agent {
@@ -44,8 +46,13 @@ public class Manager extends Agent {
 				hour = 0;
 				currentTickInDay = 0;
 				day = GlobalVars.WEEKDAY.getNextDay(day.id);
+				
 				if(day.equals(GlobalVars.WEEKDAY.MONDAY)) { // next week
 					week++;
+					Iterator<ParkingLot> it = Simulation.parkingLotContext.getObjects(ParkingLot.class).iterator();
+				    while(it.hasNext()) { 
+				      it.next().updatePricingSheme();; 
+				    } 
 				}
 			}
 		}
@@ -99,5 +106,9 @@ public class Manager extends Agent {
 
 	public int getDay() {
 		return this.day.id;
+	}
+	
+	public int getPreviousDay() {
+		return (this.day.id - 1 + 7) % 7;
 	}
 }

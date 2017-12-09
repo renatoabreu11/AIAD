@@ -76,4 +76,8 @@ public class WeeklyInfo {
 	public void setTotalDrivers(int totalDrivers) {
 		this.totalDrivers = totalDrivers;
 	}
+	
+	public DailyInfo getDalyInfo(int day) {
+		return days.get(day);
+	}
 }

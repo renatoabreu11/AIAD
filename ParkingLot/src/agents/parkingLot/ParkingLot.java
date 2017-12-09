@@ -1,9 +1,11 @@
 package agents.parkingLot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 
+import Utils.DailyInfo;
 import Utils.PricingScheme;
 import Utils.WeeklyInfo;
 import agents.Agent;
@@ -27,7 +29,8 @@ public abstract class ParkingLot extends Agent {
 	public int capacity = 100;
 	protected int currLotation = 0;
 	
-	private WeeklyInfo weeklyInfo;
+	WeeklyInfo weeklyInfo;
+	WeeklyInfo previousWeeklyInfo;
 	private PricingScheme pricingScheme;
 	private double profit = 0;
 	
@@ -148,6 +151,10 @@ public abstract class ParkingLot extends Agent {
 	public void saveWeeklyInfo() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void updatePricingSheme() {
+
 	}
 	
 	/**
