@@ -28,7 +28,7 @@ public class AcceptEntryServer extends CyclicBehaviour {
 				myAgent.send(reply);
 			} else {
 				reply.setPerformative(ACLMessage.FAILURE);
-				reply.setContent("no-spots-available");
+				reply.setContent("No spots available.");
 				myAgent.send(reply);
 			}
 			((ParkingLot) myAgent).logMessage("Accept entry served\n" + reply);

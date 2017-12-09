@@ -83,7 +83,7 @@ public class AgentManager extends Agent{
 		}
 		
 		for(int i = 0; i < nrParkingAgents; i++) {
-			ParkingLot pl = new CooperativeParkingLot();
+			ParkingLot pl = new DynamicParkingLot();
 			parkingAgents.add(pl);
 		}
 	}
