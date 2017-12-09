@@ -77,7 +77,7 @@ public class RequestEntryPerformer extends Behaviour {
 				if (reply.getPerformative() == ACLMessage.INFORM) {
 					((Driver) myAgent).logMessage("Driver " + myAgent.getName() + " successfully parked at " + reply.getSender().getName() + 
 							"\nPrice = " + price + "; Parking duration: " + durationOfStay);
-					myAgent.addBehaviour(new RequestExitPerformer(myAgent, Long.parseLong(durationOfStay), parkingAgent));
+					((Driver) myAgent).setParked(true);
 				}
 				else {
 					((Driver) myAgent).logMessage("Park entry failed: park at maximum capacity");

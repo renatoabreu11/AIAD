@@ -3,10 +3,9 @@ package behaviours;
 import agents.Agent.Type;
 import agents.parkingLot.DynamicParkingLot;
 import agents.parkingLot.ParkingLot;
-import sajas.core.Agent;
-import sajas.core.behaviours.TickerBehaviour;
+import sajas.core.behaviours.OneShotBehaviour;
 
-public class WeekyUpdatePerformer extends TickerBehaviour{
+public class WeeklyUpdatePerformer extends OneShotBehaviour{
 
 	/**
 	 * 
@@ -18,14 +17,10 @@ public class WeekyUpdatePerformer extends TickerBehaviour{
 	 * @param a
 	 * @param period
 	 */
-	public WeekyUpdatePerformer(Agent a, long period) {
-		super(a, period);
-	}
-
 	@Override
-	protected void onTick() {
+	public void action() {
+		((ParkingLot) myAgent).logMessage("Weekly update performed\n");
 		((ParkingLot) myAgent).closeParkingFacility();
-		((ParkingLot) myAgent).saveWeeklyInfo();
 		Type type = ((ParkingLot) myAgent).type;
 		if(type.equals(Type.DYNAMIC_PARKING_LOT))
 			((DynamicParkingLot) myAgent).updatePricingSheme();

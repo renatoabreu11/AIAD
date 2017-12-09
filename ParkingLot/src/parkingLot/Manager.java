@@ -17,6 +17,7 @@ public class Manager extends Agent {
 	private int week;
 	private GlobalVars.WEEKDAY day;
 	private int hour;
+	private int currentTickInWeek;
 	private int currentTickInDay;
 	private int currentTickInHour;
 	
@@ -29,11 +30,13 @@ public class Manager extends Agent {
 		setHour(0);
 		setCurrentTickInDay(0);
 		setCurrentTickInHour(0);
+		setCurrentTickInWeek(0);
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {
 		++totalTicks;
+		++currentTickInWeek;
 		++currentTickInDay;
 		++currentTickInHour;
 		
@@ -46,10 +49,10 @@ public class Manager extends Agent {
 				day = GlobalVars.WEEKDAY.getNextDay(day.id);
 				if(day.equals(GlobalVars.WEEKDAY.MONDAY)) { // next week
 					week++;
+					setCurrentTickInWeek(0);
 				}
 			}
 		}
-		LOGGER.info("Week: " + week + "; Day: "+ day + "; Hour " + hour);
 	}
 	
 	/**
@@ -99,5 +102,13 @@ public class Manager extends Agent {
 
 	public int getDay() {
 		return this.day.id;
+	}
+
+	public int getCurrentTickInWeek() {
+		return currentTickInWeek;
+	}
+
+	public void setCurrentTickInWeek(int currentTickInWeek) {
+		this.currentTickInWeek = currentTickInWeek;
 	}
 }

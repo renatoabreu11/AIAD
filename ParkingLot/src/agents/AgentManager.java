@@ -6,16 +6,20 @@ import java.util.logging.Logger;
 
 import agents.driver.Driver;
 import agents.driver.RationalDriver;
+import agents.parkingLot.CooperativeParkingLot;
 import agents.parkingLot.DynamicParkingLot;
 import agents.parkingLot.ParkingLot;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.wrapper.StaleProxyException;
+import parkingLot.Initializer;
+import parkingLot.Manager;
+import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.parameter.Parameters;
-import sajas.core.AID;
 import sajas.domain.DFService;
 import sajas.wrapper.ContainerController;
+import behaviours.WeeklyUpdatePerformer;;
 
 public class AgentManager extends Agent{
 	private static Logger LOGGER = Logger.getLogger(AgentManager.class.getName());
@@ -30,6 +34,15 @@ public class AgentManager extends Agent{
 		parkingAgents = new ArrayList<>();
 		driverAgents = new ArrayList<>();
 	}
+	
+	@ScheduledMethod(start = 1, interval = 1)
+	public void update() {
+		if(Initializer.manager.getCurrentTickInWeek() == (Manager.ticksPerWeek - Manager.ticksPerHour)) { // One hour before the week ends, it stores the weekly info
+			for(ParkingLot pl : parkingAgents) {
+				pl.addBehaviour(new WeeklyUpdatePerformer());
+			}
+		}
+	};
 	
 	@Override
 	protected void setup() {
@@ -61,8 +74,8 @@ public class AgentManager extends Agent{
 	}
 	
 	public void initAgents(Parameters params) {
-		int nrDriverAgents = params.getInteger("driver_count");
-		int nrParkingAgents = params.getInteger("parking_count");
+		int nrDriverAgents = 1;//params.getInteger("driver_count");
+		int nrParkingAgents = 4;//params.getInteger("parking_count");
 		
 		for(int i = 0; i < nrDriverAgents; i++) {
 			Driver d = new RationalDriver();
@@ -70,7 +83,7 @@ public class AgentManager extends Agent{
 		}
 		
 		for(int i = 0; i < nrParkingAgents; i++) {
-			ParkingLot pl = new DynamicParkingLot();
+			ParkingLot pl = new CooperativeParkingLot();
 			parkingAgents.add(pl);
 		}
 	}
