@@ -25,10 +25,12 @@ public class AcceptEntryServer extends CyclicBehaviour {
 			boolean accepted = ((ParkingLot) myAgent).acceptDriver(durationOfStay, msg.getSender().getName());
 			if(accepted) {
 				reply.setPerformative(ACLMessage.INFORM);
-				myAgent.send(reply);	
+				myAgent.send(reply);
 			} else {
+				System.out.println("FAILURE");
 				reply.setPerformative(ACLMessage.FAILURE);
 				reply.setContent("no-spots-available");
+				myAgent.send(reply);
 			}
 			((ParkingLot) myAgent).logMessage("Accept entry served\n" + reply);
 		}

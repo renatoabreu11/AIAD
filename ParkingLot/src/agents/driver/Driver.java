@@ -29,13 +29,14 @@ public abstract class Driver extends Agent {
 	public static double beta = 0.5;
 
 	private int durationOfStay = 10; // definir valor default futuramente
-	private double walkDistance = 400.0; // definir valor default futuramente
+	private double walkDistance = 600.0; // definir valor default futuramente
 	private double defaultSatisfaction = 0.5;
 	private double walkCoefficient = 0.5;
 	private double payCoefficient = 0.5;
 
 	private boolean alive = true;
-	private boolean inPark = false;
+	//private boolean inPark = false;
+	private boolean hasMadeRequest = false;
 	private boolean parked = false;
 	public boolean searchForNewPark = false; //TODO
 	private int parkedTime = 0;
@@ -115,19 +116,20 @@ public abstract class Driver extends Agent {
 				LOGGER.log(Level.FINE,
 						this.toString() + " travelling to " + this.route.getDestinationBuilding().toString());
 			} else {
-				if(!this.inPark) {
-					this.inPark = true;
+				if(!this.hasMadeRequest) {
+					this.hasMadeRequest = true;
 					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
+				}
+				
+				if(this.parked) {
+					System.out.println("ESTOU ESTACIONAD");
+					if(parkedTime == durationOfStay) {
+						addBehaviour(new RequestExitPerformer(this, (AID) this.parkingLotDestiny.getAID()));
+					}
+					++parkedTime;
 				}
 
 				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
-			}
-			
-			if(this.parked) {
-				if(parkedTime == durationOfStay) {
-					addBehaviour(new RequestExitPerformer(this, (AID) this.parkingLotDestiny.getAID()));
-				}
-				++parkedTime;
 			}
 		} else {
 			Simulation.removeAgent(this);
@@ -173,10 +175,12 @@ public abstract class Driver extends Agent {
 
 	public void pickParkToGo() {
 		this.currentParkSelected++;
+		System.out.println("Vou escolher o park indice: "+this.currentParkSelected);
 		if(this.currentParkSelected >= this.parksInRange.size()) {
 			this.alive = false;
 		}
 		else {
+			this.hasMadeRequest = false;
 			this.parkingLotDestiny = this.parksInRange.get(this.currentParkSelected).park;
 			this.route = new Route(this, Simulation.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
 			LOGGER.log(Level.FINE, this.toString() + " created new route to " + parkingLotDestiny.toString());
@@ -238,6 +242,10 @@ public abstract class Driver extends Agent {
 
 	public Coordinate getCurrentPosition() {
 		return currentPosition;
+	}
+	
+	public ParkingLot getParkingLotDestiny() {
+		return parkingLotDestiny;
 	}
 
 	public boolean getAlive() {

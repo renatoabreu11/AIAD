@@ -24,8 +24,8 @@ public abstract class ParkingLot extends Agent {
 
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
-	public int capacity = 100;
-	protected int currLotation = 0;
+	public int capacity = 1;
+	protected int currLotation = 1;
 	
 	private WeeklyInfo weeklyInfo;
 	private PricingScheme pricingScheme;
@@ -118,6 +118,7 @@ public abstract class ParkingLot extends Agent {
 	 * @return
 	 */
 	public boolean acceptDriver(String durationOfStay, String AID) {
+		System.out.println("LOTATION: "+currLotation+" ; "+capacity);
 		if(currLotation == capacity) {
 			return false;
 		}

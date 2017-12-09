@@ -74,7 +74,7 @@ public class AgentManager extends Agent{
 	
 	public void initAgents(Parameters params) {
 		int nrDriverAgents = 1;//params.getInteger("driver_count");
-		int nrParkingAgents = 4;//params.getInteger("parking_count");
+		int nrParkingAgents = 2;//params.getInteger("parking_count");
 		
 		for(int i = 0; i < nrDriverAgents; i++) {
 			Driver d = new RationalDriver();
