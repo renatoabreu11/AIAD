@@ -35,6 +35,7 @@ import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.gis.SimpleAdder;
 import repast.simphony.space.graph.Network;
+import repast.simphony.util.collections.IndexedIterable;
 
 public class Simulation {
 	private static Logger LOGGER = Logger.getLogger(Simulation.class.getName());
@@ -136,35 +137,52 @@ public class Simulation {
 		Random r = new Random();
 		int type = 0;
 		int parkLotation;
+		ArrayList<Coordinate> coords = new ArrayList<>();
+		coords.add(new Coordinate(-1.5179463382681508, 53.830348355155316));
+		coords.add(new Coordinate(-1.512861407674773, 53.8273409081473));
+		coords.add(new Coordinate(-1.518021442707166, 53.829186442820216));
+		coords.add(new Coordinate(-1.5192543771762335, 53.83033302471431));
+		coords.add(new Coordinate(-1.5169192423121938, 53.833865282995106));
+		coords.add(new Coordinate(-1.5170339492937859, 53.834459028019396));
+		coords.add(new Coordinate(-1.5134111539939434, 53.83366239221787));
+		coords.add(new Coordinate(-1.5097128267739806, 53.834141679352555));
 		
 		StaticParkingLot sPark;
 		DynamicParkingLot dPark;
-		for(int i = 0; i < nrParkingAgents; i++) {
-			type = r.nextInt(2);
-			parkLotation = r.nextInt(101)+250;
-			junction = junctionContext.getRandomObject();
-			point = junctionGeography.getGeometry(junction).getCentroid();
-			if(type == 0) {
-				System.out.println("Static"+i);
-				sPark = new StaticParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
-				agentContext.add(sPark);
-				getAgentGeography().move(sPark, point);
-				parkingLotContext.add(sPark);
-				getParkingLotGeography().move(sPark,  point);
-				
-				parkingLotAgents.add(sPark);
-			} else {
-				System.out.println("Dynamic"+i);
-				dPark = new DynamicParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
-				agentContext.add(dPark);
-				getAgentGeography().move(dPark, point);
-				parkingLotContext.add(dPark);
-				getParkingLotGeography().move(dPark,  point);
-				
-				parkingLotAgents.add(dPark);
+		
+		IndexedIterable<Junction> index = junctionContext.getObjects(Junction.class);
+		for(int i = 0; i < index.size(); i++) {
+			Coordinate jCoord = index.get(i).getCoords();
+			for (int j = 0; j < coords.size(); j++) {
+				if(coords.get(j).x == jCoord.x && coords.get(j).y == jCoord.y) {
+					point = junctionGeography.getGeometry(index.get(i)).getCentroid();
+					
+					type = r.nextInt(2);
+					parkLotation = r.nextInt(101)+250;
+					if(type == 0) {
+						System.out.println("Static"+i);
+						sPark = new StaticParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
+						agentContext.add(sPark);
+						getAgentGeography().move(sPark, point);
+						parkingLotContext.add(sPark);
+						getParkingLotGeography().move(sPark,  point);
+						
+						parkingLotAgents.add(sPark);
+					} else {
+						System.out.println("Dynamic"+i);
+						dPark = new DynamicParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
+						agentContext.add(dPark);
+						getAgentGeography().move(dPark, point);
+						parkingLotContext.add(dPark);
+						getParkingLotGeography().move(dPark,  point);
+						
+						parkingLotAgents.add(dPark);
+					}
+					
+					System.out.println("X: " +point.getX()+" ; Y: "+point.getY()+" "+parkLotation);
+				}
 			}
 			
-			System.out.println("X: " +point.getX()+" ; Y: "+point.getY()+" "+parkLotation);
 		}
 	}
 
