@@ -30,7 +30,6 @@ public class RationalDriver extends Driver{
 				parksInRange.add(pc);
 			}
 		}
-		
 		sortParksInRange();
 	}
 

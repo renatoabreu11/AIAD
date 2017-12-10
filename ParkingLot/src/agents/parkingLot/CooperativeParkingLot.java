@@ -54,7 +54,9 @@ public class CooperativeParkingLot extends ParkingLot {
 			newMin /= parksInfo.size();
 			newMax /= parksInfo.size();
 		} else {
-			double previousProfit = previousWeeklyInfo.getTotalProfit();
+			double previousProfit = 0;
+			if(previousWeeklyInfo != null)
+				previousProfit = previousWeeklyInfo.getTotalProfit();
 			double variation;
 			if(previousProfit == 0) variation = weeklyInfo.getTotalProfit();
 			else variation = weeklyInfo.getTotalProfit() / previousProfit;
