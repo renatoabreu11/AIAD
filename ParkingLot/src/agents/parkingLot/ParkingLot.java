@@ -49,7 +49,7 @@ public abstract class ParkingLot extends Agent {
 
 	@Override
 	protected void setup() {
-		LOGGER.info("ParkingLot " + getAID().getName()  + " is ready!");
+		this.logMessage("ParkingLot " + getAID().getName()  + " is ready!");
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -78,7 +78,7 @@ public abstract class ParkingLot extends Agent {
 			fe.printStackTrace();
 		}
 
-		LOGGER.info("Parking lot terminating");
+		this.logMessage("Parking lot terminating");
 	}
 	
 	/**
@@ -160,7 +160,7 @@ public abstract class ParkingLot extends Agent {
 	}
 
 	public void logMessage(String message) {
-		LOGGER.info(message);
+		LOGGER.fine(message);
 	}
 
 	public WeeklyInfo getWeeklyInfo() {

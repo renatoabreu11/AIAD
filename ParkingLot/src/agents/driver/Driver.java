@@ -69,7 +69,7 @@ public abstract class Driver extends Agent {
 
 	@Override
 	protected void setup() {
-		LOGGER.info("Driver " + getAID().getName()  + " is ready!");
+		this.logMessage("Driver " + getAID().getName()  + " is ready!");
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -92,7 +92,7 @@ public abstract class Driver extends Agent {
 			fe.printStackTrace();
 		}
 
-		LOGGER.info("Driver " + getAID().getName()  + " terminating");
+		this.logMessage("Driver " + getAID().getName()  + " terminating");
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -246,7 +246,7 @@ public abstract class Driver extends Agent {
 	}
 
 	public void logMessage(String message) {
-		LOGGER.info(message);
+		LOGGER.fine(message);
 	}
 
 	public DriverState getState() {
