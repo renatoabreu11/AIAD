@@ -25,6 +25,7 @@ import environment.contexts.AgentContext;
 import environment.contexts.JunctionContext;
 import environment.contexts.ParkingLotContext;
 import environment.contexts.RoadContext;
+import parkingLot.Initializer.ExperienceType;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -171,14 +172,25 @@ public class Simulation {
 
 					parkingLotAgents.add(sPark);
 				} else {
-					System.out.println("Dynamic" + i);
-					dPark = new DynamicParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
-					agentContext.add(dPark);
-					getAgentGeography().move(dPark, point);
-					parkingLotContext.add(dPark);
-					getParkingLotGeography().move(dPark, point);
+					if(Initializer.experienceType.equals(ExperienceType.EXPERIENCE_2)) {
+						System.out.println("Cooperative" + i);
+						cPark = new CooperativeParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
+						agentContext.add(cPark);
+						getAgentGeography().move(cPark, point);
+						parkingLotContext.add(cPark);
+						getParkingLotGeography().move(cPark, point);
 
-					parkingLotAgents.add(dPark);
+						parkingLotAgents.add(cPark);
+					} else {
+						System.out.println("Dynamic" + i);
+						dPark = new DynamicParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
+						agentContext.add(dPark);
+						getAgentGeography().move(dPark, point);
+						parkingLotContext.add(dPark);
+						getParkingLotGeography().move(dPark, point);
+
+						parkingLotAgents.add(dPark);
+					}
 				}
 
 				System.out.println("X: " + point.getX() + " ; Y: " + point.getY() + " " + parkLotation);
