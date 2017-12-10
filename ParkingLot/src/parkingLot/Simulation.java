@@ -199,10 +199,6 @@ public class Simulation {
 	}
 
 	public void addDrivers() {
-		if (!generated)
-			return;
-		generated = false;
-
 		Random r = new Random();
 		int nrDriverAgents;
 
@@ -222,7 +218,6 @@ public class Simulation {
 
 		ExploratoryDriver eDriver;
 		RationalDriver rDriver;
-		nrDriverAgents = 4;
 		for (int i = 0; i < nrDriverAgents; i++) {
 			type = r.nextInt(2);
 			road = roadContext.getRandomObject();
@@ -246,7 +241,7 @@ public class Simulation {
 				durationOfStay = r.nextInt(maxTimeInPark) + 30;
 			}
 			double walkDistance = (r.nextInt(500) + 100); // [100,600[
-			double defaultSatisfaction = 1.0; // TODO random satisfaction
+			double defaultSatisfaction = r.nextInt(26)+25;
 
 			if (type == 0) {
 				eDriver = new ExploratoryDriver(initialCoordinate, finalCoordinate, durationOfStay, walkDistance,

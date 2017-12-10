@@ -59,6 +59,7 @@ public class Manager extends Agent {
 				day = GlobalVars.WEEKDAY.getNextDay(day.id);
 								
 				if(day.equals(GlobalVars.WEEKDAY.MONDAY)) { // next week
+					System.out.println("Week: "+week);
 					week++;
 					setCurrentTickInWeek(0);
 					setUtilityPerWeek(0);
