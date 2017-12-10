@@ -26,6 +26,7 @@ public class Manager extends Agent {
 	private int currentTickInHour;
 	
 	private double globalUtility;
+	private double utilityPerWeek;
 	
 	public Manager() {
 		super("Manager", Type.MANAGER);
@@ -39,6 +40,7 @@ public class Manager extends Agent {
 		setCurrentTickInWeek(0);
 		
 		globalUtility = 0;
+		setUtilityPerWeek(0);
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -59,6 +61,9 @@ public class Manager extends Agent {
 				if(day.equals(GlobalVars.WEEKDAY.MONDAY)) { // next week
 					week++;
 					setCurrentTickInWeek(0);
+					setUtilityPerWeek(0);
+					
+					// TODO remove this
 					IndexedIterable<ParkingLot> pl = Simulation.parkingLotContext.getObjects(ParkingLot.class);
 					for (int i = 0; i < pl.size(); i++) {
 						pl.get(i).updatePricingScheme();
@@ -139,6 +144,7 @@ public class Manager extends Agent {
 
 	public void addUtility(double driverUtility) {
 		this.globalUtility += driverUtility;
+		this.setUtilityPerWeek(this.getUtilityPerWeek() + driverUtility);
 	}
 	
 	public int calculateNumberOfDriversWeekDays() {
@@ -173,5 +179,13 @@ public class Manager extends Agent {
 		System.out.println("Current hour: "+currentHour+" "+currentTickInDay);
 		
 		return numDrivers;
+	}
+
+	public double getUtilityPerWeek() {
+		return utilityPerWeek;
+	}
+
+	public void setUtilityPerWeek(double utilityPerWeek) {
+		this.utilityPerWeek = utilityPerWeek;
 	}
 }
