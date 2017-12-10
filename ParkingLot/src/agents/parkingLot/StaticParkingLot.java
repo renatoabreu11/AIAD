@@ -10,7 +10,7 @@ public class StaticParkingLot extends ParkingLot {
 		super("StaticParkingLot",position, maxCapacity,Type.STATIC_PARKING_LOT);
 	}
 	
-	public void updatePricingSheme() {    
+	public void updatePricingScheme() {    
 		previousWeeklyInfo = weeklyInfo;
 		weeklyInfo = new WeeklyInfo((AID) this.getAID());
 	}

@@ -122,6 +122,10 @@ public abstract class ParkingLot extends Agent {
 		return true;
 	}
 	
+	public void updatePricingScheme() {
+		
+	}
+	
 	/**
 	 * Removes all drivers from the park
 	 */
@@ -173,6 +177,10 @@ public abstract class ParkingLot extends Agent {
 	
 	public double getWeeklyPriceAverage() {
 		return 0;
+	}
+	
+	public double getHourlyPrice() {
+		return weeklyInfo.getPricingScheme().getPricePerHour();
 	}
 
 	public double getGlobalProfit() {

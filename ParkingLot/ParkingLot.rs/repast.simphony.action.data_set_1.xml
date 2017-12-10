@@ -1,7 +1,6 @@
 <repast.simphony.data2.engine.DataSetDescriptor simphonyVersion="2.5.0">
   <name>A Data Set</name>
-  <type>NON_AGGREGATE</type>
-  <sourceType>agents.parkingLot.ParkingLot</sourceType>
+  <type>AGGREGATE</type>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
   <inclRandomSeed>false</inclRandomSeed>
@@ -12,16 +11,26 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>1000319179</hashCode>
+    <hashCode>-1521540940</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>WeeklyProfit</string>
+      <string>dynamic</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>WeeklyProfit</id>
-        <className>agents.parkingLot.ParkingLot</className>
-        <methodName>getWeeklyProfit</methodName>
+        <id>dynamic</id>
+        <className>agents.parkingLot.DynamicParkingLot</className>
+        <methodName>getHourlyPrice</methodName>
+        <aggType>MEAN</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>static</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>static</id>
+        <className>agents.parkingLot.StaticParkingLot</className>
+        <methodName>getHourlyPrice</methodName>
+        <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>
