@@ -26,7 +26,6 @@ import environment.contexts.JunctionContext;
 import environment.contexts.ParkingLotContext;
 import environment.contexts.RoadContext;
 import parkingLot.Initializer.ExperienceType;
-import parkingLot.GlobalVars.SIMULATION;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -138,7 +137,6 @@ public class Simulation {
 
 	public void addParkingLots(int nrParkingAgents, ArrayList<ParkingLot> parkingLotAgents) {
 		Point point;
-		Random r = new Random();
 		int type = 0;
 		ArrayList<Coordinate> coords = new ArrayList<>();
 		coords.add(new Coordinate(-1.5179463382681508, 53.830348355155316));
@@ -156,9 +154,9 @@ public class Simulation {
 			if (coords.contains(jCoord)) {
 				point = junctionGeography.getGeometry(index.get(i)).getCentroid();
 				
-				if(Initializer.experienceType.equals(Initializer.ExperienceType.EXPERIENCE_1)) {
-					addExperiment1Parkings(point, parkingLotAgents);
-				}else {
+				if(Initializer.experienceType.equals(ExperienceType.EXPERIENCE_1)) {
+					addExperiment1Parkings(point, parkingLotAgents, type++);
+				}else if(Initializer.experienceType.equals(ExperienceType.EXPERIENCE_2)){
 					addExperiment2Parkings(point, parkingLotAgents, type++);
 				}		
 			}
@@ -226,16 +224,14 @@ public class Simulation {
 		}
 	}
 
-	public void addExperiment1Parkings(Point point, ArrayList<ParkingLot> parkingLotAgents) {
+	public void addExperiment1Parkings(Point point, ArrayList<ParkingLot> parkingLotAgents, int type) {
 		Random r = new Random();
-		int type = 0;
 		int parkLotation;
 		StaticParkingLot sPark;
 		DynamicParkingLot dPark;
 		
-		type = r.nextInt(2);
 		parkLotation = r.nextInt(101) + 250;
-		if (type == 0) {
+		if (type < 4) {
 			sPark = new StaticParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
 			agentContext.add(sPark);
 			getAgentGeography().move(sPark, point);
