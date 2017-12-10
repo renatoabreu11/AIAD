@@ -90,6 +90,15 @@ public class AgentManager extends Agent{
 		}
 	}
 	
+	public void acceptDriver(Driver driver) {
+		this.driverAgents.add(driver);
+		try {
+			mainContainer.acceptNewAgent(driver.getName(), driver).start();
+		} catch (StaleProxyException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public synchronized void removeAgent(String AID) {
 		for (Iterator<Driver> iterator = driverAgents.iterator(); iterator.hasNext();) {
 		    Driver d = iterator.next();

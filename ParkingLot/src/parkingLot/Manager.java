@@ -8,9 +8,9 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 public class Manager extends Agent {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
-	public static int ticksPerWeek = 21000;
-	public static int ticksPerDay = 3000;
-	public static int ticksPerHour = 125;
+	public static int ticksPerWeek = 24000*7;
+	public static int ticksPerDay = 24000;
+	public static int ticksPerHour = 1000;
 	public static double noParkAvailableUtility = -50.0; // TODO change this 
 	
 	private int totalTicks;

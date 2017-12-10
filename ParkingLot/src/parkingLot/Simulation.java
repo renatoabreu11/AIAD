@@ -55,6 +55,8 @@ public class Simulation {
 
 	public static Context<ParkingLot> parkingLotContext;
 	private static Geography<ParkingLot> parkingLotGeography;
+	
+	public boolean generate = true;
 
 	public Simulation(Context<Object> context) {
 		Simulation.context = context;
@@ -127,8 +129,12 @@ public class Simulation {
 		int nrDriverAgents = 100;//params.getInteger("driver_count");
 		int nrParkingAgents = 8;//params.getInteger("parking_count");
 		
+		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
+		schedule.schedule(ScheduleParameters.createRepeating(100, 1000), this,
+				"addDrivers",10);
+		
 		this.addParkingLots(nrParkingAgents, parkingLotAgents);
-		this.addDrivers(nrDriverAgents, driverAgents);
+		//this.addDrivers(nrDriverAgents);
 	}
 	
 	public void addParkingLots(int nrParkingAgents,ArrayList<ParkingLot> parkingLotAgents) {
@@ -169,37 +175,40 @@ public class Simulation {
 		}
 	}
 
-	public void addDrivers(int nrDriverAgents,ArrayList<Driver> driverAgents) {
-		Junction junction;
-		Road road;
-		Random r = new Random();
-		int type = 0;
-		
-		ExploratoryDriver eDriver;
-		RationalDriver rDriver;
-		for (int i = 0; i < nrDriverAgents; i++) {
-			type = r.nextInt(2);
-			road = roadContext.getRandomObject();
-			ArrayList<Junction> endpoints = road.getJunctions();
-			Point initialPoint = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
-			junction = junctionContext.getRandomObject();
-			Point finalPoint = junctionGeography.getGeometry(junction).getCentroid();
-			Coordinate initialCoordinate = new Coordinate(initialPoint.getX(),initialPoint.getY());
-			Coordinate finalCoordinate = new Coordinate(finalPoint.getX(),finalPoint.getY());
-			int durationOfStay = (r.nextInt(240)+1)*10; // [10,2400]
-			double walkDistance = (r.nextInt(500)+100); // [100,600[
-			double defaultSatisfaction = 1.0; //TODO random satisfaction
+	public void addDrivers(int nrDriverAgents) {
+		if(generate) {
+			generate = false;
+			Junction junction;
+			Road road;
+			Random r = new Random();
+			int type = 0;
 			
-			if(type == 0) {
-				eDriver = new ExploratoryDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
-				agentContext.add(eDriver);
-				getAgentGeography().move(eDriver, initialPoint);
-				driverAgents.add(eDriver);
-			} else {
-				rDriver = new RationalDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
-				agentContext.add(rDriver);
-				getAgentGeography().move(rDriver, initialPoint);
-				driverAgents.add(rDriver);
+			ExploratoryDriver eDriver;
+			RationalDriver rDriver;
+			for (int i = 0; i < nrDriverAgents; i++) {
+				type = r.nextInt(2);
+				road = roadContext.getRandomObject();
+				ArrayList<Junction> endpoints = road.getJunctions();
+				Point initialPoint = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
+				junction = junctionContext.getRandomObject();
+				Point finalPoint = junctionGeography.getGeometry(junction).getCentroid();
+				Coordinate initialCoordinate = new Coordinate(initialPoint.getX(),initialPoint.getY());
+				Coordinate finalCoordinate = new Coordinate(finalPoint.getX(),finalPoint.getY());
+				int durationOfStay = (r.nextInt(100)+1)*10; // [10,10000]
+				double walkDistance = (r.nextInt(500)+100); // [100,600[
+				double defaultSatisfaction = 1.0; //TODO random satisfaction
+				
+				if(type == 0) {
+					eDriver = new ExploratoryDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
+					agentContext.add(eDriver);
+					getAgentGeography().move(eDriver, initialPoint);
+					Initializer.agentManager.acceptDriver(eDriver);
+				} else {
+					rDriver = new RationalDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
+					agentContext.add(rDriver);
+					getAgentGeography().move(rDriver, initialPoint);
+					Initializer.agentManager.acceptDriver(rDriver);
+				}
 			}
 		}
 	}
