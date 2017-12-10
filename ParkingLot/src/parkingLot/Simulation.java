@@ -126,11 +126,10 @@ public class Simulation {
 		int nrParkingAgents = 8;//params.getInteger("parking_count");
 		
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-		schedule.schedule(ScheduleParameters.createRepeating(1000, 1000), this,
+		schedule.schedule(ScheduleParameters.createRepeating(250, 250), this, //começa aos 250 ticks e chama a função addDrivers de 250 em 250
 				"addDrivers");
 		
 		this.addParkingLots(nrParkingAgents, parkingLotAgents);
-		//this.addDrivers(nrDriverAgents);
 	}
 	
 	public void addParkingLots(int nrParkingAgents,ArrayList<ParkingLot> parkingLotAgents) {
@@ -172,10 +171,18 @@ public class Simulation {
 	}
 
 	public void addDrivers() {
-		int nrDriverAgents = Initializer.manager.calculateNumberOfDrivers();
+		Random r = new Random();
+		int nrDriverAgents;
+		
+		double offset = (r.nextInt(30)+85)/100;
+		if(Initializer.manager.getDay() == 6 || Initializer.manager.getDay() == 7) {
+			nrDriverAgents = (int) ((int) Initializer.manager.calculateNumberOfDriversWeekEndDays()*offset);
+		} else {
+			nrDriverAgents = (int) ((int) Initializer.manager.calculateNumberOfDriversWeekDays()*offset);
+		}
+		
 		Junction junction;
 		Road road;
-		Random r = new Random();
 		int type = 0;
 		
 		ExploratoryDriver eDriver;

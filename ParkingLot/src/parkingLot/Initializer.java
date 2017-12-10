@@ -21,12 +21,13 @@ public class Initializer extends RepastSLauncher{
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	private static long speedTimer = -1;
 	
-	private static ContainerController mainContainer;
+	
 	public static AgentManager agentManager;
 	public static Manager manager;
+	private static ContainerController mainContainer;
 	private Simulation simulation;
 	
-	private ExperienceType experienceType = ExperienceType.EXPERIENCE_1;
+	public static ExperienceType experienceType = ExperienceType.EXPERIENCE_1;
 
 	@Override
 	public String getName() {
