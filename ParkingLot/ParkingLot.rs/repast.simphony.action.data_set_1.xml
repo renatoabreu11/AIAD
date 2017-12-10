@@ -16,11 +16,20 @@
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
+      <string>coop</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>coop</id>
+        <className>agents.parkingLot.CooperativeParkingLot</className>
+        <methodName>getWeeklyProfit</methodName>
+        <aggType>MEAN</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
       <string>dynamic</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
         <id>dynamic</id>
         <className>agents.parkingLot.DynamicParkingLot</className>
-        <methodName>getHourlyPrice</methodName>
+        <methodName>getWeeklyProfit</methodName>
         <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
@@ -29,7 +38,7 @@
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
         <id>static</id>
         <className>agents.parkingLot.StaticParkingLot</className>
-        <methodName>getHourlyPrice</methodName>
+        <methodName>getWeeklyProfit</methodName>
         <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
