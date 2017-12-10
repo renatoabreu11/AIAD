@@ -3,16 +3,14 @@ package parkingLot;
 import java.util.logging.Logger;
 
 import agents.Agent;
-import agents.parkingLot.ParkingLot;
 import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.util.collections.IndexedIterable;
 
 public class Manager extends Agent {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	public static int ticksPerDay = 720;
 	public static int ticksPerHour = 30;
-	public static int ticksPerWeek = ticksPerDay*720;
+	public static int ticksPerWeek = ticksPerDay*7;
 
 	public static double noParkAvailableUtility = -50.0; // TODO change this 
 	

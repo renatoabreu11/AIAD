@@ -213,8 +213,8 @@ public class Simulation {
 		Junction junction;
 		Road road;
 		int type = 0;
-		int maxTimeInPark = Initializer.manager.ticksPerHour*9+1;
-		int maxTimeInParkMorningWorkers = Initializer.manager.ticksPerHour*2+1;
+		int maxTimeInPark = Manager.ticksPerHour*9+1;
+		int maxTimeInParkMorningWorkers = Manager.ticksPerHour*2+1;
 
 		ExploratoryDriver eDriver;
 		RationalDriver rDriver;
@@ -241,7 +241,7 @@ public class Simulation {
 				durationOfStay = r.nextInt(maxTimeInPark) + 30;
 			}
 			double walkDistance = (r.nextInt(500) + 100); // [100,600[
-			double defaultSatisfaction = r.nextInt(26)+25;
+			double defaultSatisfaction = r.nextInt(26)+40;
 
 			if (type == 0) {
 				eDriver = new ExploratoryDriver(initialCoordinate, finalCoordinate, durationOfStay, walkDistance,
