@@ -3,6 +3,7 @@ package parkingLot;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -11,7 +12,11 @@ import com.vividsolutions.jts.geom.Point;
 
 import agents.Agent;
 import agents.driver.Driver;
+import agents.driver.ExploratoryDriver;
+import agents.driver.RationalDriver;
+import agents.parkingLot.DynamicParkingLot;
 import agents.parkingLot.ParkingLot;
+import agents.parkingLot.StaticParkingLot;
 import environment.GISFunctions;
 import environment.Junction;
 import environment.NetworkEdgeCreator;
@@ -21,6 +26,7 @@ import environment.contexts.AgentContext;
 import environment.contexts.JunctionContext;
 import environment.contexts.ParkingLotContext;
 import environment.contexts.RoadContext;
+import repast.simphony.parameter.Parameters;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
 import repast.simphony.context.space.graph.NetworkBuilder;
@@ -116,40 +122,69 @@ public class Simulation {
 	/**
 	 * Add the defined agents to the simulation
 	 */
-	public void AddAgentsToEnvironent(ArrayList<ParkingLot> parkingLotAgents, ArrayList<Driver> driverAgents) {
-		System.out.println(parkingLotAgents);
+	public void AddAgentsToEnvironent(ArrayList<ParkingLot> parkingLotAgents, ArrayList<Driver> driverAgents,Parameters params) {
 		Junction junction;
 		Road road;
 		Point point;
-
-		for (int i = 0; i < parkingLotAgents.size(); i++) {
-			ParkingLot pl = parkingLotAgents.get(i);
+		Random r = new Random();
+		int type = 0;
+		int parkLotation;
+		
+		int nrDriverAgents = 2;//params.getInteger("driver_count");
+		int nrParkingAgents = 8;//params.getInteger("parking_count");
+		
+		StaticParkingLot sPark;
+		DynamicParkingLot dPark;
+		for(int i = 0; i < nrParkingAgents; i++) {
+			type = r.nextInt(2);
+			parkLotation = r.nextInt(101)+250;
 			junction = junctionContext.getRandomObject();
 			point = junctionGeography.getGeometry(junction).getCentroid();
-			pl.setPosition(new Coordinate(point.getX(),point.getY()));
-
-			agentContext.add(pl);
-			getAgentGeography().move(pl, point);
-			parkingLotContext.add(pl);
-			getParkingLotGeography().move(pl,  point);
+			if(type == 0) {
+				System.out.println("Static"+i);
+				sPark = new StaticParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
+				agentContext.add(sPark);
+				getAgentGeography().move(sPark, point);
+				parkingLotContext.add(sPark);
+				getParkingLotGeography().move(sPark,  point);
+				
+				parkingLotAgents.add(sPark);
+			} else {
+				System.out.println("Dynamic"+i);
+				dPark = new DynamicParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
+				agentContext.add(dPark);
+				getAgentGeography().move(dPark, point);
+				parkingLotContext.add(dPark);
+				getParkingLotGeography().move(dPark,  point);
+				
+				parkingLotAgents.add(dPark);
+			}
+			
+			System.out.println("X: " +point.getX()+" ; Y: "+point.getY()+" "+parkLotation);
 		}
-
-		for (int i = 0; i < driverAgents.size(); i++) {
-			Driver driver = driverAgents.get(i);
+		
+		for (int i = 0; i < nrDriverAgents; i++) {
+			type = r.nextInt(2);
 			road = roadContext.getRandomObject();
 			ArrayList<Junction> endpoints = road.getJunctions();
 			Point initialPoint = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
-
 			junction = junctionContext.getRandomObject();
 			Point finalPoint = junctionGeography.getGeometry(junction).getCentroid();
-
 			Coordinate initialCoordinate = new Coordinate(initialPoint.getX(),initialPoint.getY());
 			Coordinate finalCoordinate = new Coordinate(finalPoint.getX(),finalPoint.getY());
-
-			driver.setPositions(initialCoordinate, finalCoordinate);
-
-			agentContext.add(driver);
-			getAgentGeography().move(driver, initialPoint);
+			int durationOfStay = 10;
+			double walkDistance = 200.0;
+			double defaultSatisfaction = 1.0;
+			
+			if(type == 0) {
+				ExploratoryDriver eDriver = new ExploratoryDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
+				agentContext.add(eDriver);
+				getAgentGeography().move(eDriver, initialPoint);
+			} else {
+				RationalDriver rDriver = new RationalDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
+				agentContext.add(rDriver);
+				getAgentGeography().move(rDriver, initialPoint);
+			}
 		}
 
 	}

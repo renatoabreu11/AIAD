@@ -63,24 +63,13 @@ public abstract class Driver extends Agent {
 	 * @param durationOfStay
 	 * @param walkDistance
 	 */
-	public Driver(Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction) {
-		super("Driver", Type.RATIONAL_DRIVER);
+	public Driver(String name,Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction,Type type) {
+		super(name, type);
 		this.state = DriverState.ENTER;
-		this.destination = destPosition;
-		this.currentPosition = srcPosition;
 		this.durationOfStay = durationOfStay;
 		this.walkDistance = walkDistance;
 		this.defaultSatisfaction = defaultSatisfaction;
-	}
-	
-	/**
-	 * Default constructor
-	 * @param name
-	 * @param type
-	 */
-	public Driver(String name, Type type) {
-		super(name, type);
-		this.state = DriverState.ENTER;
+		setPosition(srcPosition,destPosition);
 	}
 
 	@Override
@@ -129,6 +118,7 @@ public abstract class Driver extends Agent {
 					LOGGER.log(Level.FINE,
 							this.getName() + " travelling to " + this.route.getDestinationBuilding().toString());
 				} else {
+					System.out.println("Making Request");
 					this.state = DriverState.REQUEST;
 					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
 				}
@@ -242,7 +232,7 @@ public abstract class Driver extends Agent {
 	 * @param initialCoordinate
 	 * @param finalCoordinate
 	 */
-	public void setPositions(Coordinate initialCoordinate, Coordinate finalCoordinate) {
+	public void setPosition(Coordinate initialCoordinate, Coordinate finalCoordinate) {
 		this.currentPosition = initialCoordinate;
 		this.destination = finalCoordinate;
 		

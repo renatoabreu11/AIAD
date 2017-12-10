@@ -22,8 +22,8 @@ public abstract class ParkingLot extends Agent {
 
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
-	public int capacity = 1;
-	protected int currLotation = 1;
+	public int capacity = 100;
+	protected int currLotation = 0;
 	
 	protected WeeklyInfo weeklyInfo;
 	protected WeeklyInfo previousWeeklyInfo;
@@ -38,16 +38,11 @@ public abstract class ParkingLot extends Agent {
 	 * @param position
 	 * @param maxCapacity
 	 */
-	public ParkingLot(Coordinate position, int maxCapacity, Coordinate currentPosition) {
-		super("park");
-		this.position = position;
+	public ParkingLot(String name,Coordinate position, int maxCapacity,Type type) {
+		super(name, type);
 		this.capacity = maxCapacity;
 		setWeeklyInfo(new WeeklyInfo((AID) this.getAID()));
-	}
-	
-	public ParkingLot(String name, Type type) {
-		super(name, type);
-		setWeeklyInfo(new WeeklyInfo((AID) this.getAID()));
+		setPosition(position);
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)

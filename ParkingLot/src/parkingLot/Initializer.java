@@ -44,8 +44,7 @@ public class Initializer extends RepastSLauncher{
 		}
 		
 		Parameters params = RunEnvironment.getInstance().getParameters();
-		agentManager.initAgents(params);
-		simulation.AddAgentsToEnvironent(agentManager.parkingAgents, agentManager.driverAgents);
+		simulation.AddAgentsToEnvironent(agentManager.parkingAgents, agentManager.driverAgents,params);
 		agentManager.startAgents();
 		
 	}
