@@ -228,8 +228,8 @@ public class Simulation {
 			int durationOfStay;
 			if (currentDay != 6 && currentDay != 7) {
 				double ticksDay = Initializer.manager.getCurrentTickInDay();
-				int minHour = Initializer.manager.ticksPerHour*7;
-				int maxHour = Initializer.manager.ticksPerHour*9;
+				int minHour = Manager.ticksPerHour*7;
+				int maxHour = Manager.ticksPerHour*9;
 				if(ticksDay >= minHour && ticksDay <= maxHour) {
 					durationOfStay = r.nextInt(1000)+3500;
 				}

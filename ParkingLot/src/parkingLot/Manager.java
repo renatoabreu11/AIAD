@@ -62,12 +62,6 @@ public class Manager extends Agent {
 					week++;
 					setCurrentTickInWeek(0);
 					setUtilityPerWeek(0);
-					
-					// TODO remove this
-					IndexedIterable<ParkingLot> pl = Simulation.parkingLotContext.getObjects(ParkingLot.class);
-					for (int i = 0; i < pl.size(); i++) {
-						pl.get(i).updatePricingScheme();
-					}
 				}
 			}
 		}

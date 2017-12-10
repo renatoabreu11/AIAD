@@ -122,17 +122,8 @@ public abstract class ParkingLot extends Agent {
 		return true;
 	}
 	
-	public void updatePricingScheme() {
-		
-	}
-	
-	/**
-	 * Removes all drivers from the park
-	 */
-	public void closeParkingFacility() {
+	public void updateWeekInfo() {
 		weeklyInfo.endWeek();
-		parkedDrivers = new HashMap<String, Integer>();
-		currLotation = 0;
 	}
 	
 	/**
