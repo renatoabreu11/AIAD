@@ -133,4 +133,17 @@ public class Manager extends Agent {
 	public void addUtility(double driverUtility) {
 		this.globalUtility += driverUtility;
 	}
+	
+	public int calculateNumberOfDrivers() {
+		double currentHour = Math.floorDiv(currentTickInDay, 1000);
+		
+		int numDrivers=(int)((9.7465137943127814*10)+(4.1313445183117764*10*currentHour)+(-5.0378347149419739*10*Math.pow(currentHour, 2))+
+				(1.9382369234511167*10*Math.pow(currentHour, 3))+(-3.3184195775022003*Math.pow(currentHour, 4))+
+				(2.9929797307649647/10*Math.pow(currentHour, 5))+(-1.4828693808010440/100*Math.pow(currentHour, 6))+
+				(3.8165393557919086/10000*Math.pow(currentHour, 7))+(-3.9870796373014557/1000000*Math.pow(currentHour,8)));
+		
+		System.out.println("Current hour: "+currentHour+", number drivers: "+numDrivers+" "+currentTickInDay);
+		
+		return numDrivers;
+	}
 }

@@ -55,8 +55,6 @@ public class Simulation {
 
 	public static Context<ParkingLot> parkingLotContext;
 	private static Geography<ParkingLot> parkingLotGeography;
-	
-	public boolean generate = true;
 
 	public Simulation(Context<Object> context) {
 		Simulation.context = context;
@@ -125,13 +123,11 @@ public class Simulation {
 	 * Add the defined agents to the simulation
 	 */
 	public void AddAgentsToEnvironent(ArrayList<ParkingLot> parkingLotAgents, ArrayList<Driver> driverAgents,Parameters params) {
-		
-		int nrDriverAgents = 100;//params.getInteger("driver_count");
 		int nrParkingAgents = 8;//params.getInteger("parking_count");
 		
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-		schedule.schedule(ScheduleParameters.createRepeating(100, 1000), this,
-				"addDrivers",10);
+		schedule.schedule(ScheduleParameters.createRepeating(1000, 1000), this,
+				"addDrivers");
 		
 		this.addParkingLots(nrParkingAgents, parkingLotAgents);
 		//this.addDrivers(nrDriverAgents);
@@ -175,40 +171,38 @@ public class Simulation {
 		}
 	}
 
-	public void addDrivers(int nrDriverAgents) {
-		if(generate) {
-			generate = false;
-			Junction junction;
-			Road road;
-			Random r = new Random();
-			int type = 0;
+	public void addDrivers() {
+		int nrDriverAgents = Initializer.manager.calculateNumberOfDrivers();
+		Junction junction;
+		Road road;
+		Random r = new Random();
+		int type = 0;
+		
+		ExploratoryDriver eDriver;
+		RationalDriver rDriver;
+		for (int i = 0; i < nrDriverAgents; i++) {
+			type = r.nextInt(2);
+			road = roadContext.getRandomObject();
+			ArrayList<Junction> endpoints = road.getJunctions();
+			Point initialPoint = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
+			junction = junctionContext.getRandomObject();
+			Point finalPoint = junctionGeography.getGeometry(junction).getCentroid();
+			Coordinate initialCoordinate = new Coordinate(initialPoint.getX(),initialPoint.getY());
+			Coordinate finalCoordinate = new Coordinate(finalPoint.getX(),finalPoint.getY());
+			int durationOfStay = (r.nextInt(100)+1)*10; // [10,10000]
+			double walkDistance = (r.nextInt(500)+100); // [100,600[
+			double defaultSatisfaction = 1.0; //TODO random satisfaction
 			
-			ExploratoryDriver eDriver;
-			RationalDriver rDriver;
-			for (int i = 0; i < nrDriverAgents; i++) {
-				type = r.nextInt(2);
-				road = roadContext.getRandomObject();
-				ArrayList<Junction> endpoints = road.getJunctions();
-				Point initialPoint = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
-				junction = junctionContext.getRandomObject();
-				Point finalPoint = junctionGeography.getGeometry(junction).getCentroid();
-				Coordinate initialCoordinate = new Coordinate(initialPoint.getX(),initialPoint.getY());
-				Coordinate finalCoordinate = new Coordinate(finalPoint.getX(),finalPoint.getY());
-				int durationOfStay = (r.nextInt(100)+1)*10; // [10,10000]
-				double walkDistance = (r.nextInt(500)+100); // [100,600[
-				double defaultSatisfaction = 1.0; //TODO random satisfaction
-				
-				if(type == 0) {
-					eDriver = new ExploratoryDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
-					agentContext.add(eDriver);
-					getAgentGeography().move(eDriver, initialPoint);
-					Initializer.agentManager.acceptDriver(eDriver);
-				} else {
-					rDriver = new RationalDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
-					agentContext.add(rDriver);
-					getAgentGeography().move(rDriver, initialPoint);
-					Initializer.agentManager.acceptDriver(rDriver);
-				}
+			if(type == 0) {
+				eDriver = new ExploratoryDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
+				agentContext.add(eDriver);
+				getAgentGeography().move(eDriver, initialPoint);
+				Initializer.agentManager.acceptDriver(eDriver);
+			} else {
+				rDriver = new RationalDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
+				agentContext.add(rDriver);
+				getAgentGeography().move(rDriver, initialPoint);
+				Initializer.agentManager.acceptDriver(rDriver);
 			}
 		}
 	}
