@@ -239,9 +239,12 @@ public class Simulation {
 				int maxHour = Manager.ticksPerHour * 9;
 				if (ticksDay >= minHour && ticksDay <= maxHour) {
 					durationOfStay = r.nextInt(maxTimeInParkMorningWorkers) + 210;
+				} else {
+					durationOfStay = r.nextInt(maxTimeInPark) + 30;
 				}
+			} else {
+				durationOfStay = r.nextInt(maxTimeInPark) + 30;
 			}
-			durationOfStay = r.nextInt(maxTimeInPark) + 30;
 			double walkDistance = (r.nextInt(500) + 100); // [100,600[
 			double defaultSatisfaction = 1.0; // TODO random satisfaction
 
