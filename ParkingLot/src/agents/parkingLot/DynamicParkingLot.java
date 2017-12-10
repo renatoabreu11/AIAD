@@ -28,7 +28,15 @@ public class DynamicParkingLot extends ParkingLot {
 				else
 					variation += days.get(i).getTotalProfit();
 			}
-			variation /= 7; 
+			variation /= 7;
+			if(variation > 2) {
+				variation = 2;
+			}
+			
+			if(variation < -2) {
+				variation = -2;
+			}
+			
 		    double learningRate = 0.3; 
 		    double newMin = ps.getMinPricePerStay() + learningRate * ps.getMinPricePerStay() * (variation - 1);
 		    double newMax = ps.getMaxPricePerStay() + learningRate * ps.getMaxPricePerStay() * (variation - 1);

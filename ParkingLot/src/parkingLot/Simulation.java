@@ -94,9 +94,9 @@ public class Simulation {
 
 		} catch (MalformedURLException | FileNotFoundException e) {
 			e.printStackTrace();
-		}	
+		}
 	}
-	
+
 	/**
 	 * Add agents (driver and parks) to the context
 	 */
@@ -108,7 +108,7 @@ public class Simulation {
 				GlobalVars.CONTEXT_NAMES.AGENT_GEOGRAPHY, agentContext,
 				new GeographyParameters<Agent>(new SimpleAdder<Agent>()));
 
-		//creates parking context to have access to only parking lot agents
+		// creates parking context to have access to only parking lot agents
 		parkingLotContext = new ParkingLotContext();
 		context.addSubContext(parkingLotContext);
 		parkingLotGeography = GeographyFactoryFinder.createGeographyFactory(null).createGeography(
@@ -121,17 +121,19 @@ public class Simulation {
 	/**
 	 * Add the defined agents to the simulation
 	 */
-	public void AddAgentsToEnvironent(ArrayList<ParkingLot> parkingLotAgents, ArrayList<Driver> driverAgents,Parameters params) {
-		int nrParkingAgents = 8;//params.getInteger("parking_count");
-		
+	public void AddAgentsToEnvironent(ArrayList<ParkingLot> parkingLotAgents, ArrayList<Driver> driverAgents,
+			Parameters params) {
+		int nrParkingAgents = 8;// params.getInteger("parking_count");
+
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-		schedule.schedule(ScheduleParameters.createRepeating(250, 250), this, //come�a aos 250 ticks e chama a fun��o addDrivers de 250 em 250
+		schedule.schedule(ScheduleParameters.createRepeating(250, 250), this, // come�a aos 250 ticks e chama a
+																				// fun��o addDrivers de 250 em 250
 				"addDrivers");
-		
+
 		this.addParkingLots(nrParkingAgents, parkingLotAgents);
 	}
-	
-	public void addParkingLots(int nrParkingAgents,ArrayList<ParkingLot> parkingLotAgents) {
+
+	public void addParkingLots(int nrParkingAgents, ArrayList<ParkingLot> parkingLotAgents) {
 		Point point;
 		Random r = new Random();
 		int type = 0;
@@ -145,58 +147,59 @@ public class Simulation {
 		coords.add(new Coordinate(-1.5170339492937859, 53.834459028019396));
 		coords.add(new Coordinate(-1.5134111539939434, 53.83366239221787));
 		coords.add(new Coordinate(-1.5097128267739806, 53.834141679352555));
-		
+
 		StaticParkingLot sPark;
 		DynamicParkingLot dPark;
-		
+
 		IndexedIterable<Junction> index = junctionContext.getObjects(Junction.class);
-		for(int i = 0; i < index.size(); i++) {
+		for (int i = 0; i < index.size(); i++) {
 			Coordinate jCoord = index.get(i).getCoords();
-			if(coords.contains(jCoord)) {
+			if (coords.contains(jCoord)) {
 				point = junctionGeography.getGeometry(index.get(i)).getCentroid();
-				
+
 				type = r.nextInt(2);
-				parkLotation = r.nextInt(101)+250;
-				if(type == 0) {
-					System.out.println("Static"+i);
-					sPark = new StaticParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
+				parkLotation = r.nextInt(101) + 250;
+				if (type == 0) {
+					System.out.println("Static" + i);
+					sPark = new StaticParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
 					agentContext.add(sPark);
 					getAgentGeography().move(sPark, point);
 					parkingLotContext.add(sPark);
-					getParkingLotGeography().move(sPark,  point);
-					
+					getParkingLotGeography().move(sPark, point);
+
 					parkingLotAgents.add(sPark);
 				} else {
-					System.out.println("Dynamic"+i);
-					dPark = new DynamicParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
+					System.out.println("Dynamic" + i);
+					dPark = new DynamicParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
 					agentContext.add(dPark);
 					getAgentGeography().move(dPark, point);
 					parkingLotContext.add(dPark);
-					getParkingLotGeography().move(dPark,  point);
-					
+					getParkingLotGeography().move(dPark, point);
+
 					parkingLotAgents.add(dPark);
 				}
-				
-				System.out.println("X: " +point.getX()+" ; Y: "+point.getY()+" "+parkLotation);
-			}	
+
+				System.out.println("X: " + point.getX() + " ; Y: " + point.getY() + " " + parkLotation);
+			}
 		}
 	}
 
 	public void addDrivers() {
 		Random r = new Random();
 		int nrDriverAgents;
-		
-		double offset = (r.nextInt(30)+85)/100;
-		if(Initializer.manager.getDay() == 6 || Initializer.manager.getDay() == 7) {
-			nrDriverAgents = (int) ((int) Initializer.manager.calculateNumberOfDriversWeekEndDays()*offset);
+
+		double offset = (r.nextInt(30) + 85) / 100;
+		int currentDay = Initializer.manager.getDay();
+		if (currentDay == 6 || currentDay == 7) {
+			nrDriverAgents = (int) ((int) Initializer.manager.calculateNumberOfDriversWeekEndDays() * offset);
 		} else {
-			nrDriverAgents = (int) ((int) Initializer.manager.calculateNumberOfDriversWeekDays()*offset);
+			nrDriverAgents = (int) ((int) Initializer.manager.calculateNumberOfDriversWeekDays() * offset);
 		}
-		
+
 		Junction junction;
 		Road road;
 		int type = 0;
-		
+
 		ExploratoryDriver eDriver;
 		RationalDriver rDriver;
 		for (int i = 0; i < nrDriverAgents; i++) {
@@ -206,25 +209,37 @@ public class Simulation {
 			Point initialPoint = junctionGeography.getGeometry(endpoints.get(0)).getCentroid();
 			junction = junctionContext.getRandomObject();
 			Point finalPoint = junctionGeography.getGeometry(junction).getCentroid();
-			Coordinate initialCoordinate = new Coordinate(initialPoint.getX(),initialPoint.getY());
-			Coordinate finalCoordinate = new Coordinate(finalPoint.getX(),finalPoint.getY());
-			int durationOfStay = (r.nextInt(100)+1)*10; // [10,10000]
-			double walkDistance = (r.nextInt(500)+100); // [100,600[
-			double defaultSatisfaction = 1.0; //TODO random satisfaction
-			
-			if(type == 0) {
-				eDriver = new ExploratoryDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
+			Coordinate initialCoordinate = new Coordinate(initialPoint.getX(), initialPoint.getY());
+			Coordinate finalCoordinate = new Coordinate(finalPoint.getX(), finalPoint.getY());
+			int durationOfStay;
+			if (currentDay != 6 && currentDay != 7) {
+				double ticksDay = Initializer.manager.getCurrentTickInDay();
+				int minHour = Initializer.manager.ticksPerHour*7;
+				int maxHour = Initializer.manager.ticksPerHour*9;
+				if(ticksDay >= minHour && ticksDay <= maxHour) {
+					durationOfStay = r.nextInt(1000)+3500;
+				}
+			}
+			durationOfStay = r.nextInt(450)*10+500;
+			double walkDistance = (r.nextInt(500) + 100); // [100,600[
+			double defaultSatisfaction = 1.0; // TODO random satisfaction
+
+			if (type == 0) {
+				eDriver = new ExploratoryDriver(initialCoordinate, finalCoordinate, durationOfStay, walkDistance,
+						defaultSatisfaction);
 				agentContext.add(eDriver);
 				getAgentGeography().move(eDriver, initialPoint);
 				Initializer.agentManager.acceptDriver(eDriver);
 			} else {
-				rDriver = new RationalDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
+				rDriver = new RationalDriver(initialCoordinate, finalCoordinate, durationOfStay, walkDistance,
+						defaultSatisfaction);
 				agentContext.add(rDriver);
 				getAgentGeography().move(rDriver, initialPoint);
 				Initializer.agentManager.acceptDriver(rDriver);
 			}
 		}
 	}
+
 	/**
 	 * Schedule the simulation and defines the update method for each agent context
 	 */
@@ -244,16 +259,18 @@ public class Simulation {
 
 	/**
 	 * Remove an agent from the simulation and scheduler
+	 * 
 	 * @param driver
 	 */
 	public static void removeAgent(Driver driver) {
 		agentContext.remove(driver);
 		agentGeography.move(driver, null);
 	}
-	
+
 	/**
-	 * Move an agent. This method is required -- rather than giving agents direct access to the agentGeography --
-	 * because when multiple threads are used they can interfere with each other and agents end up moving incorrectly.
+	 * Move an agent. This method is required -- rather than giving agents direct
+	 * access to the agentGeography -- because when multiple threads are used they
+	 * can interfere with each other and agents end up moving incorrectly.
 	 * 
 	 * @param agent
 	 *            The agent to move.
@@ -263,11 +280,12 @@ public class Simulation {
 	public static synchronized void moveAgent(Agent agent, Point point) {
 		agentGeography.move(agent, point);
 	}
-	
+
 	/**
-	 * Move an agent by a vector. This method is required -- rather than giving agents direct access to the
-	 * agentGeography -- because when multiple threads are used they can interfere with each other and agents end up
-	 * moving incorrectly.
+	 * Move an agent by a vector. This method is required -- rather than giving
+	 * agents direct access to the agentGeography -- because when multiple threads
+	 * are used they can interfere with each other and agents end up moving
+	 * incorrectly.
 	 * 
 	 * @param agent
 	 *            The agent to move.
@@ -280,34 +298,38 @@ public class Simulation {
 	public static synchronized void moveAgentByVector(Agent agent, double distToTravel, double angle) {
 		agentGeography.moveByVector(agent, distToTravel, angle);
 	}
-	
+
 	/**
-	 * Get the geometry of the given agent. This method is required -- rather than giving agents direct access to the
-	 * agentGeography -- because when multiple threads are used they can interfere with each other and agents end up
-	 * moving incorrectly.
+	 * Get the geometry of the given agent. This method is required -- rather than
+	 * giving agents direct access to the agentGeography -- because when multiple
+	 * threads are used they can interfere with each other and agents end up moving
+	 * incorrectly.
 	 */
 	public static synchronized Geometry getAgentGeometry(Agent agent) {
 		return agentGeography.getGeometry(agent);
 	}
-	
+
 	/**
 	 * Get the agent geometry
+	 * 
 	 * @return
 	 */
 	public static synchronized Geography<Agent> getAgentGeography() {
 		return agentGeography;
 	}
-	
+
 	/**
 	 * Get the parking lot geometry
+	 * 
 	 * @return
 	 */
 	public static synchronized Geography<ParkingLot> getParkingLotGeography() {
 		return parkingLotGeography;
 	}
-	
+
 	/**
 	 * Return the simulation context
+	 * 
 	 * @return
 	 */
 	public Context<Object> getContext() {
