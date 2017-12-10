@@ -1,5 +1,7 @@
 package behaviours;
 
+import com.sun.corba.se.impl.util.Utility;
+
 import agents.driver.Driver;
 import agents.driver.Driver.DriverState;
 import jade.lang.acl.ACLMessage;
@@ -48,8 +50,11 @@ public class RequestEntryPerformer extends Behaviour {
 					price = Double.parseDouble(reply.getContent());
 					
 					driverUtility = ((Driver) myAgent).getUtility(price);
-					// TODO change step accordingly to utility
-					step = 2; 
+					if(driverUtility < 0.0) {
+						((Driver) myAgent).logMessage("Park entry failed: low utility");
+						((Driver) myAgent).setState(DriverState.PICKING);
+						step = 4;
+					} else step = 2;
 				}
 			}
 			else {
@@ -93,9 +98,6 @@ public class RequestEntryPerformer extends Behaviour {
 	}
 
 	public boolean done() {
-		if (step == 2 && driverUtility > 2000) {
-			System.out.println("Attempt failed: Low utility value");
-		}
-		return ((step == 2 && driverUtility > 2000) || step == 4);
+		return (step == 4);
 	}
 }
