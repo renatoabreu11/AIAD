@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor simphonyVersion="2.5.0">
-  <name>Time Series Chart</name>
-  <dataSet>A Data Set</dataSet>
+  <name>Parking profits</name>
+  <dataSet>parking profits</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel></yAxisLabel>
-  <chartTitle>prices</chartTitle>
+  <yAxisLabel>prodfits</yAxisLabel>
+  <chartTitle>profits</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
