@@ -18,20 +18,19 @@ public class PricingScheme implements Serializable {
 		this.pricePerHour = pricePerHour;
 		this.minPricePerStay = minPricePerStay;
 		this.maxPricePerStay = maxPricePerStay;
-		pricesPerHour = new double[24];
-		for (int i = 0; i < pricesPerHour.length; i++) {
-			pricesPerHour[i] = 1;
-		}
 	}
 	
 	public PricingScheme() {
 		pricePerHour = 1;
 		minPricePerStay = 5;
 		maxPricePerStay = 50;
-		pricesPerHour = new double[24];
-		for (int i = 0; i < pricesPerHour.length; i++) {
-			pricesPerHour[i] = 1;
-		}
+	}
+	
+	public PricingScheme(double[] pricesPerHour, double minPrice, double maxPrice) {
+		this.pricePerHour = -1;
+		this.pricesPerHour = pricesPerHour;
+		minPricePerStay = minPrice;
+		maxPricePerStay = maxPrice;
 	}
 	
 	public PricingScheme(double[] pricesPerHour) {
