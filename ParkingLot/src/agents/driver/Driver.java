@@ -60,24 +60,13 @@ public abstract class Driver extends Agent {
 	 * @param durationOfStay
 	 * @param walkDistance
 	 */
-	public Driver(Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction) {
-		super("Driver", Type.RATIONAL_DRIVER);
+	public Driver(String name,Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction,Type type) {
+		super(name, type);
 		this.state = DriverState.ENTER;
-		this.destination = destPosition;
-		this.currentPosition = srcPosition;
 		this.durationOfStay = durationOfStay;
 		this.walkDistance = walkDistance;
 		this.defaultSatisfaction = defaultSatisfaction;
-	}
-	
-	/**
-	 * Default constructor
-	 * @param name
-	 * @param type
-	 */
-	public Driver(String name, Type type) {
-		super(name, type);
-		this.state = DriverState.ENTER;
+		setPosition(srcPosition,destPosition);
 	}
 
 	@Override
@@ -164,6 +153,25 @@ public abstract class Driver extends Agent {
 
 	abstract void updatePossibleParks();
 
+		for(int i = 0;i<parks.size();i++) {
+			tmp = parks.get(i).getPosition();
+			Route.distance(this.destination, tmp, distAndAng);
+			System.out.println("I"+i+": "+distAndAng[0]);
+			if(distAndAng[0] < this.walkDistance) {
+				parksInRange.add(new ParkDistance(parks.get(i),distAndAng[0]));
+			}
+		}
+		
+		if(this.type == Type.RATIONAL_DRIVER) {
+			parksInRange.sort(new Comparator<ParkDistance>() {
+		        @Override
+		        public int compare(ParkDistance pd1, ParkDistance pd2) {
+		            return pd1.compareTo(pd2);
+		        }
+		    });
+		}
+	}
+
 	abstract void getPossibleParks();
 
 	public void pickParkToGo() {
@@ -213,7 +221,7 @@ public abstract class Driver extends Agent {
 	 * @param initialCoordinate
 	 * @param finalCoordinate
 	 */
-	public void setPositions(Coordinate initialCoordinate, Coordinate finalCoordinate) {
+	public void setPosition(Coordinate initialCoordinate, Coordinate finalCoordinate) {
 		this.currentPosition = initialCoordinate;
 		this.destination = finalCoordinate;
 		this.state = DriverState.PICKING;

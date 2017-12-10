@@ -13,14 +13,21 @@ import sajas.sim.repasts.RepastSLauncher;
 import sajas.wrapper.ContainerController;
 
 public class Initializer extends RepastSLauncher{
+	public static enum ExperienceType {
+		EXPERIENCE_1,
+		EXPERIENCE_2
+}
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	private static long speedTimer = -1;
 	
-	private static ContainerController mainContainer;
+	
 	public static AgentManager agentManager;
 	public static Manager manager;
+	private static ContainerController mainContainer;
 	private Simulation simulation;
+	
+	public static ExperienceType experienceType = ExperienceType.EXPERIENCE_1;
 
 	@Override
 	public String getName() {
@@ -44,10 +51,8 @@ public class Initializer extends RepastSLauncher{
 		}
 		
 		Parameters params = RunEnvironment.getInstance().getParameters();
-		agentManager.initAgents(params);
-		simulation.AddAgentsToEnvironent(agentManager.parkingAgents, agentManager.driverAgents);
+		simulation.AddAgentsToEnvironent(agentManager.parkingAgents, agentManager.driverAgents,params);
 		agentManager.startAgents();
-		
 	}
 	
 	@Override

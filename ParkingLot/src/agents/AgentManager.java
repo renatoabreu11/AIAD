@@ -72,21 +72,6 @@ public class AgentManager extends Agent{
 		LOGGER.info("AgentManager " + getAID().getName()  + " terminating");
 	}
 	
-	public void initAgents(Parameters params) {
-		int nrDriverAgents = 1;//params.getInteger("driver_count");
-		int nrParkingAgents = 2;//params.getInteger("parking_count");
-		
-		for(int i = 0; i < nrDriverAgents; i++) {
-			Driver d = new RationalDriver();
-			driverAgents.add(d);
-		}
-		
-		for(int i = 0; i < nrParkingAgents; i++) {
-			ParkingLot pl = new DynamicParkingLot();
-			parkingAgents.add(pl);
-		}
-	}
-
 	public void startAgents() {
 		for(int i = 0; i < driverAgents.size(); i++) {
 			try {
@@ -102,6 +87,15 @@ public class AgentManager extends Agent{
 			} catch (StaleProxyException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	public void acceptDriver(Driver driver) {
+		this.driverAgents.add(driver);
+		try {
+			mainContainer.acceptNewAgent(driver.getName(), driver).start();
+		} catch (StaleProxyException e) {
+			e.printStackTrace();
 		}
 	}
 	

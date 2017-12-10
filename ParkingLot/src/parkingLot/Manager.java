@@ -8,9 +8,9 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 public class Manager extends Agent {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
-	public static int ticksPerWeek = 21000;
-	public static int ticksPerDay = 3000;
-	public static int ticksPerHour = 125;
+	public static int ticksPerWeek = 12000*7;
+	public static int ticksPerDay = 12000;
+	public static int ticksPerHour = 500;
 	public static double noParkAvailableUtility = -50.0; // TODO change this 
 	
 	private int totalTicks;
@@ -19,7 +19,7 @@ public class Manager extends Agent {
 	private GlobalVars.WEEKDAY day;
 	private int hour;
 	private int currentTickInWeek;
-	private int currentTickInDay;
+	private double currentTickInDay;
 	private int currentTickInHour;
 	
 	private double globalUtility;
@@ -90,7 +90,7 @@ public class Manager extends Agent {
 		this.hour = hour;
 	}
 
-	public int getCurrentTickInDay() {
+	public double getCurrentTickInDay() {
 		return currentTickInDay;
 	}
 
@@ -132,5 +132,39 @@ public class Manager extends Agent {
 
 	public void addUtility(double driverUtility) {
 		this.globalUtility += driverUtility;
+	}
+	
+	public int calculateNumberOfDriversWeekDays() {
+		double currentHour = currentTickInDay/1000.0;
+		int numDrivers= (int) (9.7465137943127814e+001 * Math.pow(currentHour,0)
+        +  4.1313445183117764e+001 * Math.pow(currentHour,1)
+        + -5.0378347149419739e+001 * Math.pow(currentHour,2)
+        +  1.9382369234511167e+001 * Math.pow(currentHour,3)
+        + -3.3184195775022003e+000 * Math.pow(currentHour,4)
+        +  2.9929797307649647e-001 * Math.pow(currentHour,5)
+        + -1.4828693808010440e-002 * Math.pow(currentHour,6)
+        +  3.8165393557919086e-004 * Math.pow(currentHour,7)
+        + -3.9870796373014557e-006 * Math.pow(currentHour,8));
+		
+		System.out.println("Current hour: "+currentHour+" "+currentTickInDay);
+		
+		return numDrivers;
+	}
+	
+	public int calculateNumberOfDriversWeekEndDays() {
+		double currentHour = currentTickInDay/1000;
+		int numDrivers =  (int) (5.5410955131276346e+001 * Math.pow(currentHour,0)
+        +  2.1102033222065248e+001 * Math.pow(currentHour,1)
+        + -1.8796855577791021e+001 * Math.pow(currentHour,2)
+        +  7.3522350964157379e+000 * Math.pow(currentHour,3)
+        + -1.2077376021269184e+000 * Math.pow(currentHour,4)
+        +  1.0233526625755751e-001 * Math.pow(currentHour,5)
+        + -4.7429521356996658e-003 * Math.pow(currentHour,6)
+        +  1.1445930510905407e-004 * Math.pow(currentHour,7)
+        + -1.1274232393164334e-006 * Math.pow(currentHour,8));
+		
+		System.out.println("Current hour: "+currentHour+" "+currentTickInDay);
+		
+		return numDrivers;
 	}
 }

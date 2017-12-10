@@ -13,12 +13,12 @@ import utils.PricingScheme;
 import utils.WeeklyInfo;
 
 public class CooperativeParkingLot extends ParkingLot {
-	public CooperativeParkingLot(Coordinate position, int maxCapacity,Coordinate currentPosition) {
-		super(position, maxCapacity, currentPosition);
+	public CooperativeParkingLot(Coordinate position, int maxCapacity) {
+		super("CooperativeParkingLot",position, maxCapacity,Type.COOPERATIVE_PARKING_LOT);
 		this.type = Type.COOPERATIVE_PARKING_LOT;
 	}
 
-	public CooperativeParkingLot() {
+	/*public CooperativeParkingLot() {
 		super("CooperativeParkingLot", Type.COOPERATIVE_PARKING_LOT);
 		double[] pricesPerHour = new double[24];
 		Random generator = new Random();
@@ -29,7 +29,7 @@ public class CooperativeParkingLot extends ParkingLot {
 	    }
 	    PricingScheme ps = new PricingScheme(pricesPerHour);
 	    this.weeklyInfo.setPricingScheme(ps);
-	}
+	}*/
 
 	public void updatePricingScheme(HashMap<String, WeeklyInfo> parksWeeklyInfo) {
 
