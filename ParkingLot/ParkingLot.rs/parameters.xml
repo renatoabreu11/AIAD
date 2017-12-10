@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <parameters>
 
-	<parameter name="randomSeed" displayName="Default Random Seed" type="int" defaultValue="__NULL__" />
-
-	<parameter name="driver_count" displayName="Driver Count" type="int" 
-			defaultValue="20" 
+ <parameter name="randomSeed" displayName="Default Random Seed" type="int" defaultValue="__NULL__" />
+ 
+	<parameter name="experiment" displayName="Experiment" type="int" 
+			defaultValue="1" 
 			isReadOnly="false" 
 			converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 							
 	/>
 	
-	<parameter name="parking_count" displayName="Parking Lot Count" type="int" 
-			defaultValue="5" 
-			isReadOnly="false" 
-			converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-							
-	/>
 </parameters>

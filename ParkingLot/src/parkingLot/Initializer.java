@@ -57,6 +57,11 @@ public class Initializer extends RepastSLauncher{
 	@Override
 	public Context<?> build(Context<Object> context) {
 		context.setId("ParkingLotSimulation");
+		
+		Parameters params = RunEnvironment.getInstance().getParameters();
+		int experiment = (Integer) params.getValue("experiment");
+		if(experiment == 2) experienceType = ExperienceType.EXPERIENCE_2;
+		
 		simulation = new Simulation(context);
 		simulation.addEnvironment();
 		manager = new Manager();

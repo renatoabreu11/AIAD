@@ -26,6 +26,7 @@ import environment.contexts.JunctionContext;
 import environment.contexts.ParkingLotContext;
 import environment.contexts.RoadContext;
 import parkingLot.Initializer.ExperienceType;
+import parkingLot.GlobalVars.SIMULATION;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -139,7 +140,6 @@ public class Simulation {
 		Point point;
 		Random r = new Random();
 		int type = 0;
-		int parkLotation;
 		ArrayList<Coordinate> coords = new ArrayList<>();
 		coords.add(new Coordinate(-1.5179463382681508, 53.830348355155316));
 		coords.add(new Coordinate(-1.512861407674773, 53.8273409081473));
@@ -150,50 +150,17 @@ public class Simulation {
 		coords.add(new Coordinate(-1.5134111539939434, 53.83366239221787));
 		coords.add(new Coordinate(-1.5097128267739806, 53.834141679352555));
 
-		StaticParkingLot sPark;
-		DynamicParkingLot dPark;
-		CooperativeParkingLot cPark;
-
 		IndexedIterable<Junction> index = junctionContext.getObjects(Junction.class);
 		for (int i = 0; i < index.size(); i++) {
 			Coordinate jCoord = index.get(i).getCoords();
 			if (coords.contains(jCoord)) {
 				point = junctionGeography.getGeometry(index.get(i)).getCentroid();
-
-				type = r.nextInt(2);
-				parkLotation = r.nextInt(101) + 250;
-				if (type == 0) {
-					System.out.println("Static" + i);
-					sPark = new StaticParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
-					agentContext.add(sPark);
-					getAgentGeography().move(sPark, point);
-					parkingLotContext.add(sPark);
-					getParkingLotGeography().move(sPark, point);
-
-					parkingLotAgents.add(sPark);
-				} else {
-					if (Initializer.experienceType.equals(ExperienceType.EXPERIENCE_2)) {
-						System.out.println("Cooperative" + i);
-						cPark = new CooperativeParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
-						agentContext.add(cPark);
-						getAgentGeography().move(cPark, point);
-						parkingLotContext.add(cPark);
-						getParkingLotGeography().move(cPark, point);
-
-						parkingLotAgents.add(cPark);
-					} else {
-						System.out.println("Dynamic" + i);
-						dPark = new DynamicParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
-						agentContext.add(dPark);
-						getAgentGeography().move(dPark, point);
-						parkingLotContext.add(dPark);
-						getParkingLotGeography().move(dPark, point);
-
-						parkingLotAgents.add(dPark);
-					}
-				}
-
-				System.out.println("X: " + point.getX() + " ; Y: " + point.getY() + " " + parkLotation);
+				
+				if(Initializer.experienceType.equals(Initializer.ExperienceType.EXPERIENCE_1)) {
+					addExperiment1Parkings(point, parkingLotAgents);
+				}else {
+					addExperiment2Parkings(point, parkingLotAgents, type++);
+				}		
 			}
 		}
 	}
@@ -259,6 +226,71 @@ public class Simulation {
 		}
 	}
 
+	public void addExperiment1Parkings(Point point, ArrayList<ParkingLot> parkingLotAgents) {
+		Random r = new Random();
+		int type = 0;
+		int parkLotation;
+		StaticParkingLot sPark;
+		DynamicParkingLot dPark;
+		
+		type = r.nextInt(2);
+		parkLotation = r.nextInt(101) + 250;
+		if (type == 0) {
+			sPark = new StaticParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
+			agentContext.add(sPark);
+			getAgentGeography().move(sPark, point);
+			parkingLotContext.add(sPark);
+			getParkingLotGeography().move(sPark, point);
+
+			parkingLotAgents.add(sPark);
+		} else {
+			dPark = new DynamicParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
+			agentContext.add(dPark);
+			getAgentGeography().move(dPark, point);
+			parkingLotContext.add(dPark);
+			getParkingLotGeography().move(dPark, point);
+
+			parkingLotAgents.add(dPark);	
+		}
+		System.out.println("X: " + point.getX() + " ; Y: " + point.getY() + " " + parkLotation);
+	}
+	
+	public void addExperiment2Parkings(Point point, ArrayList<ParkingLot> parkingLotAgents, int type) {
+		Random r = new Random();
+		int parkLotation;
+		StaticParkingLot sPark;
+		DynamicParkingLot dPark;
+		CooperativeParkingLot cPark;
+		
+		parkLotation = r.nextInt(101) + 250;
+		if (type < 2) {
+			sPark = new StaticParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
+			agentContext.add(sPark);
+			getAgentGeography().move(sPark, point);
+			parkingLotContext.add(sPark);
+			getParkingLotGeography().move(sPark, point);
+
+			parkingLotAgents.add(sPark);
+		} else if(type < 6) {
+			cPark = new CooperativeParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
+			agentContext.add(cPark);
+			getAgentGeography().move(cPark, point);
+			parkingLotContext.add(cPark);
+			getParkingLotGeography().move(cPark, point);
+
+			parkingLotAgents.add(cPark);
+		} else {
+			dPark = new DynamicParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
+			agentContext.add(dPark);
+			getAgentGeography().move(dPark, point);
+			parkingLotContext.add(dPark);
+			getParkingLotGeography().move(dPark, point);
+
+			parkingLotAgents.add(dPark);
+		}
+		System.out.println("X: " + point.getX() + " ; Y: " + point.getY() + " " + parkLotation);
+	}
+	
 	/**
 	 * Schedule the simulation and defines the update method for each agent context
 	 */
