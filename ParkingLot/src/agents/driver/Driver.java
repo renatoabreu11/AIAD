@@ -182,7 +182,6 @@ public abstract class Driver extends Agent {
 		double effortToArriveAtDest = beta * distAndAng[0];
 		double utility = defaultSatisfaction - payCoefficient * Math.pow(toPayDuringStay, 0.9) 
 				- walkCoefficient * Math.pow(effortToArriveAtDest, 0.9);
-		System.out.println("Utility: " + utility);
 		/*		
 			The powers u and v are both set to 0.9. They create non-linearity in the
 			impact of price and effort on the walking distance. Indeed, it is fair to assume

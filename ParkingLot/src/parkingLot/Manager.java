@@ -58,7 +58,6 @@ public class Manager extends Agent {
 				day = GlobalVars.WEEKDAY.getNextDay(day.id);
 								
 				if(day.equals(GlobalVars.WEEKDAY.MONDAY)) { // next week
-					System.out.println("Week: "+week);
 					week++;
 					setCurrentTickInWeek(0);
 					setUtilityPerWeek(0);
@@ -156,9 +155,7 @@ public class Manager extends Agent {
         + -1.4828693808010440e-002 * Math.pow(currentHour,6)
         +  3.8165393557919086e-004 * Math.pow(currentHour,7)
         + -3.9870796373014557e-006 * Math.pow(currentHour,8));
-		
-		System.out.println("Current hour: "+currentHour+" "+currentTickInDay);
-		
+				
 		return numDrivers;
 	}
 	
@@ -174,9 +171,7 @@ public class Manager extends Agent {
         + -4.7429521356996658e-003 * Math.pow(currentHour,6)
         +  1.1445930510905407e-004 * Math.pow(currentHour,7)
         + -1.1274232393164334e-006 * Math.pow(currentHour,8));
-		
-		System.out.println("Current hour: "+currentHour+" "+currentTickInDay);
-		
+				
 		return numDrivers;
 	}
 
