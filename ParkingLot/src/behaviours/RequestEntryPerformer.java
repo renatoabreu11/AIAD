@@ -83,7 +83,6 @@ public class RequestEntryPerformer extends Behaviour {
 				else {
 					((Driver) myAgent).logMessage("Park entry failed: park at maximum capacity");
 					((Driver) myAgent).setState(DriverState.PICKING);
-					((Driver) myAgent).pickParkToGo();
 				}
 				step = 4;
 			} else {

@@ -114,4 +114,18 @@ public class AgentManager extends Agent{
 		    }
 		}
 	}
+	
+	public synchronized ParkingLot getAgent(String AID) {
+		for (Iterator<ParkingLot> iterator = parkingAgents.iterator(); iterator.hasNext();) {
+		    ParkingLot d = iterator.next();
+		    if (AID.equals(d.getAID().toString())) {
+		        return d;
+		    }
+		}
+		return null;
+	}
+	
+	public synchronized ArrayList<ParkingLot> getParkingAgents() {
+		return this.parkingAgents;
+	}
 }

@@ -117,7 +117,6 @@ public class Simulation {
 	 * Add the defined agents to the simulation
 	 */
 	public void AddAgentsToEnvironent(ArrayList<ParkingLot> parkingLotAgents, ArrayList<Driver> driverAgents) {
-		System.out.println(parkingLotAgents);
 		Junction junction;
 		Road road;
 		Point point;
