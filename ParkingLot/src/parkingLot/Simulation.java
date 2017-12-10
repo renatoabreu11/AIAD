@@ -132,7 +132,6 @@ public class Simulation {
 	}
 	
 	public void addParkingLots(int nrParkingAgents,ArrayList<ParkingLot> parkingLotAgents) {
-		Junction junction;
 		Point point;
 		Random r = new Random();
 		int type = 0;
@@ -153,36 +152,33 @@ public class Simulation {
 		IndexedIterable<Junction> index = junctionContext.getObjects(Junction.class);
 		for(int i = 0; i < index.size(); i++) {
 			Coordinate jCoord = index.get(i).getCoords();
-			for (int j = 0; j < coords.size(); j++) {
-				if(coords.get(j).x == jCoord.x && coords.get(j).y == jCoord.y) {
-					point = junctionGeography.getGeometry(index.get(i)).getCentroid();
+			if(coords.contains(jCoord)) {
+				point = junctionGeography.getGeometry(index.get(i)).getCentroid();
+				
+				type = r.nextInt(2);
+				parkLotation = r.nextInt(101)+250;
+				if(type == 0) {
+					System.out.println("Static"+i);
+					sPark = new StaticParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
+					agentContext.add(sPark);
+					getAgentGeography().move(sPark, point);
+					parkingLotContext.add(sPark);
+					getParkingLotGeography().move(sPark,  point);
 					
-					type = r.nextInt(2);
-					parkLotation = r.nextInt(101)+250;
-					if(type == 0) {
-						System.out.println("Static"+i);
-						sPark = new StaticParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
-						agentContext.add(sPark);
-						getAgentGeography().move(sPark, point);
-						parkingLotContext.add(sPark);
-						getParkingLotGeography().move(sPark,  point);
-						
-						parkingLotAgents.add(sPark);
-					} else {
-						System.out.println("Dynamic"+i);
-						dPark = new DynamicParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
-						agentContext.add(dPark);
-						getAgentGeography().move(dPark, point);
-						parkingLotContext.add(dPark);
-						getParkingLotGeography().move(dPark,  point);
-						
-						parkingLotAgents.add(dPark);
-					}
+					parkingLotAgents.add(sPark);
+				} else {
+					System.out.println("Dynamic"+i);
+					dPark = new DynamicParkingLot(new Coordinate(point.getX(),point.getY()),parkLotation);
+					agentContext.add(dPark);
+					getAgentGeography().move(dPark, point);
+					parkingLotContext.add(dPark);
+					getParkingLotGeography().move(dPark,  point);
 					
-					System.out.println("X: " +point.getX()+" ; Y: "+point.getY()+" "+parkLotation);
+					parkingLotAgents.add(dPark);
 				}
-			}
-			
+				
+				System.out.println("X: " +point.getX()+" ; Y: "+point.getY()+" "+parkLotation);
+			}	
 		}
 	}
 
