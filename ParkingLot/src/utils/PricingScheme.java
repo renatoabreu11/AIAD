@@ -3,6 +3,7 @@ package utils;
 import java.io.Serializable;
 
 import parkingLot.Initializer;
+import parkingLot.Manager;
 
 public class PricingScheme implements Serializable {
 	/**
@@ -57,11 +58,12 @@ public class PricingScheme implements Serializable {
 	}
 
 	public double calculatePrice(double durationOfStay, double scale) {
+		double durationOfStayHour = durationOfStay / Manager.ticksPerHour;
 		double price;
 		if(pricePerHour == -1) { // depends on the current hour
-			price = pricesPerHour[Initializer.manager.getHour()] * durationOfStay;
+			price = pricesPerHour[Initializer.manager.getHour()] * durationOfStayHour;
 		} else { // constant price per minute
-			price = pricePerHour * durationOfStay;
+			price = pricePerHour * durationOfStayHour;
 		}
 		
 		if(price > maxPricePerStay) {

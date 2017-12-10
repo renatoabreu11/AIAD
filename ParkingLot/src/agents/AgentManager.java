@@ -3,6 +3,7 @@ package agents;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Logger;
+
 import agents.driver.Driver;
 import agents.parkingLot.ParkingLot;
 import jade.domain.FIPAException;

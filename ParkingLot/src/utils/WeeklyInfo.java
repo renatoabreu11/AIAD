@@ -54,14 +54,14 @@ public class WeeklyInfo implements Serializable {
 		totalDrivers = 0;
 	}
 
-	public void addDriver(double finalPrice) {
+	public synchronized void addDriver(double finalPrice) {
 		totalProfit += finalPrice;
 		totalDrivers++;
 		DailyInfo di = days.get(Initializer.manager.getDay());
 		di.addDriver(finalPrice, Initializer.manager.getHour());
 	}
 
-	public void removeDriver() {
+	public synchronized void removeDriver() {
 		DailyInfo di = days.get(Initializer.manager.getDay());
 		di.removeDriver(Initializer.manager.getHour());
 	}

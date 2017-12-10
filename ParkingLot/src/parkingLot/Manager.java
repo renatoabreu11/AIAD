@@ -10,9 +10,9 @@ import repast.simphony.util.collections.IndexedIterable;
 public class Manager extends Agent {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
-	public static int ticksPerDay = 12000;
-	public static int ticksPerHour = 500;
-	public static int ticksPerWeek = ticksPerDay*7;
+	public static int ticksPerDay = 720;
+	public static int ticksPerHour = 30;
+	public static int ticksPerWeek = 5040;
 
 	public static double noParkAvailableUtility = -50.0; // TODO change this 
 	
@@ -22,7 +22,7 @@ public class Manager extends Agent {
 	private GlobalVars.WEEKDAY day;
 	private int hour;
 	private int currentTickInWeek;
-	private double currentTickInDay;
+	private int currentTickInDay;
 	private int currentTickInHour;
 	
 	private double globalUtility;
