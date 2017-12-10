@@ -6,8 +6,13 @@
 	<parameter name="experiment" displayName="Experiment" type="int" 
 			defaultValue="1" 
 			isReadOnly="false" 
-			converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-							
+			converter="repast.simphony.parameter.StringConverterFactory$IntConverter"				
+	/>
+	
+	<parameter name="weeks" displayName="Num of weeks" type="int" 
+			defaultValue="20" 
+			isReadOnly="false" 
+			converter="repast.simphony.parameter.StringConverterFactory$IntConverter"				
 	/>
 	
 </parameters>

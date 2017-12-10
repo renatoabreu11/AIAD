@@ -3,6 +3,7 @@ package parkingLot;
 import java.util.logging.Logger;
 
 import agents.Agent;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class Manager extends Agent {
@@ -61,6 +62,9 @@ public class Manager extends Agent {
 					week++;
 					setCurrentTickInWeek(0);
 					setUtilityPerWeek(0);
+					if(week >= Initializer.numOfWeeks) {
+						Simulation.stop = true;
+					}
 				}
 			}
 		}

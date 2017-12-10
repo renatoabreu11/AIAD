@@ -27,6 +27,7 @@ public class Initializer extends RepastSLauncher{
 	private Simulation simulation;
 	
 	public static ExperienceType experienceType = ExperienceType.EXPERIENCE_1;
+	public static int numOfWeeks = 20;
 
 	@Override
 	public String getName() {
@@ -61,6 +62,7 @@ public class Initializer extends RepastSLauncher{
 		Parameters params = RunEnvironment.getInstance().getParameters();
 		int experiment = (Integer) params.getValue("experiment");
 		if(experiment == 2) experienceType = ExperienceType.EXPERIENCE_2;
+		numOfWeeks = (Integer) params.getValue("weeks");
 		
 		simulation = new Simulation(context);
 		simulation.addEnvironment();

@@ -58,6 +58,7 @@ public class Simulation {
 	private static Geography<ParkingLot> parkingLotGeography;
 
 	public boolean generated = true;
+	public static boolean stop = false;
 
 	public Simulation(Context<Object> context) {
 		Simulation.context = context;
@@ -164,6 +165,7 @@ public class Simulation {
 	}
 
 	public void addDrivers() {
+		if(stop) return;
 		Random r = new Random();
 		int nrDriverAgents;
 
