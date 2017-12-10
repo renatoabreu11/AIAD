@@ -126,7 +126,7 @@ public class Simulation {
 		int nrParkingAgents = 8;//params.getInteger("parking_count");
 		
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-		schedule.schedule(ScheduleParameters.createRepeating(250, 250), this, //começa aos 250 ticks e chama a função addDrivers de 250 em 250
+		schedule.schedule(ScheduleParameters.createRepeating(250, 250), this, //comeï¿½a aos 250 ticks e chama a funï¿½ï¿½o addDrivers de 250 em 250
 				"addDrivers");
 		
 		this.addParkingLots(nrParkingAgents, parkingLotAgents);

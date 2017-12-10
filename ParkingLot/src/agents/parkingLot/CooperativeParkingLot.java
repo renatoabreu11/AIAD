@@ -45,7 +45,7 @@ public class CooperativeParkingLot extends ParkingLot {
 	    	}
 		}
 		
-		previousWeeklyInfo = weeklyInfo;
+		
 		double[] pricesPerHour = new double[24];
 		if(parksInfo.size() != 0) {
 			int numberParks = parksInfo.size();
@@ -60,9 +60,19 @@ public class CooperativeParkingLot extends ParkingLot {
 				pricesPerHour[i] /= numberParks; 
 			}
 		} else {
+			double previousProfit = previousWeeklyInfo.getTotalProfit();
+			double[] previousPrices = previousWeeklyInfo.getPricingScheme().getPricesPerHour();
+			double variation;
+			if(previousProfit == 0) variation = weeklyInfo.getTotalProfit();
+			else variation = weeklyInfo.getTotalProfit() / previousProfit;
+			double learningRate = 0.3; 
+			double[] prices = weeklyInfo.getPricingScheme().getPricesPerHour();
+			for (int i = 0; i < pricesPerHour.length; i++) {
+				pricesPerHour[i] = prices[i] + learningRate * prices[i] * (variation - 1);
+			}
 			
 		}
-		
+		previousWeeklyInfo = weeklyInfo;
 		weeklyInfo = new WeeklyInfo((AID) this.getAID(), new PricingScheme(pricesPerHour));
 	}
 }

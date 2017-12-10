@@ -1,7 +1,6 @@
 package agents.driver;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +18,6 @@ import parkingLot.Initializer;
 import parkingLot.Manager;
 import parkingLot.Simulation;
 import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.util.collections.IndexedIterable;
 import sajas.core.AID;
 import sajas.domain.DFService;
 
@@ -39,7 +37,7 @@ public abstract class Driver extends Agent {
 	public static double beta = 0.5;
 
 	private int durationOfStay = 10; // definir valor default futuramente
-	private double walkDistance = 600.0; // definir valor default futuramente
+	protected double walkDistance = 600.0; // definir valor default futuramente
 	private double defaultSatisfaction = 0.5;
 	private double walkCoefficient = 0.5;
 	private double payCoefficient = 0.5;
@@ -47,8 +45,7 @@ public abstract class Driver extends Agent {
 	private DriverState state; 
 	private int parkedTime = 0;
 
-	private ArrayList<ParkDistance> parksInRange = new ArrayList<>();
-	private int currentParkSelected = -1;
+	protected ArrayList<ParkComparable> parksInRange = new ArrayList<>();
 	private ParkingLot parkingLotDestiny = null;
 
 	public Coordinate destination;
@@ -112,6 +109,7 @@ public abstract class Driver extends Agent {
 				if (!this.route.atDestination()) {
 					try {
 						this.route.travel();
+						this.currentPosition = Simulation.getAgentGeography().getGeometry(this).getCoordinate();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -125,6 +123,10 @@ public abstract class Driver extends Agent {
 			}
 			case PICKING: {
 				LOGGER.log(Level.FINE, this.getName() + " is picking a new park.");
+				if(parksInRange.size() == 0 && parkingLotDestiny == null)
+					this.getPossibleParks();
+				else this.updatePossibleParks();
+				this.pickParkToGo();
 				break;
 			}
 			case REQUEST: {
@@ -149,10 +151,7 @@ public abstract class Driver extends Agent {
 		}
 	}
 
-	private void getPossibleParks() {
-		Coordinate tmp = new Coordinate();
-		double[] distAndAng = new double[2];
-		IndexedIterable<ParkingLot> parks = Simulation.parkingLotContext.getObjects(ParkingLot.class);
+	abstract void updatePossibleParks();
 
 		for(int i = 0;i<parks.size();i++) {
 			tmp = parks.get(i).getPosition();
@@ -173,17 +172,19 @@ public abstract class Driver extends Agent {
 		}
 	}
 
+	abstract void getPossibleParks();
+
 	public void pickParkToGo() {
-		this.currentParkSelected++;
-		System.out.println("Vou escolher o park indice: "+this.currentParkSelected);
-		if(this.currentParkSelected >= this.parksInRange.size()) {
+		if(this.parksInRange.size() == 0) {
 			this.state = DriverState.EXIT;
 			Initializer.manager.addUtility(Manager.noParkAvailableUtility);
 		}
 		else {
 			this.state = DriverState.MOVING;
-			this.parkingLotDestiny = this.parksInRange.get(this.currentParkSelected).park;
-			this.route = new Route(this, Simulation.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
+			String aid = this.parksInRange.get(0).park;
+			this.parkingLotDestiny = Initializer.agentManager.getAgent(aid);
+			this.route = new Route(this, parkingLotDestiny.getPosition(), parkingLotDestiny);
+			this.parksInRange.remove(0);
 			LOGGER.log(Level.FINE, this.toString() + " created new route to " + parkingLotDestiny.toString());
 		}
 	}
@@ -223,28 +224,24 @@ public abstract class Driver extends Agent {
 	public void setPosition(Coordinate initialCoordinate, Coordinate finalCoordinate) {
 		this.currentPosition = initialCoordinate;
 		this.destination = finalCoordinate;
-		
 		this.state = DriverState.PICKING;
-		this.getPossibleParks();
-		this.pickParkToGo();
 	}
 	
-	private class ParkDistance implements Comparable<ParkDistance>{
-		public ParkingLot park;
-		public double distance;
+	class ParkComparable{
+		public String park;
+		public double distance = -1;
+		public double utility = -1;
 		
-		public ParkDistance(ParkingLot park, double distance) {
-			this.park = park;
+		public ParkComparable(String parkAID) {
+			this.park = parkAID;
+		}
+		
+		public void setDistance(double distance) {
 			this.distance = distance;
 		}
-
-		@Override
-		public int compareTo(ParkDistance arg) {
-			return (int)(this.distance-arg.distance);
-		}
 		
-		public String toString() {
-			return "Park: "+park.getName()+"; "+distance;
+		public void setUtility(double utility) {
+			this.utility = utility;
 		}
 	}
 
