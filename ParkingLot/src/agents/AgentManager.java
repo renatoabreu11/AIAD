@@ -3,10 +3,7 @@ package agents;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Logger;
-
 import agents.driver.Driver;
-import agents.driver.RationalDriver;
-import agents.parkingLot.DynamicParkingLot;
 import agents.parkingLot.ParkingLot;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -15,7 +12,6 @@ import jade.wrapper.StaleProxyException;
 import parkingLot.Initializer;
 import parkingLot.Manager;
 import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.parameter.Parameters;
 import sajas.domain.DFService;
 import sajas.wrapper.ContainerController;
 import behaviours.WeeklyUpdatePerformer;;

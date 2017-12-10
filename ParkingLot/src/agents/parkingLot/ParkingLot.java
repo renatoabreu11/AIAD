@@ -3,7 +3,6 @@ package agents.parkingLot;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
-
 import agents.Agent;
 import behaviours.AcceptEntryServer;
 import behaviours.RequestEntryServer;
@@ -38,7 +37,7 @@ public abstract class ParkingLot extends Agent {
 	 * @param position
 	 * @param maxCapacity
 	 */
-	public ParkingLot(String name,Coordinate position, int maxCapacity,Type type) {
+	public ParkingLot(String name, Coordinate position, int maxCapacity, Type type) {
 		super(name, type);
 		this.capacity = maxCapacity;
 		setWeeklyInfo(new WeeklyInfo((AID) this.getAID()));

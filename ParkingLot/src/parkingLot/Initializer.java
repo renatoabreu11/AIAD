@@ -16,11 +16,10 @@ public class Initializer extends RepastSLauncher{
 	public static enum ExperienceType {
 		EXPERIENCE_1,
 		EXPERIENCE_2
-}
+	}
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	private static long speedTimer = -1;
-	
 	
 	public static AgentManager agentManager;
 	public static Manager manager;

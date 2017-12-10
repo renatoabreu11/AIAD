@@ -3,9 +3,7 @@ package agents.driver;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.vividsolutions.jts.geom.Coordinate;
-
 import agents.Agent;
 import agents.parkingLot.ParkingLot;
 import behaviours.RequestEntryPerformer;
@@ -60,7 +58,7 @@ public abstract class Driver extends Agent {
 	 * @param durationOfStay
 	 * @param walkDistance
 	 */
-	public Driver(String name,Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction,Type type) {
+	public Driver(String name, Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction, Type type) {
 		super(name, type);
 		this.state = DriverState.ENTER;
 		this.durationOfStay = durationOfStay;
@@ -152,25 +150,6 @@ public abstract class Driver extends Agent {
 	}
 
 	abstract void updatePossibleParks();
-
-		for(int i = 0;i<parks.size();i++) {
-			tmp = parks.get(i).getPosition();
-			Route.distance(this.destination, tmp, distAndAng);
-			System.out.println("I"+i+": "+distAndAng[0]);
-			if(distAndAng[0] < this.walkDistance) {
-				parksInRange.add(new ParkDistance(parks.get(i),distAndAng[0]));
-			}
-		}
-		
-		if(this.type == Type.RATIONAL_DRIVER) {
-			parksInRange.sort(new Comparator<ParkDistance>() {
-		        @Override
-		        public int compare(ParkDistance pd1, ParkDistance pd2) {
-		            return pd1.compareTo(pd2);
-		        }
-		    });
-		}
-	}
 
 	abstract void getPossibleParks();
 

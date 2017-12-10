@@ -3,9 +3,7 @@ package agents.driver;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
 import com.vividsolutions.jts.geom.Coordinate;
-
 import agents.parkingLot.ParkingLot;
 import environment.Route;
 import parkingLot.Initializer;
@@ -33,15 +31,7 @@ public class RationalDriver extends Driver{
 			}
 		}
 		
-		Collections.sort(parksInRange, new Comparator<ParkComparable>() {
-	        @Override
-	        public int compare(ParkComparable pc1, ParkComparable pc2)
-	        {
-	        	if (pc1.utility < pc2.utility) return 1;
-	            if (pc1.utility > pc2.utility) return -1;
-	            return 0;
-	        }
-	    });
+		sortParksInRange();
 	}
 
 	@Override
@@ -52,7 +42,10 @@ public class RationalDriver extends Driver{
 			double utility = this.getUtility(price);
 			pc.setUtility(utility);
 		}
-		
+		sortParksInRange();
+	}
+	
+	private void sortParksInRange() {
 		Collections.sort(parksInRange, new Comparator<ParkComparable>() {
 	        @Override
 	        public int compare(ParkComparable pc1, ParkComparable pc2)

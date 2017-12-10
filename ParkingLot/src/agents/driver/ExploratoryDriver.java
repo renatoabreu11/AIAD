@@ -1,9 +1,7 @@
 package agents.driver;
 
 import java.util.ArrayList;
-
 import com.vividsolutions.jts.geom.Coordinate;
-
 import agents.parkingLot.ParkingLot;
 import environment.Route;
 import parkingLot.Initializer;
@@ -12,7 +10,6 @@ public class ExploratoryDriver extends Driver {
 	public ExploratoryDriver(Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction) {
 		super("ExploratoryDriver",srcPosition, destPosition, durationOfStay, walkDistance, defaultSatisfaction, Type.EXPLORATORY_DRIVER);
 	}
-
 
 	@Override
 	void getPossibleParks() {

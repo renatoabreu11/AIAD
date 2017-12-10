@@ -3,10 +3,7 @@ package agents.parkingLot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-
 import com.vividsolutions.jts.geom.Coordinate;
-
 import environment.Route;
 import sajas.core.AID;
 import utils.PricingScheme;
@@ -43,8 +40,7 @@ public class CooperativeParkingLot extends ParkingLot {
 	    	if(wi.getProfitPerDriver() > this.weeklyInfo.getProfitPerDriver() && distAndAng[0] < 400) { // Change value later
 	    		parksInfo.add(wi);
 	    	}
-		}
-		
+		}	
 		
 		double[] pricesPerHour = new double[24];
 		if(parksInfo.size() != 0) {

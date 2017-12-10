@@ -5,11 +5,9 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Logger;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-
 import agents.Agent;
 import agents.driver.Driver;
 import agents.driver.ExploratoryDriver;
