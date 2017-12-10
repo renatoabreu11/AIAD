@@ -200,9 +200,9 @@ public class Simulation {
 				int minHour = Manager.ticksPerHour * 7;
 				int maxHour = Manager.ticksPerHour * 9;
 				if (ticksDay >= minHour && ticksDay <= maxHour) {
-					durationOfStay = r.nextInt(maxTimeInParkMorningWorkers) + 210;
+					durationOfStay = r.nextInt(maxTimeInParkMorningWorkers) + 42;
 				} else {
-					durationOfStay = r.nextInt(maxTimeInPark) + 30;
+					durationOfStay = r.nextInt(maxTimeInPark) + 6;
 				}
 			} else {
 				durationOfStay = r.nextInt(maxTimeInPark) + 30;
@@ -232,7 +232,7 @@ public class Simulation {
 		StaticParkingLot sPark;
 		DynamicParkingLot dPark;
 		
-		parkLotation = r.nextInt(101) + 250;
+		parkLotation = r.nextInt(50) + 50;
 		if (type < 4) {
 			sPark = new StaticParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
 			agentContext.add(sPark);
@@ -260,7 +260,7 @@ public class Simulation {
 		DynamicParkingLot dPark;
 		CooperativeParkingLot cPark;
 		
-		parkLotation = r.nextInt(101) + 250;
+		parkLotation = r.nextInt(50) + 50;
 		if (type < 2) {
 			sPark = new StaticParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
 			agentContext.add(sPark);
