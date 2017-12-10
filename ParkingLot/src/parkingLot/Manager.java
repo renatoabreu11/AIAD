@@ -12,7 +12,7 @@ public class Manager extends Agent {
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	public static int ticksPerDay = 720;
 	public static int ticksPerHour = 30;
-	public static int ticksPerWeek = 5040;
+	public static int ticksPerWeek = ticksPerDay*720;
 
 	public static double noParkAvailableUtility = -50.0; // TODO change this 
 	
@@ -142,7 +142,8 @@ public class Manager extends Agent {
 	}
 	
 	public int calculateNumberOfDriversWeekDays() {
-		double currentHour = currentTickInDay/1000.0;
+		double currentHour = currentTickInDay/ticksPerHour;
+		
 		int numDrivers= (int) (9.7465137943127814e+001 * Math.pow(currentHour,0)
         +  4.1313445183117764e+001 * Math.pow(currentHour,1)
         + -5.0378347149419739e+001 * Math.pow(currentHour,2)
@@ -159,7 +160,8 @@ public class Manager extends Agent {
 	}
 	
 	public int calculateNumberOfDriversWeekEndDays() {
-		double currentHour = currentTickInDay/1000;
+		double currentHour = currentTickInDay/ticksPerHour;
+		
 		int numDrivers =  (int) (5.5410955131276346e+001 * Math.pow(currentHour,0)
         +  2.1102033222065248e+001 * Math.pow(currentHour,1)
         + -1.8796855577791021e+001 * Math.pow(currentHour,2)

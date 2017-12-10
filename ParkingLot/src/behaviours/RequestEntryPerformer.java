@@ -48,6 +48,7 @@ public class RequestEntryPerformer extends Behaviour {
 					price = Double.parseDouble(reply.getContent());
 					
 					driverUtility = ((Driver) myAgent).getUtility(price);
+					System.out.println("utility: "+driverUtility);
 					if(driverUtility < 0.0) {
 						((Driver) myAgent).logMessage("Park entry failed: low utility");
 						((Driver) myAgent).setState(DriverState.PICKING);

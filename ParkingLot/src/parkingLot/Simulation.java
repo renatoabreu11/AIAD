@@ -57,6 +57,8 @@ public class Simulation {
 	public static Context<ParkingLot> parkingLotContext;
 	private static Geography<ParkingLot> parkingLotGeography;
 
+	public boolean generated = true;
+
 	public Simulation(Context<Object> context) {
 		Simulation.context = context;
 	}
@@ -128,9 +130,7 @@ public class Simulation {
 		int nrParkingAgents = 8;// params.getInteger("parking_count");
 
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-		schedule.schedule(ScheduleParameters.createRepeating(250, 250), this, // come�a aos 250 ticks e chama a
-																				// fun��o addDrivers de 250 em 250
-				"addDrivers");
+		schedule.schedule(ScheduleParameters.createRepeating(15, 15), this, "addDrivers");
 
 		this.addParkingLots(nrParkingAgents, parkingLotAgents);
 	}
@@ -172,7 +172,7 @@ public class Simulation {
 
 					parkingLotAgents.add(sPark);
 				} else {
-					if(Initializer.experienceType.equals(ExperienceType.EXPERIENCE_2)) {
+					if (Initializer.experienceType.equals(ExperienceType.EXPERIENCE_2)) {
 						System.out.println("Cooperative" + i);
 						cPark = new CooperativeParkingLot(new Coordinate(point.getX(), point.getY()), parkLotation);
 						agentContext.add(cPark);
@@ -199,6 +199,10 @@ public class Simulation {
 	}
 
 	public void addDrivers() {
+		if (!generated)
+			return;
+		generated = false;
+
 		Random r = new Random();
 		int nrDriverAgents;
 
@@ -213,9 +217,12 @@ public class Simulation {
 		Junction junction;
 		Road road;
 		int type = 0;
+		int maxTimeInPark = Initializer.manager.ticksPerHour*9+1;
+		int maxTimeInParkMorningWorkers = Initializer.manager.ticksPerHour*2+1;
 
 		ExploratoryDriver eDriver;
 		RationalDriver rDriver;
+		nrDriverAgents = 4;
 		for (int i = 0; i < nrDriverAgents; i++) {
 			type = r.nextInt(2);
 			road = roadContext.getRandomObject();
@@ -228,13 +235,13 @@ public class Simulation {
 			int durationOfStay;
 			if (currentDay != 6 && currentDay != 7) {
 				double ticksDay = Initializer.manager.getCurrentTickInDay();
-				int minHour = Manager.ticksPerHour*7;
-				int maxHour = Manager.ticksPerHour*9;
-				if(ticksDay >= minHour && ticksDay <= maxHour) {
-					durationOfStay = r.nextInt(1000)+3500;
+				int minHour = Manager.ticksPerHour * 7;
+				int maxHour = Manager.ticksPerHour * 9;
+				if (ticksDay >= minHour && ticksDay <= maxHour) {
+					durationOfStay = r.nextInt(maxTimeInParkMorningWorkers) + 210;
 				}
 			}
-			durationOfStay = r.nextInt(450)*10+500;
+			durationOfStay = r.nextInt(maxTimeInPark) + 30;
 			double walkDistance = (r.nextInt(500) + 100); // [100,600[
 			double defaultSatisfaction = 1.0; // TODO random satisfaction
 
