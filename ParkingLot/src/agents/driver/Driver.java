@@ -118,7 +118,6 @@ public abstract class Driver extends Agent {
 					LOGGER.log(Level.FINE,
 							this.getName() + " travelling to " + this.route.getDestinationBuilding().toString());
 				} else {
-					System.out.println("Making Request");
 					this.state = DriverState.REQUEST;
 					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
 				}
@@ -164,24 +163,13 @@ public abstract class Driver extends Agent {
 			}
 		}
 		
-		System.out.println("Sem ordem");
-		for(int i=0;i<parksInRange.size();i++) {
-			System.out.println(parksInRange.get(i));
-		}
-		
 		if(this.type == Type.RATIONAL_DRIVER) {
-			System.out.println("Racional");
 			parksInRange.sort(new Comparator<ParkDistance>() {
 		        @Override
 		        public int compare(ParkDistance pd1, ParkDistance pd2) {
 		            return pd1.compareTo(pd2);
 		        }
 		    });
-		}
-		
-		System.out.println("Com ordem");
-		for(int i=0;i<parksInRange.size();i++) {
-			System.out.println(parksInRange.get(i));
 		}
 	}
 

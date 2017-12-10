@@ -123,15 +123,20 @@ public class Simulation {
 	 * Add the defined agents to the simulation
 	 */
 	public void AddAgentsToEnvironent(ArrayList<ParkingLot> parkingLotAgents, ArrayList<Driver> driverAgents,Parameters params) {
+		
+		int nrDriverAgents = 100;//params.getInteger("driver_count");
+		int nrParkingAgents = 8;//params.getInteger("parking_count");
+		
+		this.addParkingLots(nrParkingAgents, parkingLotAgents);
+		this.addDrivers(nrDriverAgents, driverAgents);
+	}
+	
+	public void addParkingLots(int nrParkingAgents,ArrayList<ParkingLot> parkingLotAgents) {
 		Junction junction;
-		Road road;
 		Point point;
 		Random r = new Random();
 		int type = 0;
 		int parkLotation;
-		
-		int nrDriverAgents = 2;//params.getInteger("driver_count");
-		int nrParkingAgents = 8;//params.getInteger("parking_count");
 		
 		StaticParkingLot sPark;
 		DynamicParkingLot dPark;
@@ -162,7 +167,16 @@ public class Simulation {
 			
 			System.out.println("X: " +point.getX()+" ; Y: "+point.getY()+" "+parkLotation);
 		}
+	}
+
+	public void addDrivers(int nrDriverAgents,ArrayList<Driver> driverAgents) {
+		Junction junction;
+		Road road;
+		Random r = new Random();
+		int type = 0;
 		
+		ExploratoryDriver eDriver;
+		RationalDriver rDriver;
 		for (int i = 0; i < nrDriverAgents; i++) {
 			type = r.nextInt(2);
 			road = roadContext.getRandomObject();
@@ -172,23 +186,23 @@ public class Simulation {
 			Point finalPoint = junctionGeography.getGeometry(junction).getCentroid();
 			Coordinate initialCoordinate = new Coordinate(initialPoint.getX(),initialPoint.getY());
 			Coordinate finalCoordinate = new Coordinate(finalPoint.getX(),finalPoint.getY());
-			int durationOfStay = 10;
-			double walkDistance = 200.0;
-			double defaultSatisfaction = 1.0;
+			int durationOfStay = (r.nextInt(240)+1)*10; // [10,2400]
+			double walkDistance = (r.nextInt(500)+100); // [100,600[
+			double defaultSatisfaction = 1.0; //TODO random satisfaction
 			
 			if(type == 0) {
-				ExploratoryDriver eDriver = new ExploratoryDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
+				eDriver = new ExploratoryDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
 				agentContext.add(eDriver);
 				getAgentGeography().move(eDriver, initialPoint);
+				driverAgents.add(eDriver);
 			} else {
-				RationalDriver rDriver = new RationalDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
+				rDriver = new RationalDriver(initialCoordinate,finalCoordinate,durationOfStay,walkDistance,defaultSatisfaction);
 				agentContext.add(rDriver);
 				getAgentGeography().move(rDriver, initialPoint);
+				driverAgents.add(rDriver);
 			}
 		}
-
 	}
-
 	/**
 	 * Schedule the simulation and defines the update method for each agent context
 	 */
