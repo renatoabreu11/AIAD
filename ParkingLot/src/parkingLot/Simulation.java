@@ -180,7 +180,7 @@ public class Simulation {
 		Junction junction;
 		Road road;
 		int type = 0;
-		int maxTimeInPark = Manager.ticksPerHour*9+1;
+		int maxTimeInPark = Manager.ticksPerHour*6+1;
 		int maxTimeInParkMorningWorkers = Manager.ticksPerHour*2+1;
 
 		ExploratoryDriver eDriver;
@@ -200,12 +200,12 @@ public class Simulation {
 				int minHour = Manager.ticksPerHour * 7;
 				int maxHour = Manager.ticksPerHour * 9;
 				if (ticksDay >= minHour && ticksDay <= maxHour) {
-					durationOfStay = r.nextInt(maxTimeInParkMorningWorkers) + 42;
+					durationOfStay = r.nextInt(maxTimeInParkMorningWorkers) + 18;
 				} else {
 					durationOfStay = r.nextInt(maxTimeInPark) + 6;
 				}
 			} else {
-				durationOfStay = r.nextInt(maxTimeInPark) + 30;
+				durationOfStay = r.nextInt(maxTimeInPark) + 6;
 			}
 			double walkDistance = (r.nextInt(500) + 100); // [100,600[
 			double defaultSatisfaction = r.nextInt(26)+40;

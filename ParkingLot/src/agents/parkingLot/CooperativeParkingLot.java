@@ -72,8 +72,8 @@ public class CooperativeParkingLot extends ParkingLot {
 			for (int i = 0; i < pricesPerHour.length; i++) {
 				pricesPerHour[i] = prices[i] + learningRate * prices[i] * (variation - 1);
 			}
-			newMin = weeklyInfo.getPricingScheme().getMinPricePerStay() + learningRate * weeklyInfo.getPricingScheme().getMinPricePerStay() * (variation*100 - 1);
-		    newMax = weeklyInfo.getPricingScheme().getMaxPricePerStay() + learningRate * weeklyInfo.getPricingScheme().getMaxPricePerStay() * (variation*100 - 1);			
+			newMin = weeklyInfo.getPricingScheme().getMinPricePerStay() + learningRate * weeklyInfo.getPricingScheme().getMinPricePerStay() * (variation - 1);
+		    newMax = weeklyInfo.getPricingScheme().getMaxPricePerStay() + learningRate * weeklyInfo.getPricingScheme().getMaxPricePerStay() * (variation - 1);			
 		}
 		previousWeeklyInfo = weeklyInfo;
 		weeklyInfo = new WeeklyInfo((AID) this.getAID(), new PricingScheme(pricesPerHour, newMin, newMax));

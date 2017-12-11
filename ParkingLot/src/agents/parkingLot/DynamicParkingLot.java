@@ -17,6 +17,11 @@ public class DynamicParkingLot extends ParkingLot {
 	public void updatePricingScheme() {
 		if(previousWeeklyInfo == null) {
 			previousWeeklyInfo = weeklyInfo;
+			PricingScheme ps = weeklyInfo.getPricingScheme();
+			double newMin = ps.getMinPricePerStay();
+		    double newMax = ps.getMaxPricePerStay();
+		    double newCost = ps.getPricePerHour();
+			weeklyInfo = new WeeklyInfo((AID) this.getAID(), new PricingScheme(newCost, newMin, newMax));
 		} else {
 			PricingScheme ps = weeklyInfo.getPricingScheme();
 			ArrayList<DailyInfo> days = weeklyInfo.getDailyInfo();
@@ -38,10 +43,10 @@ public class DynamicParkingLot extends ParkingLot {
 			}
 			
 		    double learningRate = 0.3; 
-		    double newMin = ps.getMinPricePerStay() + learningRate * ps.getMinPricePerStay() * (variation*100 - 1);
-		    double newMax = ps.getMaxPricePerStay() + learningRate * ps.getMaxPricePerStay() * (variation*100 - 1);
+		    double newMin = ps.getMinPricePerStay() + learningRate * ps.getMinPricePerStay() * (variation - 1);
+		    double newMax = ps.getMaxPricePerStay() + learningRate * ps.getMaxPricePerStay() * (variation - 1);
 		    double newCost = ps.getPricePerHour()+ learningRate * ps.getPricePerHour() * (variation - 1);
-		    
+		  
 		    previousWeeklyInfo = weeklyInfo;
 		    weeklyInfo = new WeeklyInfo((AID) this.getAID(), new PricingScheme(newCost, newMin, newMax));
 		    LOGGER.info("changed prices: " + newCost);
