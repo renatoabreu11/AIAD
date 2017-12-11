@@ -28,12 +28,12 @@ public class ShareWeeklyInfoServer extends CyclicBehaviour {
 	private ArrayList<AID> senders = new ArrayList<>();
 	private HashMap<String, WeeklyInfo> parksWeeklyInfo = new HashMap<>();
 
-	public void ShareInfoServer() {
+	public ShareWeeklyInfoServer(AID myAgentAID) {
 		ArrayList<ParkingLot> agents = Initializer.agentManager.getParkingAgents();
 		for(ParkingLot pl : agents) {
 			if(pl.getType().equals(Type.COOPERATIVE_PARKING_LOT)) {
 				AID aid = (AID) pl.getAID();
-				if(!aid.equals(myAgent.getAID()))
+				if(!aid.equals(myAgentAID))
 					senders.add(aid);
 			}
 		}

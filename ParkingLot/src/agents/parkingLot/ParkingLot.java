@@ -27,6 +27,7 @@ public abstract class ParkingLot extends Agent {
 	protected WeeklyInfo weeklyInfo;
 	protected WeeklyInfo previousWeeklyInfo;
 	private double globalProfit = 0;
+	private boolean addedBehaviour = false;
 	
 	private Coordinate position;
 	
@@ -44,8 +45,13 @@ public abstract class ParkingLot extends Agent {
 		setPosition(position);
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1)
-	public void update() {};
+	@ScheduledMethod(start = 5, interval = 1)
+	public void update() {
+		if(this.getType().equals(Type.COOPERATIVE_PARKING_LOT) && addedBehaviour == false) {
+			addBehaviour(new ShareWeeklyInfoServer((AID) this.getAID()));
+			addedBehaviour = true;
+		}
+	};
 
 	@Override
 	protected void setup() {
@@ -65,8 +71,6 @@ public abstract class ParkingLot extends Agent {
 		addBehaviour(new AcceptEntryServer());
 		addBehaviour(new RequestEntryServer());
 		addBehaviour(new RequestExitServer());
-		if(this.getType().equals(Type.COOPERATIVE_PARKING_LOT))
-			addBehaviour(new ShareWeeklyInfoServer());
 	}
 	
 	@Override
