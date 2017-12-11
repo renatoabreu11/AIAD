@@ -53,6 +53,8 @@ public class CooperativeParkingLot extends ParkingLot {
 			}
 			newMin /= parksInfo.size();
 			newMax /= parksInfo.size();
+			System.out.println("New min:" + newMin);
+			System.out.println("newMax :" + newMax);
 		} else {
 			double previousProfit = 0;
 			if(previousWeeklyInfo != null)
@@ -74,6 +76,8 @@ public class CooperativeParkingLot extends ParkingLot {
 			}
 			newMin = weeklyInfo.getPricingScheme().getMinPricePerStay() + learningRate * weeklyInfo.getPricingScheme().getMinPricePerStay() * (variation - 1);
 		    newMax = weeklyInfo.getPricingScheme().getMaxPricePerStay() + learningRate * weeklyInfo.getPricingScheme().getMaxPricePerStay() * (variation - 1);			
+			System.out.println("aaaNew min:" + newMin);
+			System.out.println("sssnewMax :" + newMax);
 		}
 		previousWeeklyInfo = weeklyInfo;
 		weeklyInfo = new WeeklyInfo((AID) this.getAID(), new PricingScheme(pricesPerHour, newMin, newMax));
