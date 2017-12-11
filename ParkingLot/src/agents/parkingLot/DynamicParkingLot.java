@@ -49,7 +49,7 @@ public class DynamicParkingLot extends ParkingLot {
 		  
 		    previousWeeklyInfo = weeklyInfo;
 		    weeklyInfo = new WeeklyInfo((AID) this.getAID(), new PricingScheme(newCost, newMin, newMax));
-		    LOGGER.info("changed prices: " + newCost);
+		    this.logMessage("Changed prices: " + newCost);
 		}
 	}
 }
