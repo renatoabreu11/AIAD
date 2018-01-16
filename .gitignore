@@ -1,0 +1,6 @@
+
+*.settings
+
+*.log
+
+ParkingLot/velocity\.log\.1

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-import agents.IAgent;
+import agents.Agent;
 import exceptions.NoIdentifierException;
 
 public class Building implements FixedGeography, Identified {
@@ -30,7 +30,7 @@ public class Building implements FixedGeography, Identified {
 	private static Logger LOGGER = Logger.getLogger(Building.class.getName());
 	
 	/** A list of agents who live here */
-	private List<IAgent> agents;
+	private List<Agent> agents;
 
 	/**
 	 * A unique identifier for buildings, usually set from the 'identifier' column in a shapefile
@@ -45,7 +45,7 @@ public class Building implements FixedGeography, Identified {
 	private Coordinate coords;
 
 	public Building() {
-		this.agents = new ArrayList<IAgent>();
+		this.agents = new ArrayList<Agent>();
 	}
 
 	@Override
@@ -73,11 +73,11 @@ public class Building implements FixedGeography, Identified {
 		this.identifier = id;
 	}
 
-	public void addAgent(IAgent a) {
+	public void addAgent(Agent a) {
 		this.agents.add(a);
 	}
 
-	public List<IAgent> getAgents() {
+	public List<Agent> getAgents() {
 		return this.agents;
 	}
 

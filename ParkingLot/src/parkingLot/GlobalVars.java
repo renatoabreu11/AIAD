@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import agents.IAgent;
+import agents.Agent;
 
 /**
  * 
@@ -36,15 +36,7 @@ public abstract class GlobalVars {
 	
 	private static Logger LOGGER = Logger.getLogger(GlobalVars.class.getName());
 	
-	/* These are strings that match entries in the repastcity.properties file.*/
-	public static final String GISDataDirectory = "GISDataDirectory";
-	public static final String BuildingShapefile = "BuildingShapefile";
-	public static final String RoadShapefile = "RoadShapefile";
-	public static final String BuildingsRoadsCoordsCache = "BuildingsRoadsCoordsCache";
-	public static final String BuildingsRoadsCache = "BuildingsRoadsCache";
-	
 	public static final class GEOGRAPHY_PARAMS {
-		
 		/**
 		 * Different search distances used in functions that need to find objects that are
 		 * close to them. A bigger buffer means that more objects will be analysed (less
@@ -99,7 +91,9 @@ public abstract class GlobalVars {
 		
 		public static final String AGENT_CONTEXT = "AgentContext";
 		public static final String AGENT_GEOGRAPHY = "AgentGeography";
-	
+		
+		public static final String PARKINGLOT_CONTEXT = "ParkingLotContext";
+		public static final String PARKINGLOT_GEOGRAPHY = "ParkingLotGeography";
 	}
 	
 	// Parameters used by transport networks
@@ -108,7 +102,7 @@ public abstract class GlobalVars {
 		// This variable is used by NetworkEdge.getWeight() function so that it knows what travel options
 		// are available to the agent (e.g. has a car). Can't be passed as a parameter because NetworkEdge.getWeight()
 		// must override function in RepastEdge because this is the one called by ShortestPath.
-		public static IAgent currentAgent = null;
+		public static Agent currentAgent = null;
 		public static Object currentBurglarLock = new Object();
 
 		public static final String WALK = "walk";
@@ -140,5 +134,32 @@ public abstract class GlobalVars {
 		}
 	}
 	
+	public static enum WEEKDAY {
+		MONDAY(1),
+		TUESDAY(2),
+		WEDNESDAY(3),
+		THURSDAY(4),
+		FRIDAY(5),
+		SATURDAY(6),
+		SUNDAY(0);
+		
+		WEEKDAY(int id){
+			this.id = id;
+		}
+		public final int id;
+		public static final int maxTicksInDay = 12000;
+		
+		public static WEEKDAY getNextDay(int id) {
+			WEEKDAY week = null;
+			int nextDay = (id + 1) % 7;
+			for(WEEKDAY day : WEEKDAY.values()) {
+				if(day.id == nextDay) {
+					week = day;
+					break;
+				}
+			}
+			return week;
+		}
 
+	}
 }

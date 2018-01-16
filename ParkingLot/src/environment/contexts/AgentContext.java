@@ -19,10 +19,10 @@ along with RepastCity.  If not, see <http://www.gnu.org/licenses/>.
 package environment.contexts;
 
 import repast.simphony.context.DefaultContext;
-import agents.IAgent;
+import agents.Agent;
 import parkingLot.GlobalVars;
 
-public class AgentContext extends DefaultContext<IAgent>{
+public class AgentContext extends DefaultContext<Agent>{
 	
 	public AgentContext() {
 		super(GlobalVars.CONTEXT_NAMES.AGENT_CONTEXT);
