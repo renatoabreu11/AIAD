@@ -1,32 +1,34 @@
-package agents;
+package agents.parkingLot;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
+import agents.Agent;
 import behaviours.AcceptEntryServer;
 import behaviours.RequestEntryServer;
 import behaviours.RequestExitServer;
+import behaviours.ShareWeeklyInfoServer;
+import sajas.core.AID;
 import sajas.domain.*;
+import utils.WeeklyInfo;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-
 import repast.simphony.engine.schedule.ScheduledMethod;
 
-public class ParkingLot extends Agent {
-	private static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
+public abstract class ParkingLot extends Agent {
+	static Logger LOGGER = Logger.getLogger(ParkingLot.class.getName());
 
 	// Parking spots info
 	protected HashMap<String, Integer> parkedDrivers = new HashMap<String, Integer>();
 	public int capacity = 100;
 	protected int currLotation = 0;
 	
-	// Pricing Scheme
-	public double pricePerMinute;
-	public double minPricePerStay;
-	public double maxPricePerStay;
+	protected WeeklyInfo weeklyInfo;
+	protected WeeklyInfo previousWeeklyInfo;
+	private double globalProfit = 0;
+	private boolean addedBehaviour = false;
 	
-	public double profit = 0;
 	private Coordinate position;
 	
 	/**
@@ -36,34 +38,29 @@ public class ParkingLot extends Agent {
 	 * @param position
 	 * @param maxCapacity
 	 */
-	public ParkingLot(Type type, Coordinate position, int maxCapacity,Coordinate currentPosition) {
-		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
-		this.type = type;
-		this.position = position;
+	public ParkingLot(String name, Coordinate position, int maxCapacity, Type type) {
+		super(name, type);
 		this.capacity = maxCapacity;
+		setWeeklyInfo(new WeeklyInfo((AID) this.getAID()));
+		setPosition(position);
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1)
-	public void update() {};
-	
-	public ParkingLot(Coordinate position) { //construtor tempor�rio
-		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
-		this.position = position;
-		this.capacity = 10;
-	}
-	
-	public ParkingLot() { // temporary
-		super("ParkingLot", Type.STATIC_PARKING_FACILITY);
-	}
+	@ScheduledMethod(start = 5, interval = 1)
+	public void update() {
+		if(this.getType().equals(Type.COOPERATIVE_PARKING_LOT) && addedBehaviour == false) {
+			addBehaviour(new ShareWeeklyInfoServer((AID) this.getAID()));
+			addedBehaviour = true;
+		}
+	};
 
 	@Override
 	protected void setup() {
-		LOGGER.info("ParkingLot " + getAID().getName()  + " is ready!");
+		this.logMessage("ParkingLot " + getAID().getName()  + " is ready!");
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
 		sd.setName(getName());
-		sd.setType("ParkingLot");
+		sd.setType(this.getType().toString());
 		dfd.addServices(sd);
 		try {
 			DFService.register(this, dfd);
@@ -85,9 +82,8 @@ public class ParkingLot extends Agent {
 			fe.printStackTrace();
 		}
 
-		LOGGER.info("Parking facility terminating");
+		this.logMessage("Parking lot terminating");
 	}
-
 	
 	/**
 	 * Returns the price to pay for the stay
@@ -96,32 +92,18 @@ public class ParkingLot extends Agent {
 	 */
 	public double getFinalPrice(String durationOfStayStr) {
 		double durationOfStay = Double.parseDouble(durationOfStayStr);
-		double price = pricePerMinute * durationOfStay;
-		
-		if(price > maxPricePerStay) {
-			price = maxPricePerStay;
-		} else if (price < minPricePerStay) {
-			price = minPricePerStay;
-		}
-		
 		double scale = currLotation / capacity;
-		
-		if(scale <= 0.3) {
-			
-		} else if (scale >= 0.7) {
-			
-		}
-		
-		return price;
+		return weeklyInfo.calculatePrice(durationOfStay, scale);
 	}
 	
 	/**
 	 * Removes a driver from the park
 	 * @param string
 	 */
-	public void removeDriver(String AID) {
+	public synchronized void removeDriver(String AID) {
 		parkedDrivers.remove(AID);
 		currLotation--;
+		weeklyInfo.removeDriver();
 	}
 
 	/**
@@ -129,46 +111,28 @@ public class ParkingLot extends Agent {
 	 * @param driver
 	 * @return
 	 */
-	public boolean acceptDriver(String durationOfStay, String AID) {
+	public synchronized boolean acceptDriver(String durationOfStay, String AID) {
 		if(currLotation == capacity) {
 			return false;
 		}
 		double finalPrice = this.getFinalPrice(durationOfStay);
-		profit += finalPrice;
+		this.setGlobalProfit(this.getGlobalProfit() + finalPrice);
 		
 		parkedDrivers.put(AID, Integer.parseInt(durationOfStay));
 		currLotation++;
+		
+		weeklyInfo.addDriver(finalPrice);
+		
 		return true;
 	}
 	
-	/**
-	 * Removes all drivers from the park
-	 */
-	public void closeParkingFacility() {
-		parkedDrivers = new HashMap<String, Integer>();
-		currLotation = 0;
+	public void updateWeekInfo() {
+		weeklyInfo.endWeek();
 	}
 	
-	/**
-	 * Returns the info about a parking lot
-	 * @return
-	 */
-	public String getParkingFacilityInfo() {
-		StringBuilder sb = new StringBuilder();
-		
-		sb.append("Parking Lot Agent: " + getAID() + "\n");
-		
-		return sb.toString();
-	}
 	/**
 	 * Default Getters and Setters
 	 */
-	public void setPricingScheme(double pricePerMinute, double minPricePerStay, double maxPricePerStay) {
-		this.pricePerMinute = pricePerMinute;
-		this.minPricePerStay = minPricePerStay;
-		this.maxPricePerStay = maxPricePerStay;
-	}
-	
 	public Coordinate getPosition() {
 		return position;
 	}
@@ -185,23 +149,40 @@ public class ParkingLot extends Agent {
 		return parkedDrivers;
 	}
 
-	public double getPricePerMinute() {
-		return pricePerMinute;
-	}
-
-	public double getMinPricePerStay() {
-		return minPricePerStay;
-	}
-
-	public double getMaxPricePerStay() {
-		return maxPricePerStay;
-	}
-
 	public void setPosition(Coordinate position) {
 		this.position = position;
+		this.weeklyInfo.setParkingLotPosition(position);
 	}
 
 	public void logMessage(String message) {
-		LOGGER.info(message);
+		LOGGER.fine(message);
+	}
+
+	public WeeklyInfo getWeeklyInfo() {
+		return weeklyInfo;
+	}
+
+	public void setWeeklyInfo(WeeklyInfo weeklyInfo) {
+		this.weeklyInfo = weeklyInfo;
+	}
+	
+	public double getWeeklyProfit() {
+		return weeklyInfo.getTotalProfit();
+	}
+	
+	public double getWeeklyPriceAverage() {
+		return 0;
+	}
+	
+	public double getHourlyPrice() {
+		return weeklyInfo.getPricingScheme().getPricePerHour();
+	}
+
+	public double getGlobalProfit() {
+		return globalProfit;
+	}
+
+	public void setGlobalProfit(double globalProfit) {
+		this.globalProfit = globalProfit;
 	}
 }

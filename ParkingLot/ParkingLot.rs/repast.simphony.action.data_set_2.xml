@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor simphonyVersion="2.5.0">
-  <name>Parking prices</name>
+  <name>parking profits</name>
   <type>AGGREGATE</type>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
@@ -16,15 +16,6 @@
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>coop</string>
-      <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>coop</id>
-        <className>agents.parkingLot.CooperativeParkingLot</className>
-        <methodName>getWeeklyProfit</methodName>
-        <aggType>MEAN</aggType>
-      </repast.simphony.data2.engine.MethodDataSourceDefinition>
-    </entry>
-    <entry>
       <string>dynamic</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
         <id>dynamic</id>
@@ -38,6 +29,15 @@
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
         <id>static</id>
         <className>agents.parkingLot.StaticParkingLot</className>
+        <methodName>getWeeklyProfit</methodName>
+        <aggType>MEAN</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>coop</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>coop</id>
+        <className>agents.parkingLot.CooperativeParkingLot</className>
         <methodName>getWeeklyProfit</methodName>
         <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>

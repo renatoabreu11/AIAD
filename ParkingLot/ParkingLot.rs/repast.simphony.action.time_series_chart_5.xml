@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor simphonyVersion="2.5.0">
-  <name>Time Series Chart</name>
-  <dataSet>A Data Set</dataSet>
+  <name>Parking profits</name>
+  <dataSet>parking profits</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel>drivers</yAxisLabel>
-  <chartTitle>ugy</chartTitle>
+  <yAxisLabel>prodfits</yAxisLabel>
+  <chartTitle>profits</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,9 +21,33 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>Driver Count</string>
+      <string>coop</string>
       <SeriesData>
-        <label>Driver Count</label>
+        <label>coop</label>
+        <color>
+          <red>0</red>
+          <green>255</green>
+          <blue>0</blue>
+          <alpha>255</alpha>
+        </color>
+      </SeriesData>
+    </entry>
+    <entry>
+      <string>static</string>
+      <SeriesData>
+        <label>static</label>
+        <color>
+          <red>255</red>
+          <green>0</green>
+          <blue>0</blue>
+          <alpha>255</alpha>
+        </color>
+      </SeriesData>
+    </entry>
+    <entry>
+      <string>dynamic</string>
+      <SeriesData>
+        <label>dynamic</label>
         <color>
           <red>0</red>
           <green>0</green>
