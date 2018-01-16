@@ -13,13 +13,21 @@ import sajas.sim.repasts.RepastSLauncher;
 import sajas.wrapper.ContainerController;
 
 public class Initializer extends RepastSLauncher{
+	public static enum ExperienceType {
+		EXPERIENCE_1,
+		EXPERIENCE_2
+	}
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 	private static long speedTimer = -1;
 	
+	public static AgentManager agentManager;
+	public static Manager manager;
 	private static ContainerController mainContainer;
-	private AgentManager agentManager;
 	private Simulation simulation;
+	
+	public static ExperienceType experienceType = ExperienceType.EXPERIENCE_1;
+	public static int numOfWeeks = 20;
 
 	@Override
 	public String getName() {
@@ -43,19 +51,23 @@ public class Initializer extends RepastSLauncher{
 		}
 		
 		Parameters params = RunEnvironment.getInstance().getParameters();
-		agentManager.initAgents(params);
-		simulation.AddAgentsToEnvironent(agentManager.parkingAgents, agentManager.driverAgents);
-		simulation.scheduleSimulation(this);
+		simulation.AddAgentsToEnvironent(agentManager.parkingAgents, agentManager.driverAgents,params);
 		agentManager.startAgents();
-		
 	}
 	
 	@Override
 	public Context<?> build(Context<Object> context) {
 		context.setId("ParkingLotSimulation");
+		
+		Parameters params = RunEnvironment.getInstance().getParameters();
+		int experiment = (Integer) params.getValue("experiment");
+		if(experiment == 2) experienceType = ExperienceType.EXPERIENCE_2;
+		numOfWeeks = (Integer) params.getValue("weeks");
+		
 		simulation = new Simulation(context);
 		simulation.addEnvironment();
-		simulation.addAgentsToContext();
+		manager = new Manager();
+		simulation.addAgentsToContext(manager);
 		
 		return super.build(simulation.getContext());
 	}

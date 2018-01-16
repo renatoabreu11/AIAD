@@ -1,41 +1,185 @@
 package parkingLot;
 
-import java.util.Iterator;
 import java.util.logging.Logger;
 
-import agents.Driver;
 import agents.Agent;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
-public class Manager extends Agent{
+public class Manager extends Agent {
 	
 	private static Logger LOGGER = Logger.getLogger(Initializer.class.getName());
+	public static int ticksPerDay = 120;
+	public static int ticksPerHour = 5;
+	public static int ticksPerWeek = 840;
+
+	public static double noParkAvailableUtility = -50.0; // TODO change this 
 	
-	private GlobalVars.WEEKDAY weekday;
-	private int currentTicksInDay;
+	private int totalTicks;
+	
+	private int week;
+	private GlobalVars.WEEKDAY day;
+	private int hour;
+	private int currentTickInWeek;
+	private int currentTickInDay;
+	private int currentTickInHour;
+	
+	private double globalUtility;
+	private double utilityPerWeek;
 	
 	public Manager() {
 		super("Manager", Type.MANAGER);
-		weekday = GlobalVars.WEEKDAY.SUNDAY;
-		currentTicksInDay = 0;
+		setTotalTicks(0);
+		
+		setWeek(0);
+		day = GlobalVars.WEEKDAY.MONDAY;
+		setHour(0);
+		setCurrentTickInDay(0);
+		setCurrentTickInHour(0);
+		setCurrentTickInWeek(0);
+		
+		globalUtility = 0;
+		setUtilityPerWeek(0);
 	}
 	
-	@ScheduledMethod(start = 1, interval = 12000)
+	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {
-		currentTicksInDay = 0;
-		weekday = GlobalVars.WEEKDAY.getNextDay(weekday.id);
-		LOGGER.severe("Started new day: " + weekday.toString());
-	/*	Iterator<Agent> iterator = Initializer.agentContext.getRandomObjects(Driver.class, 1).iterator();
-		if(!iterator.hasNext()) return;
-		Agent driver = iterator.next();
-		Simulation.removeAgent(driver);*/
+		++totalTicks;
+		++currentTickInWeek;
+		++currentTickInDay;
+		++currentTickInHour;
+		
+		if(currentTickInHour == ticksPerHour) { // next hour
+			currentTickInHour = 0;
+			hour++;
+			if(hour == 24) { // next day
+				hour = 0;
+				currentTickInDay = 0;
+				day = GlobalVars.WEEKDAY.getNextDay(day.id);
+								
+				if(day.equals(GlobalVars.WEEKDAY.MONDAY)) { // next week
+					week++;
+					setCurrentTickInWeek(0);
+					setUtilityPerWeek(0);
+					if(week >= Initializer.numOfWeeks) {
+						Simulation.stop = true;
+					}
+				}
+			}
+		}
 	}
 	
-	public void setup() {
-		
+	/**
+	 * Default getters and setters
+	 * @return
+	 */
+
+	public int getTotalTicks() {
+		return totalTicks;
+	}
+
+	public void setTotalTicks(int totalTicks) {
+		this.totalTicks = totalTicks;
+	}
+
+	public int getWeek() {
+		return week;
+	}
+
+	public void setWeek(int week) {
+		this.week = week;
+	}
+
+	public int getHour() {
+		return hour;
+	}
+
+	public void setHour(int hour) {
+		this.hour = hour;
+	}
+
+	public double getCurrentTickInDay() {
+		return currentTickInDay;
+	}
+
+	public void setCurrentTickInDay(int currentTickInDay) {
+		this.currentTickInDay = currentTickInDay;
+	}
+
+	public int getCurrentTickInHour() {
+		return currentTickInHour;
+	}
+
+	public void setCurrentTickInHour(int currentTickInHour) {
+		this.currentTickInHour = currentTickInHour;
+	}
+
+	public int getDay() {
+		return this.day.id;
 	}
 	
-	public void finalize() {
+	public int getPreviousDay() {
+		return (this.day.id - 1 + 7) % 7;
+	}
+
+	public int getCurrentTickInWeek() {
+		return currentTickInWeek;
+	}
+
+	public void setCurrentTickInWeek(int currentTickInWeek) {
+		this.currentTickInWeek = currentTickInWeek;
+	}
+
+	public double getGlobalUtility() {
+		return globalUtility;
+	}
+
+	public void setGlobalUtility(double globalUtility) {
+		this.globalUtility = globalUtility;
+	}
+
+	public void addUtility(double driverUtility) {
+		this.globalUtility += driverUtility;
+		this.setUtilityPerWeek(this.getUtilityPerWeek() + driverUtility);
+	}
+	
+	public int calculateNumberOfDriversWeekDays() {
+		double currentHour = currentTickInDay/ticksPerHour;
 		
+		int numDrivers= (int) (9.7465137943127814e+001 * Math.pow(currentHour,0)
+        +  4.1313445183117764e+001 * Math.pow(currentHour,1)
+        + -5.0378347149419739e+001 * Math.pow(currentHour,2)
+        +  1.9382369234511167e+001 * Math.pow(currentHour,3)
+        + -3.3184195775022003e+000 * Math.pow(currentHour,4)
+        +  2.9929797307649647e-001 * Math.pow(currentHour,5)
+        + -1.4828693808010440e-002 * Math.pow(currentHour,6)
+        +  3.8165393557919086e-004 * Math.pow(currentHour,7)
+        + -3.9870796373014557e-006 * Math.pow(currentHour,8));
+				
+		return numDrivers;
+	}
+	
+	public int calculateNumberOfDriversWeekEndDays() {
+		double currentHour = currentTickInDay/ticksPerHour;
+		
+		int numDrivers =  (int) (5.5410955131276346e+001 * Math.pow(currentHour,0)
+        +  2.1102033222065248e+001 * Math.pow(currentHour,1)
+        + -1.8796855577791021e+001 * Math.pow(currentHour,2)
+        +  7.3522350964157379e+000 * Math.pow(currentHour,3)
+        + -1.2077376021269184e+000 * Math.pow(currentHour,4)
+        +  1.0233526625755751e-001 * Math.pow(currentHour,5)
+        + -4.7429521356996658e-003 * Math.pow(currentHour,6)
+        +  1.1445930510905407e-004 * Math.pow(currentHour,7)
+        + -1.1274232393164334e-006 * Math.pow(currentHour,8));
+				
+		return numDrivers;
+	}
+
+	public double getUtilityPerWeek() {
+		return utilityPerWeek;
+	}
+
+	public void setUtilityPerWeek(double utilityPerWeek) {
+		this.utilityPerWeek = utilityPerWeek;
 	}
 }

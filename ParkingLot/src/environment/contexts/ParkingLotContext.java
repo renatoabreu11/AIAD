@@ -2,7 +2,7 @@ package environment.contexts;
 
 import repast.simphony.context.DefaultContext;
 import agents.Agent;
-import agents.ParkingLot;
+import agents.parkingLot.ParkingLot;
 import parkingLot.GlobalVars;
 
 public class ParkingLotContext extends DefaultContext<ParkingLot>{

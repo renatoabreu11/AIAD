@@ -1,39 +1,49 @@
-package agents;
+package agents.driver;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.vividsolutions.jts.geom.Coordinate;
-
+import agents.Agent;
+import agents.parkingLot.ParkingLot;
 import behaviours.RequestEntryPerformer;
+import behaviours.RequestExitPerformer;
 import environment.Route;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import parkingLot.Initializer;
+import parkingLot.Manager;
 import parkingLot.Simulation;
 import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.util.collections.IndexedIterable;
 import sajas.core.AID;
 import sajas.domain.DFService;
 
-public class Driver extends Agent {
+public abstract class Driver extends Agent {
+	public static enum DriverState {
+		ENTER, // Entering system
+		MOVING, // Moving to park
+		PICKING, // Picking a park
+		REQUEST, // Request to entry
+		PARKED, // Parked at the selected park
+		EXIT // Exiting system
+	}
+	
 	private static Logger LOGGER = Logger.getLogger(Driver.class.getName());
 	
 	public static double alfa = 0.5;
 	public static double beta = 0.5;
 
 	private int durationOfStay = 10; // definir valor default futuramente
-	private double walkDistance = 400.0; // definir valor default futuramente
+	protected double walkDistance = 600.0; // definir valor default futuramente
 	private double defaultSatisfaction = 0.5;
 	private double walkCoefficient = 0.5;
 	private double payCoefficient = 0.5;
 
-	private boolean alive = true;
-	private boolean inPark = false;
+	private DriverState state; 
+	private int parkedTime = 0;
 
-	private ArrayList<ParkingLot> parksInRange = new ArrayList<>();
+	protected ArrayList<ParkComparable> parksInRange = new ArrayList<>();
 	private ParkingLot parkingLotDestiny = null;
 
 	public Coordinate destination;
@@ -48,22 +58,18 @@ public class Driver extends Agent {
 	 * @param durationOfStay
 	 * @param walkDistance
 	 */
-	public Driver(Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction) {
-		super("Driver", Type.RATIONAL_DRIVER);
-		this.destination = destPosition;
-		this.currentPosition = srcPosition;
+	public Driver(String name, Coordinate srcPosition, Coordinate destPosition, int durationOfStay, double walkDistance, double defaultSatisfaction, Type type) {
+		super(name, type);
+		this.state = DriverState.ENTER;
 		this.durationOfStay = durationOfStay;
 		this.walkDistance = walkDistance;
 		this.defaultSatisfaction = defaultSatisfaction;
-	}
-	
-	public Driver() { // temporary
-		super("Driver", Type.RATIONAL_DRIVER);
+		setPosition(srcPosition,destPosition);
 	}
 
 	@Override
 	protected void setup() {
-		LOGGER.info("Driver " + getAID().getName()  + " is ready!");
+		this.logMessage("Driver " + getAID().getName()  + " is ready!");
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -86,57 +92,78 @@ public class Driver extends Agent {
 			fe.printStackTrace();
 		}
 
-		LOGGER.info("Driver " + getAID().getName()  + " terminating");
+		this.logMessage("Driver " + getAID().getName()  + " terminating");
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
 	public void update() {
-		if(this.alive) {
-			Agent.updateTick();
-			if (!this.route.atDestination()) {
-				try {
-					this.route.travel();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				LOGGER.log(Level.FINE,
-						this.toString() + " travelling to " + this.route.getDestinationBuilding().toString());
-			} else {
-				if(!this.inPark) {
-					this.inPark = true;
-					
+		Agent.updateTick();
+		switch(this.state) {
+			case ENTER: {
+				LOGGER.log(Level.FINE, this.getName() + " is entering the system.");
+				break;
+			}
+			case MOVING: {
+				if (!this.route.atDestination()) {
+					try {
+						this.route.travel();
+						this.currentPosition = Simulation.getAgentGeography().getGeometry(this).getCoordinate();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					LOGGER.log(Level.FINE,
+							this.getName() + " travelling to " + this.route.getDestinationBuilding().toString());
+				} else {
+					this.state = DriverState.REQUEST;
 					addBehaviour(new RequestEntryPerformer((AID) parkingLotDestiny.getAID(), this.getDurationOfStay()));
 				}
-				LOGGER.log(Level.FINE, this.toString() + " reached final destination: " + this.route.getDestinationBuilding().toString());
+				break;
 			}
-		} else {
-			Simulation.removeAgent(this);
-			this.doDelete();
+			case PICKING: {
+				LOGGER.log(Level.FINE, this.getName() + " is picking a new park.");
+				if(parksInRange.size() == 0 && parkingLotDestiny == null)
+					this.getPossibleParks();
+				else this.updatePossibleParks();
+				this.pickParkToGo();
+				break;
+			}
+			case REQUEST: {
+				LOGGER.log(Level.FINE, this.getName() + " is requesting a entry to the park.");
+				break;
+			}
+			case PARKED: {
+				LOGGER.log(Level.FINE, this.getName() + " is parked.");
+				if(parkedTime == durationOfStay) {
+					addBehaviour(new RequestExitPerformer(this, (AID) this.parkingLotDestiny.getAID()));
+				}
+				++parkedTime;
+				break;
+			}
+			case EXIT: {
+				Simulation.removeAgent(this);
+				Initializer.agentManager.removeAgent(this.getAID().toString());
+				this.doDelete();
+			}
+			default:
+				break;
 		}
 	}
 
-	private void getPossibleParks() {
-		Coordinate tmp = new Coordinate();
-		double[] distAndAng = new double[2];
-		IndexedIterable<ParkingLot> parks = Simulation.parkingLotContext.getObjects(ParkingLot.class);
+	abstract void updatePossibleParks();
 
-		for(int i = 0;i<parks.size();i++) {
-			tmp = parks.get(i).getPosition();
-			Route.distance(this.destination, tmp, distAndAng);
-			System.out.println("I"+i+": "+distAndAng[0]+" ; "+distAndAng[1]);
-			if(distAndAng[0] < this.walkDistance) {
-				parksInRange.add(parks.get(i));
-			}
-		}
-	}
+	abstract void getPossibleParks();
 
 	public void pickParkToGo() {
 		if(this.parksInRange.size() == 0) {
-			this.alive = false;
+			this.state = DriverState.EXIT;
+			Initializer.manager.addUtility(Manager.noParkAvailableUtility);
 		}
 		else {
-			this.parkingLotDestiny = this.parksInRange.get(0);
-			this.route = new Route(this, Simulation.getAgentGeography().getGeometry(parkingLotDestiny).getCoordinate(), parkingLotDestiny);
+			this.state = DriverState.MOVING;
+			String aid = this.parksInRange.get(0).park;
+			this.parkingLotDestiny = Initializer.agentManager.getAgent(aid);
+			this.route = new Route(this, parkingLotDestiny.getPosition(), parkingLotDestiny);
+			this.parksInRange.remove(0);
 			LOGGER.log(Level.FINE, this.toString() + " created new route to " + parkingLotDestiny.toString());
 		}
 	}
@@ -150,11 +177,11 @@ public class Driver extends Agent {
 		double[] distAndAng = new double[2];
 		Route.distance(this.destination, this.currentPosition, distAndAng);
 
-		double toPayDuringStay = alfa * price * durationOfStay;
+		double durationOfStayHour = durationOfStay / Manager.ticksPerHour;
+		double toPayDuringStay = alfa * price * durationOfStayHour;
 		double effortToArriveAtDest = beta * distAndAng[0];
 		double utility = defaultSatisfaction - payCoefficient * Math.pow(toPayDuringStay, 0.9) 
 				- walkCoefficient * Math.pow(effortToArriveAtDest, 0.9);
-
 		/*		
 			The powers u and v are both set to 0.9. They create non-linearity in the
 			impact of price and effort on the walking distance. Indeed, it is fair to assume
@@ -173,12 +200,28 @@ public class Driver extends Agent {
 	 * @param initialCoordinate
 	 * @param finalCoordinate
 	 */
-	public void setPositions(Coordinate initialCoordinate, Coordinate finalCoordinate) {
+	public void setPosition(Coordinate initialCoordinate, Coordinate finalCoordinate) {
 		this.currentPosition = initialCoordinate;
 		this.destination = finalCoordinate;
+		this.state = DriverState.PICKING;
+	}
+	
+	class ParkComparable{
+		public String park;
+		public double distance = -1;
+		public double utility = -1;
 		
-		this.getPossibleParks();
-		this.pickParkToGo();
+		public ParkComparable(String parkAID) {
+			this.park = parkAID;
+		}
+		
+		public void setDistance(double distance) {
+			this.distance = distance;
+		}
+		
+		public void setUtility(double utility) {
+			this.utility = utility;
+		}
 	}
 
 	/**
@@ -197,16 +240,20 @@ public class Driver extends Agent {
 	public Coordinate getCurrentPosition() {
 		return currentPosition;
 	}
-
-	public boolean getAlive() {
-		return alive;
+	
+	public ParkingLot getParkingLotDestiny() {
+		return parkingLotDestiny;
 	}
 
 	public void logMessage(String message) {
-		LOGGER.info(message);
+		LOGGER.fine(message);
 	}
 
-	public void setAlive(boolean b) {
-		this.alive = b;
+	public DriverState getState() {
+		return state;
+	}
+
+	public void setState(DriverState state) {
+		this.state = state;
 	}
 }
